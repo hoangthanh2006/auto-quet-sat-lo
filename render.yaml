@@ -1,0 +1,30 @@
+# Render.com Blueprint - Deploy Backend + Frontend
+# https://render.com/docs/blueprint-spec
+# Deploy: Connect repo → New → Blueprint → Chọn render.yaml
+
+services:
+  # Backend API (Node + Express + Puppeteer)
+  - type: web
+    name: data-crawl-api
+    runtime: node
+    region: singapore
+    rootDir: server
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+    # Render cung cấp PORT tự động; server đã dùng process.env.PORT
+
+  # Frontend (Static Site - Vite build)
+  - type: static_site
+    name: data-crawl-web
+    region: singapore
+    rootDir: client
+    buildCommand: npm install && npm run build
+    publishPath: dist
+    # Set VITE_API_URL = URL Backend sau khi deploy (ví dụ: https://data-crawl-api.onrender.com)
+    envVars:
+      - key: VITE_API_URL
+        sync: false

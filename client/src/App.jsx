@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Search, Download, Loader2, ExternalLink, FileText, CheckSquare, Square } from 'lucide-react';
 import { scanLinks, extractContent } from './services/api';
+import CustomScraper from './components/CustomScraper';
+import DynamicScraper from './components/DynamicScraper';
 
 function App() {
   const [links, setLinks] = useState([]);
@@ -9,7 +11,7 @@ function App() {
   const [extracting, setExtracting] = useState(false);
   const [error, setError] = useState(null);
   const [extractedData, setExtractedData] = useState([]);
-  const [activeTab, setActiveTab] = useState('links'); // 'links' or 'data'
+  const [activeTab, setActiveTab] = useState('links'); // 'links', 'data', 'custom', or 'dynamic'
   const [selectedKhoa, setSelectedKhoa] = useState(14); // Default to Khóa XIV (default)
   const [useCustomUrl, setUseCustomUrl] = useState(false);
   const [customUrl, setCustomUrl] = useState('https://daihoidang.vn/uy-vien-trung-uong.html');
@@ -604,40 +606,64 @@ function App() {
         )}
 
         {/* Tabs */}
-        {(links.length > 0 || extractedData.length > 0) && (
-          <div className="mb-4 border-b border-gray-200">
-            <nav className="flex space-x-8">
+        <div className="mb-4 border-b border-gray-200">
+          <nav className="flex space-x-8">
+            <button
+              onClick={() => setActiveTab('links')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'links'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Links {links.length > 0 && `(${links.length})`}
+            </button>
+            {extractedData.length > 0 && (
               <button
-                onClick={() => setActiveTab('links')}
+                onClick={() => setActiveTab('data')}
                 className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'links'
+                  activeTab === 'data'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                Links ({links.length})
+                Data Table ({dataTableRows.length} rows)
+                {successfulExtractions > 0 && (
+                  <span className="ml-2 text-green-600">✓ {successfulExtractions}</span>
+                )}
+                {failedExtractions > 0 && (
+                  <span className="ml-2 text-red-600">✗ {failedExtractions}</span>
+                )}
               </button>
-              {extractedData.length > 0 && (
-                <button
-                  onClick={() => setActiveTab('data')}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                    activeTab === 'data'
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  Data Table ({dataTableRows.length} rows)
-                  {successfulExtractions > 0 && (
-                    <span className="ml-2 text-green-600">✓ {successfulExtractions}</span>
-                  )}
-                  {failedExtractions > 0 && (
-                    <span className="ml-2 text-red-600">✗ {failedExtractions}</span>
-                  )}
-                </button>
-              )}
-            </nav>
-          </div>
-        )}
+            )}
+            <button
+              onClick={() => setActiveTab('custom')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'custom'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Custom Scraper
+            </button>
+            <button
+              onClick={() => setActiveTab('dynamic')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'dynamic'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Dynamic Scraper
+            </button>
+          </nav>
+        </div>
+
+        {/* Custom Scraper Tab */}
+        {activeTab === 'custom' && <CustomScraper />}
+
+        {/* Dynamic Scraper Tab */}
+        {activeTab === 'dynamic' && <DynamicScraper />}
 
         {/* Links Table */}
         {activeTab === 'links' && links.length > 0 && (

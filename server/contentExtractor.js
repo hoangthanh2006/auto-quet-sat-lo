@@ -12,6 +12,8 @@ export async function extractContent(url, customSelector = null) {
   try {
     browser = await puppeteer.launch({
       headless: true,
+      // Use system Chrome instead of Puppeteer's managed binary to avoid "Could not find Chrome" errors
+      executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
