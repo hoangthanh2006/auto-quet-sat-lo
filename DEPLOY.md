@@ -48,6 +48,15 @@ git push -u origin main
 3. Kết nối GitHub/GitLab, chọn repo **Data-crawl**.
 4. Render sẽ đọc file `render.yaml` và tạo 2 service: **data-crawl-api** (Backend) và **data-crawl-web** (Frontend).
 
+### 2.1b Root Directory (quan trọng – tránh lỗi "package.json not found")
+
+Repo có cấu trúc **monorepo**: code Backend nằm trong thư mục `server/`, Frontend trong `client/`.
+
+- **Backend (data-crawl-api):** Bắt buộc đặt **Root Directory** = **`server`**.
+  - Nếu để trống, Render chạy build ở thư mục gốc repo → không có `package.json` → lỗi `ENOENT: no such file or directory, open '.../package.json'`.
+  - Trong service Backend: **Settings** → **Root Directory** → nhập **`server`** → Save.
+- **Frontend (data-crawl-web):** Đặt **Root Directory** = **`client`** (Blueprint đã khai báo `rootDir: client`; nếu tạo service thủ công thì phải set `client`).
+
 ### 2.2 Cấu hình Environment cho Frontend
 
 Sau khi Backend deploy xong, Render sẽ cho URL kiểu: `https://data-crawl-api.onrender.com`.
