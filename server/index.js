@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { scrapeLinks, scrapeLinksByClicking, scrapeDataBySelectors, previewPageStructure, analyzePageStructure, executeDynamicScrape } from './scraper.js';
+import { scrapeLinks, scrapeLinksByClicking, scrapeDataBySelectors, previewPageStructure, analyzePageStructure, executeDynamicScrape, executeRecursiveScrape, scrapeSPASidebarContent, testSelector } from './scraper.js';
 import { extractMultipleContents } from './contentExtractor.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -246,11 +246,55 @@ app.post('/api/analyze-page', async (req, res) => {
   }
 });
 
+// Analyze page structure streaming endpoint (Real-time logs for Step 1)
+app.post('/api/analyze-page-stream', async (req, res) => {
+  // Set headers for streaming chunked response
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('Transfer-Encoding', 'chunked');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('Cache-Control', 'no-cache');
+
+  const sendLog = (message) => {
+    res.write(JSON.stringify({ type: 'log', message }) + '\n');
+  };
+
+  try {
+    const { url } = req.body;
+
+    // Validate URL
+    if (!url || typeof url !== 'string' || url.trim() === '') {
+      res.write(JSON.stringify({ type: 'log', message: '❌ Lỗi: URL không hợp lệ.' }) + '\n');
+      res.write(JSON.stringify({ type: 'error', error: 'URL is required' }) + '\n');
+      return res.end();
+    }
+
+    // Validate URL format
+    try {
+      new URL(url);
+    } catch (e) {
+      res.write(JSON.stringify({ type: 'log', message: '❌ Lỗi: Định dạng URL sai.' }) + '\n');
+      res.write(JSON.stringify({ type: 'error', error: 'Invalid URL format' }) + '\n');
+      return res.end();
+    }
+
+    console.log(`Streaming page structure analysis at ${url}...`);
+    const analysis = await analyzePageStructure(url, sendLog);
+
+    res.write(JSON.stringify({ type: 'result', data: analysis }) + '\n');
+    res.end();
+  } catch (error) {
+    console.error('Streaming page analysis error:', error);
+    res.write(JSON.stringify({ type: 'log', message: `❌ Lỗi phân tích: ${error.message}` }) + '\n');
+    res.write(JSON.stringify({ type: 'error', error: error.message || 'Failed to analyze page structure' }) + '\n');
+    res.end();
+  }
+});
+
 // Execute dynamic scrape endpoint (Bước 3)
 app.post('/api/execute-scrape', async (req, res) => {
   try {
     console.log('Received execute-scrape request:', req.body);
-    const { url, config } = req.body;
+    const { url, config, crawlMode = 'single', maxDepth = 1, maxLinks = 20, urlFilter = '' } = req.body;
     
     // Validate URL
     if (!url || typeof url !== 'string' || url.trim() === '') {
@@ -287,16 +331,22 @@ app.post('/api/execute-scrape', async (req, res) => {
           error: `Config item ${i + 1} must have label, selector, and type`
         });
       }
-      if (!['text', 'link', 'image', 'api'].includes(item.type.toLowerCase())) {
+      if (!['text', 'link', 'image', 'api', 'click_content'].includes(item.type.toLowerCase())) {
         return res.status(400).json({
           success: false,
-          error: `Config item ${i + 1}: Invalid type "${item.type}". Must be 'text', 'link', 'image', or 'api'`
+          error: `Config item ${i + 1}: Invalid type "${item.type}". Must be 'text', 'link', 'image', 'api', or 'click_content'`
         });
       }
     }
 
-    console.log(`Executing dynamic scrape at ${url} with ${config.length} fields...`);
-    const results = await executeDynamicScrape(url, config);
+    let results;
+    if (crawlMode === 'multi' && maxDepth > 1) {
+      console.log(`Executing recursive scrape at ${url} with depth ${maxDepth}, maxLinks ${maxLinks}, filter "${urlFilter}"...`);
+      results = await executeRecursiveScrape(url, config, { maxDepth, maxLinks, urlFilter });
+    } else {
+      console.log(`Executing dynamic scrape at ${url} with ${config.length} fields...`);
+      results = await executeDynamicScrape(url, config);
+    }
     
     res.json({
       success: true,
@@ -313,6 +363,122 @@ app.post('/api/execute-scrape', async (req, res) => {
     });
   }
 });
+
+// Execute dynamic scrape streaming endpoint (Real-time logs)
+app.post('/api/execute-scrape-stream', async (req, res) => {
+  // Set headers for streaming chunked response
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('Transfer-Encoding', 'chunked');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('Cache-Control', 'no-cache');
+
+  const sendLog = (message) => {
+    res.write(JSON.stringify({ type: 'log', message }) + '\n');
+  };
+
+  try {
+    const { url, config, crawlMode = 'single', maxDepth = 1, maxLinks = 20, urlFilter = '' } = req.body;
+
+    // Validate URL
+    if (!url || typeof url !== 'string' || url.trim() === '') {
+      res.write(JSON.stringify({ type: 'log', message: '❌ Lỗi: URL không hợp lệ.' }) + '\n');
+      res.write(JSON.stringify({ type: 'error', error: 'URL is required' }) + '\n');
+      return res.end();
+    }
+
+    // Validate config
+    if (!config || !Array.isArray(config) || config.length === 0) {
+      res.write(JSON.stringify({ type: 'log', message: '❌ Lỗi: Cấu hình Selector trống.' }) + '\n');
+      res.write(JSON.stringify({ type: 'error', error: 'Config must be a non-empty array' }) + '\n');
+      return res.end();
+    }
+
+    let results;
+    if (crawlMode === 'multi' && maxDepth > 1) {
+      results = await executeRecursiveScrape(url, config, { maxDepth, maxLinks, urlFilter }, sendLog);
+    } else {
+      results = await executeDynamicScrape(url, config, sendLog);
+    }
+
+    res.write(JSON.stringify({ type: 'result', data: results }) + '\n');
+    res.end();
+  } catch (error) {
+    console.error('Streaming scrape error:', error);
+    res.write(JSON.stringify({ type: 'log', message: `❌ Lỗi nghiêm trọng: ${error.message}` }) + '\n');
+    res.write(JSON.stringify({ type: 'error', error: error.message || 'Failed to execute streaming scrape' }) + '\n');
+    res.end();
+  }
+});
+
+// SPA Sidebar: click từng list item, đợi sidebar cập nhật, lấy nội dung theo data-id
+app.post('/api/scrape-spa-sidebar', async (req, res) => {
+  try {
+    const { url, listSelector, idAttribute, sidebarSelector, detailSelector, waitAfterClick } = req.body;
+
+    if (!url || typeof url !== 'string' || url.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        error: 'URL is required'
+      });
+    }
+    try {
+      new URL(url);
+    } catch (e) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid URL format'
+      });
+    }
+
+    const options = {};
+    if (listSelector && typeof listSelector === 'string') options.listSelector = listSelector.trim();
+    if (idAttribute && typeof idAttribute === 'string') options.idAttribute = idAttribute.trim();
+    if (sidebarSelector && typeof sidebarSelector === 'string') options.sidebarSelector = sidebarSelector.trim();
+    if (detailSelector && typeof detailSelector === 'string') options.detailSelector = detailSelector.trim();
+    if (typeof waitAfterClick === 'number' && waitAfterClick > 0) options.waitAfterClick = waitAfterClick;
+
+    const results = await scrapeSPASidebarContent(url, options);
+
+    res.json({
+      success: true,
+      data: results,
+      url,
+      count: results.length
+    });
+  } catch (error) {
+    console.error('SPA sidebar scrape error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'SPA sidebar scrape failed'
+    });
+  }
+});
+
+// Test selector endpoint
+app.post('/api/test-selector', async (req, res) => {
+  try {
+    const { url, selector, type } = req.body;
+    if (!url || !selector || !type) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required parameters: url, selector, type'
+      });
+    }
+    console.log(`Testing selector "${selector}" of type "${type}" on URL: ${url}`);
+    const result = await testSelector(url, selector, type);
+    res.json({
+      success: true,
+      data: result
+    });
+  } catch (error) {
+    console.error('Selector test error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to test selector'
+    });
+  }
+});
+
 
 // SPA fallback: serve index.html for non-API routes (production)
 if (process.env.NODE_ENV === 'production') {
