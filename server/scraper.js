@@ -839,7 +839,7 @@ export async function analyzePageStructure(url, onLog) {
  * @param {Array<{label: string, selector: string, type: string}>} config - Array of field configs
  * @returns {Promise<Array<Object>>} Array of scraped data rows (table format)
  */
-export async function executeDynamicScrape(url, config, onLog, onRow, checkIfAborted) {
+export async function executeDynamicScrape(url, config, onLog) {
   let browser;
   
   try {
@@ -1018,10 +1018,6 @@ export async function executeDynamicScrape(url, config, onLog, onRow, checkIfAbo
       if (onLog) onLog(`[Phân tích] Tìm thấy ${linkUrls.length} liên kết chi tiết. Sẽ cào tối đa ${urlsToFetch.length} liên kết...`);
 
       for (let i = 0; i < urlsToFetch.length; i++) {
-        if (checkIfAborted && checkIfAborted()) {
-          if (onLog) onLog('[Hủy] Dừng cào trang chi tiết do người dùng yêu cầu.');
-          break;
-        }
         const u = urlsToFetch[i];
         try {
           if (onLog) onLog(`[Cào Chi Tiết ${i + 1}/${urlsToFetch.length}] Đang mở liên kết: ${u}`);
@@ -1032,16 +1028,6 @@ export async function executeDynamicScrape(url, config, onLog, onRow, checkIfAbo
             return el ? (el.innerText || el.textContent || '').trim() : '';
           }, contentSelector || null);
           contents.push(text || 'N/A');
-
-          if (onRow) {
-            const clickContentLabel = normalizedConfig.find(c => c.type.toLowerCase() === 'click_content').label;
-            const row = { URL: u };
-            labels.forEach((label) => {
-              if (label === clickContentLabel) row[label] = text || 'N/A';
-              else row[label] = (otherFields[label] && otherFields[label][i]) != null ? otherFields[label][i] : 'N/A';
-            });
-            onRow(row);
-          }
         } catch (err) {
           if (onLog) onLog(`  ⚠️ Lỗi tải trang chi tiết: ${err.message}`);
           console.log(`Failed to fetch content from ${u}:`, err.message);
@@ -1050,7 +1036,7 @@ export async function executeDynamicScrape(url, config, onLog, onRow, checkIfAbo
       }
 
       const clickContentLabel = normalizedConfig.find(c => c.type.toLowerCase() === 'click_content').label;
-      results = urlsToFetch.slice(0, contents.length).map((url, i) => {
+      results = urlsToFetch.map((url, i) => {
         const row = { URL: url };
         labels.forEach((label) => {
           if (label === clickContentLabel) row[label] = contents[i] != null ? contents[i] : 'N/A';
@@ -1235,10 +1221,6 @@ export async function executeDynamicScrape(url, config, onLog, onRow, checkIfAbo
 
       return rows;
     }, normalizedConfig);
-
-      if (onRow && results && results.length > 0) {
-        results.forEach(row => onRow(row));
-      }
     }
 
     if (onLog) onLog(`[Hoàn thành] Đã hoàn tất trích xuất dữ liệu. Lấy được tổng cộng ${results.length} dòng.`);
@@ -1472,7 +1454,7 @@ export async function testSelector(url, selector, type = 'text') {
  * @param {string} [options.urlFilter] - Substring keyword that URLs must contain to be crawled
  * @returns {Promise<Array<Object>>} Array of crawled data rows across multiple pages
  */
-export async function executeRecursiveScrape(startUrl, config, options = {}, onLog, onRow, checkIfAborted) {
+export async function executeRecursiveScrape(startUrl, config, options = {}, onLog) {
   const { maxDepth = 3, maxLinks = 20, urlFilter = '' } = options;
   let browser;
   
@@ -1517,10 +1499,6 @@ export async function executeRecursiveScrape(startUrl, config, options = {}, onL
     const normalizedConfig = config.map(c => ({ ...c, selector: normalizeSelector(c.selector) }));
 
     while (queue.length > 0 && visited.size < maxLinks) {
-      if (checkIfAborted && checkIfAborted()) {
-        if (onLog) onLog('[Hủy] Dừng cào đệ quy do người dùng yêu cầu.');
-        break;
-      }
       const { url, depth } = queue.shift();
       
       let normalizedUrl;
@@ -1703,9 +1681,6 @@ export async function executeRecursiveScrape(startUrl, config, options = {}, onL
         // Add rows to global results
         if (pageData.rows && pageData.rows.length > 0) {
           allResults.push(...pageData.rows);
-          if (onRow) {
-            pageData.rows.forEach(row => onRow(row));
-          }
           if (onLog) onLog(`  ↳ Trích xuất thành công ${pageData.rows.length} dòng dữ liệu từ trang này.`);
         } else {
           if (onLog) onLog(`  ↳ Không tìm thấy dữ liệu phù hợp với Selector trên trang này.`);
@@ -1774,7 +1749,7 @@ export async function executeRecursiveScrape(startUrl, config, options = {}, onL
  * @param {Function} onLog - Optional callback for streaming logs
  * @returns {Promise<Array<Object>>} Array of crawled data rows
  */
-export async function executeIdLoopScrape(urlPattern, startId, endId, config, onLog, onRow, checkIfAborted) {
+export async function executeIdLoopScrape(urlPattern, startId, endId, config, onLog) {
   let browser;
   
   try {
@@ -1820,10 +1795,6 @@ export async function executeIdLoopScrape(urlPattern, startId, endId, config, on
     const normalizedConfig = config.map(c => ({ ...c, selector: normalizeSelector(c.selector) }));
 
     for (let id = start; id <= end; id++) {
-      if (checkIfAborted && checkIfAborted()) {
-        if (onLog) onLog('[Hủy] Dừng cào vòng lặp ID do người dùng yêu cầu.');
-        break;
-      }
       const targetUrl = `${urlPattern}${id}`;
       const currentStep = id - start + 1;
       
@@ -1923,7 +1894,6 @@ export async function executeIdLoopScrape(urlPattern, startId, endId, config, on
         if (rowData) {
           results.push(rowData);
           successCount++;
-          if (onRow) onRow(rowData);
           if (onLog) onLog(`  ↳ Trích xuất thành công dữ liệu cho ID ${id}.`);
         } else {
           if (onLog) onLog(`  ⚠️ Không tìm thấy dữ liệu hoặc trang trống cho ID ${id}.`);

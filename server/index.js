@@ -376,24 +376,8 @@ app.post('/api/execute-scrape-stream', async (req, res) => {
   res.setHeader('Connection', 'keep-alive');
   res.setHeader('Cache-Control', 'no-cache');
 
-  let aborted = false;
-  req.on('close', () => {
-    console.log('Client closed the connection. Aborting streaming scrape...');
-    aborted = true;
-  });
-
-  const checkIfAborted = () => aborted;
-
   const sendLog = (message) => {
-    if (!aborted) {
-      res.write(JSON.stringify({ type: 'log', message }) + '\n');
-    }
-  };
-
-  const sendRow = (row) => {
-    if (!aborted) {
-      res.write(JSON.stringify({ type: 'row', data: row }) + '\n');
-    }
+    res.write(JSON.stringify({ type: 'log', message }) + '\n');
   };
 
   try {
@@ -401,45 +385,35 @@ app.post('/api/execute-scrape-stream', async (req, res) => {
 
     // Validate URL
     if (!url || typeof url !== 'string' || url.trim() === '') {
-      sendLog('❌ Lỗi: URL không hợp lệ.');
-      if (!aborted) {
-        res.write(JSON.stringify({ type: 'error', error: 'URL is required' }) + '\n');
-        res.end();
-      }
-      return;
+      res.write(JSON.stringify({ type: 'log', message: '❌ Lỗi: URL không hợp lệ.' }) + '\n');
+      res.write(JSON.stringify({ type: 'error', error: 'URL is required' }) + '\n');
+      return res.end();
     }
 
     // Validate config
     if (!config || !Array.isArray(config) || config.length === 0) {
-      sendLog('❌ Lỗi: Cấu hình Selector trống.');
-      if (!aborted) {
-        res.write(JSON.stringify({ type: 'error', error: 'Config must be a non-empty array' }) + '\n');
-        res.end();
-      }
-      return;
+      res.write(JSON.stringify({ type: 'log', message: '❌ Lỗi: Cấu hình Selector trống.' }) + '\n');
+      res.write(JSON.stringify({ type: 'error', error: 'Config must be a non-empty array' }) + '\n');
+      return res.end();
     }
 
     let results;
     if (crawlMode === 'id_loop') {
       const { startId, endId } = req.body;
-      results = await executeIdLoopScrape(url, startId, endId, config, sendLog, sendRow, checkIfAborted);
+      results = await executeIdLoopScrape(url, startId, endId, config, sendLog);
     } else if (crawlMode === 'multi' && maxDepth > 1) {
-      results = await executeRecursiveScrape(url, config, { maxDepth, maxLinks, urlFilter }, sendLog, sendRow, checkIfAborted);
+      results = await executeRecursiveScrape(url, config, { maxDepth, maxLinks, urlFilter }, sendLog);
     } else {
-      results = await executeDynamicScrape(url, config, sendLog, sendRow, checkIfAborted);
+      results = await executeDynamicScrape(url, config, sendLog);
     }
 
-    if (!aborted) {
-      res.write(JSON.stringify({ type: 'result', data: results }) + '\n');
-      res.end();
-    }
+    res.write(JSON.stringify({ type: 'result', data: results }) + '\n');
+    res.end();
   } catch (error) {
     console.error('Streaming scrape error:', error);
-    if (!aborted) {
-      res.write(JSON.stringify({ type: 'log', message: `❌ Lỗi nghiêm trọng: ${error.message}` }) + '\n');
-      res.write(JSON.stringify({ type: 'error', error: error.message || 'Failed to execute streaming scrape' }) + '\n');
-      res.end();
-    }
+    res.write(JSON.stringify({ type: 'log', message: `❌ Lỗi nghiêm trọng: ${error.message}` }) + '\n');
+    res.write(JSON.stringify({ type: 'error', error: error.message || 'Failed to execute streaming scrape' }) + '\n');
+    res.end();
   }
 });
 

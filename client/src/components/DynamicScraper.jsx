@@ -42,15 +42,6 @@ export default function DynamicScraper() {
   const [logs, setLogs] = useState([]);
   const [analysisLogs, setAnalysisLogs] = useState([]);
   const [visitedCount, setVisitedCount] = useState(0);
- 
-  const abortControllerRef = useRef(null);
-
-  const handleStop = () => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-      setLogs(prev => [...prev, '🛑 Tiến trình cào đã bị dừng bởi người dùng.']);
-    }
-  };
 
   // Auto-populate loop path extension for ID loop mode
   useEffect(() => {
@@ -232,23 +223,11 @@ export default function DynamicScraper() {
     setLogs([]); // Reset logs
     setVisitedCount(0); // Reset visited pages count
 
-    // Khởi tạo AbortController mới
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
-
     try {
       const data = await executeScrapeStream(
         crawlMode === 'id_loop' ? getLoopUrlPattern() : url,
         validFields,
-        { 
-          crawlMode, 
-          maxDepth, 
-          maxLinks, 
-          urlFilter, 
-          startId, 
-          endId,
-          signal: controller.signal // Truyền signal để hỗ trợ dừng cào
-        },
+        { crawlMode, maxDepth, maxLinks, urlFilter, startId, endId },
         (newLog) => {
           setLogs(prev => [...prev, newLog]);
           
@@ -262,25 +241,9 @@ export default function DynamicScraper() {
               setVisitedCount(Number(detailMatch[1]));
             }
           }
-        },
-        (newRow) => {
-          // Callback nhận dòng dữ liệu thực tế thời gian thực
-          setScrapeResults(prev => {
-            const current = prev || [];
-            // Tránh trùng lặp kết quả
-            const isDup = current.some(r => {
-              if (r['ID'] && newRow['ID']) return r['ID'] === newRow['ID'];
-              if (r['Nguồn URL'] && newRow['Nguồn URL']) return r['Nguồn URL'] === newRow['Nguồn URL'];
-              if (r['URL'] && newRow['URL']) return r['URL'] === newRow['URL'];
-              return false;
-            });
-            if (isDup) return current;
-            return [...current, newRow];
-          });
         }
       );
       
-      // Nếu kết quả cuối cùng hoàn tất và có dữ liệu, gán toàn bộ để đảm bảo chính xác
       if (data && data.length > 0) {
         setScrapeResults(data);
         
@@ -288,23 +251,12 @@ export default function DynamicScraper() {
         const uniqueUrls = new Set(data.filter(row => row && (row['Nguồn URL'] || row['URL'])).map(row => row['Nguồn URL'] || row['URL']));
         setVisitedCount(uniqueUrls.size > 0 ? uniqueUrls.size : 1);
       } else {
-        // Chỉ hiện lỗi khi không có dữ liệu nào cào được (nếu người dùng bấm stop thì giữ lại dữ liệu đã có)
-        setScrapeResults(prev => {
-          if (!prev || prev.length === 0) {
-            setError('Không lấy được dữ liệu. Vui lòng kiểm tra lại CSS selector.');
-          }
-          return prev;
-        });
+        setError('Không lấy được dữ liệu. Vui lòng kiểm tra lại CSS selector.');
       }
     } catch (err) {
-      if (err.name === 'AbortError') {
-        setLogs(prev => [...prev, '💡 Đã giữ lại toàn bộ dữ liệu cào được trước thời điểm dừng.']);
-      } else {
-        setError(err.message || 'Lỗi khi lấy dữ liệu');
-      }
+      setError(err.message || 'Lỗi khi lấy dữ liệu');
     } finally {
       setScraping(false);
-      abortControllerRef.current = null;
     }
   };
 
@@ -1099,40 +1051,23 @@ export default function DynamicScraper() {
             )}
           </div>
 
-          <div className="flex gap-3">
-            <button
-              onClick={handleExecute}
-              disabled={scraping || fields.filter(f => f.label.trim() && f.selector.trim()).length === 0}
-              className={`px-6 py-3.5 text-white rounded-xl disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-400 dark:disabled:text-slate-600 flex items-center justify-center gap-2 font-bold transition-all duration-200 shadow-md ${
-                scraping 
-                  ? 'flex-1 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700' 
-                  : 'w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-purple-500/10 hover:shadow-purple-500/20'
-              }`}
-            >
-              {scraping ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin text-purple-600" />
-                  <span className="text-purple-600">Đang lấy dữ liệu...</span>
-                </>
-              ) : (
-                <>
-                  <Search className="w-5 h-5" />
-                  <span>Bắt đầu lấy dữ liệu</span>
-                </>
-              )}
-            </button>
-
-            {scraping && (
-              <button
-                onClick={handleStop}
-                type="button"
-                className="px-6 py-3.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl flex items-center justify-center gap-2 font-bold transition-all duration-200 shadow-md shadow-rose-500/10 hover:shadow-rose-500/20 animate-pulse"
-              >
-                <XCircle className="w-5 h-5" />
-                <span>Dừng cào</span>
-              </button>
+          <button
+            onClick={handleExecute}
+            disabled={scraping || fields.filter(f => f.label.trim() && f.selector.trim()).length === 0}
+            className="w-full px-6 py-3.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-bold transition-all duration-200 shadow-md shadow-purple-500/10 hover:shadow-purple-500/20"
+          >
+            {scraping ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span>Đang lấy dữ liệu...</span>
+              </>
+            ) : (
+              <>
+                <Search className="w-5 h-5" />
+                <span>Bắt đầu lấy dữ liệu</span>
+              </>
             )}
-          </div>
+          </button>
 
           {/* Real-time Progress Console */}
           {(logs.length > 0 || scraping) && (
