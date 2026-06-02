@@ -11,9 +11,9 @@ export async function scrapeLinks(url) {
   try {
     // Launch browser
     browser = await puppeteer.launch({
-      headless: true,
-      // Docker/Fly: use PUPPETEER_EXECUTABLE_PATH (Chromium). Local Mac: use system Chrome.
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || (process.platform === 'darwin' ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' : undefined),
+      headless: 'new',
+      // Docker/Fly: use PUPPETEER_EXECUTABLE_PATH (Chromium). Local Mac: let Puppeteer use its own revision to avoid conflicts.
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
@@ -100,9 +100,9 @@ export async function scrapeLinksByClicking(baseUrl, linkSelector = '.dhd-prev.d
   try {
     // Launch browser
     browser = await puppeteer.launch({
-      headless: true,
-      // Docker/Fly: use PUPPETEER_EXECUTABLE_PATH (Chromium). Local Mac: use system Chrome.
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || (process.platform === 'darwin' ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' : undefined),
+      headless: 'new',
+      // Docker/Fly: use PUPPETEER_EXECUTABLE_PATH (Chromium). Local Mac: let Puppeteer use its own revision to avoid conflicts.
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
@@ -294,8 +294,8 @@ export async function scrapeDataBySelectors(url, config) {
 
     // Launch browser
     browser = await puppeteer.launch({
-      headless: true,
-      executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+      headless: 'new',
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
@@ -384,8 +384,8 @@ export async function previewPageStructure(url) {
 
     // Launch browser
     browser = await puppeteer.launch({
-      headless: true,
-      executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+      headless: 'new',
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
@@ -500,8 +500,8 @@ export async function analyzePageStructure(url, onLog) {
     // Launch browser
     if (onLog) onLog(`[Trình duyệt] Khởi chạy Chrome Headless...`);
     browser = await puppeteer.launch({
-      headless: true,
-      executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+      headless: 'new',
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
@@ -787,6 +787,11 @@ export async function analyzePageStructure(url, onLog) {
         .sort((a, b) => b.textLength - a.textLength)
         .slice(0, 50);
 
+      // Assign unique index first so bestParent can reference it
+      topRegions.forEach((r, idx) => {
+        r.index = idx + 1;
+      });
+
       // Determine parent-child nesting
       topRegions.forEach(nodeA => {
         let bestParent = null;
@@ -800,6 +805,7 @@ export async function analyzePageStructure(url, onLog) {
         });
         if (bestParent) {
           nodeA.parentId = bestParent.selector;
+          nodeA.parentIndex = bestParent.index;
         }
       });
 
@@ -808,10 +814,7 @@ export async function analyzePageStructure(url, onLog) {
         delete r.el;
       });
 
-      result.dataRegions = topRegions.map((r, idx) => ({
-        ...r,
-        index: idx + 1
-      }));
+      result.dataRegions = topRegions;
 
       return result;
     });
@@ -836,7 +839,7 @@ export async function analyzePageStructure(url, onLog) {
  * @param {Array<{label: string, selector: string, type: string}>} config - Array of field configs
  * @returns {Promise<Array<Object>>} Array of scraped data rows (table format)
  */
-export async function executeDynamicScrape(url, config, onLog) {
+export async function executeDynamicScrape(url, config, onLog, onRow, checkIfAborted) {
   let browser;
   
   try {
@@ -866,8 +869,8 @@ export async function executeDynamicScrape(url, config, onLog) {
     // Launch browser
     if (onLog) onLog(`[Trình duyệt] Đang khởi chạy trình duyệt Puppeteer...`);
     browser = await puppeteer.launch({
-      headless: true,
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || (process.platform === 'darwin' ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' : undefined),
+      headless: 'new',
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
@@ -1015,6 +1018,10 @@ export async function executeDynamicScrape(url, config, onLog) {
       if (onLog) onLog(`[Phân tích] Tìm thấy ${linkUrls.length} liên kết chi tiết. Sẽ cào tối đa ${urlsToFetch.length} liên kết...`);
 
       for (let i = 0; i < urlsToFetch.length; i++) {
+        if (checkIfAborted && checkIfAborted()) {
+          if (onLog) onLog('[Hủy] Dừng cào trang chi tiết do người dùng yêu cầu.');
+          break;
+        }
         const u = urlsToFetch[i];
         try {
           if (onLog) onLog(`[Cào Chi Tiết ${i + 1}/${urlsToFetch.length}] Đang mở liên kết: ${u}`);
@@ -1025,6 +1032,16 @@ export async function executeDynamicScrape(url, config, onLog) {
             return el ? (el.innerText || el.textContent || '').trim() : '';
           }, contentSelector || null);
           contents.push(text || 'N/A');
+
+          if (onRow) {
+            const clickContentLabel = normalizedConfig.find(c => c.type.toLowerCase() === 'click_content').label;
+            const row = { URL: u };
+            labels.forEach((label) => {
+              if (label === clickContentLabel) row[label] = text || 'N/A';
+              else row[label] = (otherFields[label] && otherFields[label][i]) != null ? otherFields[label][i] : 'N/A';
+            });
+            onRow(row);
+          }
         } catch (err) {
           if (onLog) onLog(`  ⚠️ Lỗi tải trang chi tiết: ${err.message}`);
           console.log(`Failed to fetch content from ${u}:`, err.message);
@@ -1033,7 +1050,7 @@ export async function executeDynamicScrape(url, config, onLog) {
       }
 
       const clickContentLabel = normalizedConfig.find(c => c.type.toLowerCase() === 'click_content').label;
-      results = urlsToFetch.map((url, i) => {
+      results = urlsToFetch.slice(0, contents.length).map((url, i) => {
         const row = { URL: url };
         labels.forEach((label) => {
           if (label === clickContentLabel) row[label] = contents[i] != null ? contents[i] : 'N/A';
@@ -1218,6 +1235,10 @@ export async function executeDynamicScrape(url, config, onLog) {
 
       return rows;
     }, normalizedConfig);
+
+      if (onRow && results && results.length > 0) {
+        results.forEach(row => onRow(row));
+      }
     }
 
     if (onLog) onLog(`[Hoàn thành] Đã hoàn tất trích xuất dữ liệu. Lấy được tổng cộng ${results.length} dòng.`);
@@ -1268,8 +1289,8 @@ export async function scrapeSPASidebarContent(url, options = {}) {
     }
 
     browser = await puppeteer.launch({
-      headless: true,
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || (process.platform === 'darwin' ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' : undefined),
+      headless: 'new',
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
@@ -1361,8 +1382,8 @@ export async function testSelector(url, selector, type = 'text') {
   try {
     // Launch browser
     browser = await puppeteer.launch({
-      headless: true,
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || (process.platform === 'darwin' ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' : undefined),
+      headless: 'new',
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
@@ -1451,7 +1472,7 @@ export async function testSelector(url, selector, type = 'text') {
  * @param {string} [options.urlFilter] - Substring keyword that URLs must contain to be crawled
  * @returns {Promise<Array<Object>>} Array of crawled data rows across multiple pages
  */
-export async function executeRecursiveScrape(startUrl, config, options = {}, onLog) {
+export async function executeRecursiveScrape(startUrl, config, options = {}, onLog, onRow, checkIfAborted) {
   const { maxDepth = 3, maxLinks = 20, urlFilter = '' } = options;
   let browser;
   
@@ -1467,8 +1488,8 @@ export async function executeRecursiveScrape(startUrl, config, options = {}, onL
     // Launch browser
     if (onLog) onLog(`[Trình duyệt] Đang khởi chạy trình duyệt Puppeteer...`);
     browser = await puppeteer.launch({
-      headless: true,
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || (process.platform === 'darwin' ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' : undefined),
+      headless: 'new',
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
@@ -1496,6 +1517,10 @@ export async function executeRecursiveScrape(startUrl, config, options = {}, onL
     const normalizedConfig = config.map(c => ({ ...c, selector: normalizeSelector(c.selector) }));
 
     while (queue.length > 0 && visited.size < maxLinks) {
+      if (checkIfAborted && checkIfAborted()) {
+        if (onLog) onLog('[Hủy] Dừng cào đệ quy do người dùng yêu cầu.');
+        break;
+      }
       const { url, depth } = queue.shift();
       
       let normalizedUrl;
@@ -1678,6 +1703,9 @@ export async function executeRecursiveScrape(startUrl, config, options = {}, onL
         // Add rows to global results
         if (pageData.rows && pageData.rows.length > 0) {
           allResults.push(...pageData.rows);
+          if (onRow) {
+            pageData.rows.forEach(row => onRow(row));
+          }
           if (onLog) onLog(`  ↳ Trích xuất thành công ${pageData.rows.length} dòng dữ liệu từ trang này.`);
         } else {
           if (onLog) onLog(`  ↳ Không tìm thấy dữ liệu phù hợp với Selector trên trang này.`);
@@ -1730,6 +1758,189 @@ export async function executeRecursiveScrape(startUrl, config, options = {}, onL
   } catch (error) {
     console.error('Error during recursive scraping:', error);
     throw new Error(`Recursive scraping failed: ${error.message}`);
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
+  }
+}
+
+/**
+ * Executes scraping on detail pages by looping through incremental IDs
+ * @param {string} urlPattern - The base URL with ID query parameter (e.g. http://chinhsachquandoi.gov.vn/chi-tiet-liet-si.htm?id=)
+ * @param {number} startId - Start ID
+ * @param {number} endId - End ID
+ * @param {Array<{label: string, selector: string, type: string}>} config - Array of field configs
+ * @param {Function} onLog - Optional callback for streaming logs
+ * @returns {Promise<Array<Object>>} Array of crawled data rows
+ */
+export async function executeIdLoopScrape(urlPattern, startId, endId, config, onLog, onRow, checkIfAborted) {
+  let browser;
+  
+  try {
+    if (onLog) onLog(`[Khởi tạo] Bắt đầu cào theo vòng lặp ID (Từ ${startId} đến ${endId})...`);
+    
+    // Validate inputs
+    const start = Number(startId);
+    const end = Number(endId);
+    if (isNaN(start) || isNaN(end) || start > end) {
+      throw new Error(`Khoảng ID không hợp lệ: ${startId} - ${endId}`);
+    }
+    
+    if (!Array.isArray(config) || config.length === 0) {
+      throw new Error('Config must be a non-empty array');
+    }
+
+    // Launch browser
+    if (onLog) onLog(`[Trình duyệt] Đang khởi chạy trình duyệt Puppeteer...`);
+    browser = await puppeteer.launch({
+      headless: 'new',
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1920, height: 1080 });
+    const navTimeout = Number(process.env.SCRAPE_NAV_TIMEOUT) || 30000;
+
+    const results = [];
+    const totalCount = end - start + 1;
+    let successCount = 0;
+
+    // Helper to normalize selectors
+    const normalizeSelector = (sel) => {
+      const s = (sel || '').trim();
+      if (!s) return s;
+      if (s.startsWith('.') || s.startsWith('#') || s.startsWith('[') || s.includes(' ') || s.includes('>') || s.includes('+') || s.includes('~')) {
+        return s;
+      }
+      return '.' + s;
+    };
+    
+    const normalizedConfig = config.map(c => ({ ...c, selector: normalizeSelector(c.selector) }));
+
+    for (let id = start; id <= end; id++) {
+      if (checkIfAborted && checkIfAborted()) {
+        if (onLog) onLog('[Hủy] Dừng cào vòng lặp ID do người dùng yêu cầu.');
+        break;
+      }
+      const targetUrl = `${urlPattern}${id}`;
+      const currentStep = id - start + 1;
+      
+      if (onLog) onLog(`[Cào ID ${currentStep}/${totalCount}] Đang cào trang: ${targetUrl}`);
+      console.log(`[ID Loop Scrape ${currentStep}/${totalCount}] Visiting: ${targetUrl}`);
+
+      try {
+        await page.goto(targetUrl, {
+          waitUntil: 'domcontentloaded',
+          timeout: navTimeout
+        });
+        
+        // Wait for dynamic content
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Evaluate the page to extract detail fields (single-row)
+        const rowData = await page.evaluate((fieldConfigs, currentId) => {
+          const row = { 'ID': currentId, 'Nguồn URL': window.location.href };
+          
+          const normalizeSelector = (sel) => {
+            const s = (sel || '').trim();
+            if (!s) return s;
+            if (s.startsWith('.') || s.startsWith('#') || s.startsWith('[') || s.includes(' ') || s.includes('>') || s.includes('+') || s.includes('~')) return s;
+            return '.' + s;
+          };
+
+          const toAbsoluteUrl = (url, base) => {
+            if (!url || !base) return null;
+            const cleanUrl = String(url).trim();
+            if (['undefined', 'null', '', '#', 'javascript:void(0)', 'javascript:;'].includes(cleanUrl.toLowerCase())) {
+              return null;
+            }
+            try { return new URL(cleanUrl, base).href; } catch (e) { return cleanUrl; }
+          };
+
+          const getLinkFromElement = (el, base) => {
+            let href = el.getAttribute('href');
+            if (href) {
+              const abs = toAbsoluteUrl(href, base);
+              if (abs) return abs;
+            }
+            const a = el.querySelector('a');
+            if (a) {
+              href = a.getAttribute('href');
+              if (href) {
+                const abs = toAbsoluteUrl(href, base);
+                if (abs) return abs;
+              }
+            }
+            return null;
+          };
+
+          const getImageSrcFromElement = (el, base) => {
+            let src = el.getAttribute('src') || el.getAttribute('data-src') || el.getAttribute('data-lazy-src');
+            if (src) return toAbsoluteUrl(src, base);
+            const img = el.querySelector('img');
+            if (img) {
+              src = img.getAttribute('src') || img.getAttribute('data-src');
+              if (src) return toAbsoluteUrl(src, base);
+            }
+            return null;
+          };
+
+          const base = window.location.origin;
+
+          fieldConfigs.forEach(({ label, selector, type }) => {
+            try {
+              const element = document.querySelector(normalizeSelector(selector));
+              if (!element) {
+                row[label] = 'N/A';
+                return;
+              }
+
+              const typeLower = type.toLowerCase();
+              if (typeLower === 'text') {
+                row[label] = element.textContent?.trim() || 'N/A';
+              } else if (typeLower === 'link') {
+                row[label] = getLinkFromElement(element, base) || 'N/A';
+              } else if (typeLower === 'image') {
+                row[label] = getImageSrcFromElement(element, base) || 'N/A';
+              } else if (typeLower === 'api') {
+                const dataAttr = element.getAttribute('data-json') || element.getAttribute('data-data');
+                row[label] = dataAttr || 'N/A';
+              } else {
+                row[label] = 'N/A';
+              }
+            } catch (e) {
+              row[label] = 'N/A';
+            }
+          });
+
+          // Check if at least one field was found (not all N/A)
+          const allNA = fieldConfigs.every(({ label }) => row[label] === 'N/A');
+          return allNA ? null : row;
+        }, normalizedConfig, id);
+
+        if (rowData) {
+          results.push(rowData);
+          successCount++;
+          if (onRow) onRow(rowData);
+          if (onLog) onLog(`  ↳ Trích xuất thành công dữ liệu cho ID ${id}.`);
+        } else {
+          if (onLog) onLog(`  ⚠️ Không tìm thấy dữ liệu hoặc trang trống cho ID ${id}.`);
+        }
+
+      } catch (err) {
+        if (onLog) onLog(`  ❌ Lỗi cào ID ${id}: ${err.message}`);
+        console.error(`Error scraping ID ${id}:`, err.message);
+      }
+    }
+
+    if (onLog) onLog(`[Hoàn thành] Đã cào xong theo ID! Thành công ${successCount}/${totalCount} trang, lấy được ${results.length} dòng.`);
+    return results;
+
+  } catch (error) {
+    console.error('Error during ID loop scraping:', error);
+    throw new Error(`ID loop scraping failed: ${error.message}`);
   } finally {
     if (browser) {
       await browser.close();

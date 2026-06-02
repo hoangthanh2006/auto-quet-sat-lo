@@ -142,14 +142,16 @@ export const executeScrape = async (url, config, options = {}) => {
   }
 };
 
-export const executeScrapeStream = async (url, config, options = {}, onLog) => {
+export const executeScrapeStream = async (url, config, options = {}, onLog, onRow) => {
+  const { signal, ...apiOptions } = options;
   try {
     const response = await fetch(`${API_BASE_URL}/execute-scrape-stream`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ url, config, ...options })
+      body: JSON.stringify({ url, config, ...apiOptions }),
+      signal
     });
 
     if (!response.ok) {
@@ -181,6 +183,8 @@ export const executeScrapeStream = async (url, config, options = {}, onLog) => {
             const payload = JSON.parse(line);
             if (payload.type === 'log') {
               onLog(payload.message);
+            } else if (payload.type === 'row') {
+              if (onRow) onRow(payload.data);
             } else if (payload.type === 'result') {
               finalResult = payload.data;
             } else if (payload.type === 'error') {
@@ -197,6 +201,9 @@ export const executeScrapeStream = async (url, config, options = {}, onLog) => {
     }
     return finalResult;
   } catch (error) {
+    if (error.name === 'AbortError') {
+      throw error;
+    }
     throw new Error(error.message || 'Lỗi khi kết nối hoặc đọc luồng dữ liệu thời gian thực');
   }
 };

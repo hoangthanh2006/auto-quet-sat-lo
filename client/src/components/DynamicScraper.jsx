@@ -12,7 +12,7 @@ export default function DynamicScraper() {
   const [selectedFilter, setSelectedFilter] = useState(null); // 'headings', 'articles', 'tables', 'items', or null
   const [showAllRegions, setShowAllRegions] = useState(false);
   const [fields, setFields] = useState([
-    { label: '', selector: '', type: 'text' }
+    { label: '', selector: '', type: 'text', contentSelector: '' }
   ]);
   const [spaMode, setSpaMode] = useState(false);
   const [spaLoading, setSpaLoading] = useState(false);
@@ -32,13 +32,49 @@ export default function DynamicScraper() {
   const resultsPerPage = 10;
 
   // Cấu hình cào nhiều cấp (Đệ quy)
-  const [crawlMode, setCrawlMode] = useState('single'); // 'single' | 'multi'
+  const [crawlMode, setCrawlMode] = useState('single'); // 'single' | 'multi' | 'id_loop'
   const [maxDepth, setMaxDepth] = useState(3);
   const [maxLinks, setMaxLinks] = useState(20);
   const [urlFilter, setUrlFilter] = useState('');
+  const [startId, setStartId] = useState(1);
+  const [endId, setEndId] = useState(10);
+  const [loopPathExtension, setLoopPathExtension] = useState('');
   const [logs, setLogs] = useState([]);
   const [analysisLogs, setAnalysisLogs] = useState([]);
   const [visitedCount, setVisitedCount] = useState(0);
+ 
+  const abortControllerRef = useRef(null);
+
+  const handleStop = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      setLogs(prev => [...prev, '🛑 Tiến trình cào đã bị dừng bởi người dùng.']);
+    }
+  };
+
+  // Auto-populate loop path extension for ID loop mode
+  useEffect(() => {
+    if (crawlMode === 'id_loop' && !loopPathExtension && url) {
+      if (url.includes('chinhsachquandoi.gov.vn')) {
+        setLoopPathExtension('/chi-tiet-liet-si.htm?id=');
+      } else {
+        setLoopPathExtension('/detail?id=');
+      }
+    }
+  }, [crawlMode, url]);
+
+  // Compute final loopUrlPattern dynamically
+  const getLoopUrlPattern = () => {
+    if (!url) return '';
+    try {
+      const urlObj = new URL(url);
+      const ext = loopPathExtension.trim();
+      const cleanExt = ext.startsWith('/') || ext.startsWith('?') ? ext : '/' + ext;
+      return `${urlObj.origin}${cleanExt}`;
+    } catch (e) {
+      return loopPathExtension;
+    }
+  };
 
 
   const pageTypeLabels = {
@@ -130,7 +166,7 @@ export default function DynamicScraper() {
   };
 
   const addField = () => {
-    setFields([...fields, { label: '', selector: '', type: 'text' }]);
+    setFields([...fields, { label: '', selector: '', type: 'text', contentSelector: '' }]);
   };
 
   const removeField = (index) => {
@@ -154,13 +190,15 @@ export default function DynamicScraper() {
       newFields[emptyIndex] = {
         label: region.className ? region.className.split(' ')[0] : 'Dữ liệu',
         selector: region.selector,
-        type: 'text'
+        type: 'text',
+        contentSelector: ''
       };
     } else {
       newFields.push({
         label: region.className ? region.className.split(' ')[0] : 'Dữ liệu',
         selector: region.selector,
-        type: 'text'
+        type: 'text',
+        contentSelector: ''
       });
     }
     
@@ -194,11 +232,23 @@ export default function DynamicScraper() {
     setLogs([]); // Reset logs
     setVisitedCount(0); // Reset visited pages count
 
+    // Khởi tạo AbortController mới
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     try {
       const data = await executeScrapeStream(
-        url,
+        crawlMode === 'id_loop' ? getLoopUrlPattern() : url,
         validFields,
-        { crawlMode, maxDepth, maxLinks, urlFilter },
+        { 
+          crawlMode, 
+          maxDepth, 
+          maxLinks, 
+          urlFilter, 
+          startId, 
+          endId,
+          signal: controller.signal // Truyền signal để hỗ trợ dừng cào
+        },
         (newLog) => {
           setLogs(prev => [...prev, newLog]);
           
@@ -212,9 +262,25 @@ export default function DynamicScraper() {
               setVisitedCount(Number(detailMatch[1]));
             }
           }
+        },
+        (newRow) => {
+          // Callback nhận dòng dữ liệu thực tế thời gian thực
+          setScrapeResults(prev => {
+            const current = prev || [];
+            // Tránh trùng lặp kết quả
+            const isDup = current.some(r => {
+              if (r['ID'] && newRow['ID']) return r['ID'] === newRow['ID'];
+              if (r['Nguồn URL'] && newRow['Nguồn URL']) return r['Nguồn URL'] === newRow['Nguồn URL'];
+              if (r['URL'] && newRow['URL']) return r['URL'] === newRow['URL'];
+              return false;
+            });
+            if (isDup) return current;
+            return [...current, newRow];
+          });
         }
       );
       
+      // Nếu kết quả cuối cùng hoàn tất và có dữ liệu, gán toàn bộ để đảm bảo chính xác
       if (data && data.length > 0) {
         setScrapeResults(data);
         
@@ -222,12 +288,23 @@ export default function DynamicScraper() {
         const uniqueUrls = new Set(data.filter(row => row && (row['Nguồn URL'] || row['URL'])).map(row => row['Nguồn URL'] || row['URL']));
         setVisitedCount(uniqueUrls.size > 0 ? uniqueUrls.size : 1);
       } else {
-        setError('Không lấy được dữ liệu. Vui lòng kiểm tra lại CSS selector.');
+        // Chỉ hiện lỗi khi không có dữ liệu nào cào được (nếu người dùng bấm stop thì giữ lại dữ liệu đã có)
+        setScrapeResults(prev => {
+          if (!prev || prev.length === 0) {
+            setError('Không lấy được dữ liệu. Vui lòng kiểm tra lại CSS selector.');
+          }
+          return prev;
+        });
       }
     } catch (err) {
-      setError(err.message || 'Lỗi khi lấy dữ liệu');
+      if (err.name === 'AbortError') {
+        setLogs(prev => [...prev, '💡 Đã giữ lại toàn bộ dữ liệu cào được trước thời điểm dừng.']);
+      } else {
+        setError(err.message || 'Lỗi khi lấy dữ liệu');
+      }
     } finally {
       setScraping(false);
+      abortControllerRef.current = null;
     }
   };
 
@@ -350,21 +427,23 @@ export default function DynamicScraper() {
 
     // Separate roots and children among the filtered items
     const roots = filteredDataRegions.filter(r => {
-      return !r.parentId || !filteredDataRegions.some(p => p.selector === r.parentId);
+      return !r.parentIndex || !filteredDataRegions.some(p => p.index === r.parentIndex);
     });
 
     const childrenMap = {};
     filteredDataRegions.forEach(r => {
-      if (r.parentId) {
-        if (!childrenMap[r.parentId]) childrenMap[r.parentId] = [];
-        childrenMap[r.parentId].push(r);
+      if (r.parentIndex) {
+        if (!childrenMap[r.parentIndex]) childrenMap[r.parentIndex] = [];
+        childrenMap[r.parentIndex].push(r);
       }
     });
 
     const renderNode = (node, depthLevel = 0) => {
-      const children = childrenMap[node.selector] || [];
+      const children = childrenMap[node.index] || [];
+      const parentNode = node.parentIndex ? filteredDataRegions.find(p => p.index === node.parentIndex) : null;
+      
       return (
-        <div key={node.selector} className="w-full">
+        <div key={node.index} className="w-full">
           {/* Node Button */}
           <div className="flex items-start w-full relative">
             {depthLevel > 0 && (
@@ -392,9 +471,9 @@ export default function DynamicScraper() {
                   <span className="font-mono text-sm text-blue-700 dark:text-blue-400 font-bold truncate max-w-[280px]" title={node.selector}>
                     {node.selector}
                   </span>
-                  {depthLevel > 0 && (
+                  {depthLevel > 0 && parentNode && (
                     <span className="text-[10px] text-slate-400 dark:text-slate-500 font-normal shrink-0">
-                      (con của {node.parentId})
+                      (con của {parentNode.selector})
                     </span>
                   )}
                 </div>
@@ -793,6 +872,22 @@ export default function DynamicScraper() {
                   </div>
                 </div>
 
+                {/* CSS Selector for click_content */}
+                {field.type === 'click_content' && (
+                  <div className="grid grid-cols-1 gap-2 pt-2.5 border-t border-slate-200/60 dark:border-slate-750/60 animate-fadeIn">
+                    <label className="block text-xs font-bold text-slate-750 dark:text-slate-350">
+                      CSS Selector trích xuất chi tiết (ví dụ: <code className="bg-slate-150 px-1 dark:bg-slate-800 rounded">div.lietsi_container</code>)
+                    </label>
+                    <input
+                      type="text"
+                      value={field.contentSelector || ''}
+                      onChange={(e) => updateField(index, 'contentSelector', e.target.value)}
+                      placeholder="Mặc định sẽ lấy toàn bộ nội dung text của trang. Nhập selector để lọc riêng (vd: div.lietsi_container)"
+                      className="px-4 py-2 bg-white dark:bg-slate-905 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-xs text-slate-800 dark:text-slate-100 w-full"
+                    />
+                  </div>
+                )}
+
                 {/* Quick Test Result Banner */}
                 {testResults[index] && (
                   <div className={`text-xs p-3 rounded-lg border flex flex-col gap-1 transition-all duration-300 ${
@@ -838,37 +933,48 @@ export default function DynamicScraper() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Chế độ cào */}
-              <div>
+              <div className="col-span-full">
                 <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Chế độ cào</label>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <button
                     type="button"
                     onClick={() => { setCrawlMode('single'); setMaxDepth(1); }}
-                    className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold border transition-all ${
+                    className={`flex-1 py-2.5 px-3 rounded-lg text-xs font-bold border transition-all ${
                       crawlMode === 'single'
                         ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
                         : 'bg-white dark:bg-slate-950 border-gray-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-gray-150'
                     }`}
                   >
-                    Cào 1 cấp (Trang hiện tại)
+                    1 cấp (Trang hiện tại)
                   </button>
                   <button
                     type="button"
                     onClick={() => { setCrawlMode('multi'); if (maxDepth === 1) setMaxDepth(3); }}
-                    className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold border transition-all ${
+                    className={`flex-1 py-2.5 px-3 rounded-lg text-xs font-bold border transition-all ${
                       crawlMode === 'multi'
                         ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
                         : 'bg-white dark:bg-slate-950 border-gray-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-gray-150'
                     }`}
                   >
-                    Cào nhiều cấp (Đệ quy)
+                    Nhiều cấp (Đệ quy)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setCrawlMode('id_loop'); }}
+                    className={`flex-1 py-2.5 px-3 rounded-lg text-xs font-bold border transition-all ${
+                      crawlMode === 'id_loop'
+                        ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                        : 'bg-white dark:bg-slate-950 border-gray-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-gray-150'
+                    }`}
+                  >
+                    Vòng lặp ID (Detail ID Loop)
                   </button>
                 </div>
               </div>
 
               {/* Số cấp tối đa (Level Depth) */}
               {crawlMode === 'multi' && (
-                <div className="space-y-1">
+                <div className="space-y-1 col-span-full md:col-span-1">
                   <div className="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-400">
                     <span>Số cấp tối đa (Độ sâu)</span>
                     <span className="text-blue-600 dark:text-blue-400 font-bold">{maxDepth} cấp</span>
@@ -889,6 +995,77 @@ export default function DynamicScraper() {
               )}
             </div>
 
+            {crawlMode === 'id_loop' && (
+              <div className="grid grid-cols-1 gap-4 pt-4 border-t border-slate-200/60 dark:border-slate-800/60 transition-all duration-350 animate-fadeIn">
+                {/* URL mẫu vòng lặp */}
+                <div className="col-span-full">
+                  <label className="block text-xs font-bold text-slate-750 dark:text-slate-350 mb-1.5">
+                    Đường dẫn trang chi tiết vòng lặp ID (Detail Path & Parameter)
+                  </label>
+                  
+                  <div className="flex items-stretch rounded-lg overflow-hidden border border-gray-300 dark:border-slate-700 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent">
+                    {/* Prefix: Domain Origin */}
+                    <div className="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-3 py-2 text-sm font-mono flex items-center border-r border-gray-300 dark:border-slate-700 select-none shrink-0 font-medium">
+                      {(() => {
+                        try {
+                          return new URL(url).origin;
+                        } catch (e) {
+                          return 'http://domain.com';
+                        }
+                      })()}
+                    </div>
+                    
+                    {/* Path input */}
+                    <input
+                      type="text"
+                      value={loopPathExtension}
+                      onChange={(e) => setLoopPathExtension(e.target.value)}
+                      className="flex-grow px-3 py-2 bg-white dark:bg-slate-950 text-sm text-slate-850 dark:text-slate-100 font-mono focus:outline-none"
+                      placeholder="vd: /chi-tiet-liet-si.htm?id="
+                    />
+                  </div>
+                  
+                  <p className="text-[10px] text-slate-400 mt-1.5 leading-relaxed">
+                    * Hệ thống sẽ tự động trích xuất Tên miền gốc ở Bước 1 và ghép với Đường dẫn này để tạo URL cào đầy đủ.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 col-span-full">
+                  {/* ID bắt đầu */}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">ID bắt đầu (Start ID)</label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={startId}
+                      onChange={(e) => setStartId(Math.max(1, Number(e.target.value) || 1))}
+                      className="w-full px-3 py-2 bg-white dark:bg-slate-950 border border-gray-300 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-medium"
+                      placeholder="1"
+                    />
+                  </div>
+
+                  {/* ID kết thúc */}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">ID kết thúc (End ID)</label>
+                    <input
+                      type="number"
+                      min={startId}
+                      value={endId}
+                      onChange={(e) => setEndId(Math.max(startId, Number(e.target.value) || startId))}
+                      className="w-full px-3 py-2 bg-white dark:bg-slate-950 border border-gray-300 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-medium"
+                      placeholder="10"
+                    />
+                  </div>
+                </div>
+                
+                <div className="col-span-full">
+                  <p className="text-[10.5px] text-slate-500 dark:text-slate-400 italic leading-relaxed">
+                    * Ghi chú: Chế độ này sẽ lần lượt tải các trang chi tiết bằng cách ghép ID từ <strong>{startId}</strong> đến <strong>{endId}</strong> vào cuối URL mẫu (ví dụ: <code className="text-blue-600 dark:text-blue-400 font-semibold">{getLoopUrlPattern()}{startId}</code>).
+                  </p>
+                </div>
+              </div>
+            )}
+
             {crawlMode === 'multi' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-200/60 dark:border-slate-800/60">
                 {/* Giới hạn tổng số trang */}
@@ -900,7 +1077,7 @@ export default function DynamicScraper() {
                     max={100}
                     value={maxLinks}
                     onChange={(e) => setMaxLinks(Math.min(100, Math.max(1, Number(e.target.value) || 20)))}
-                    className="w-full px-3 py-2 bg-white dark:bg-slate-950 border border-gray-300 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-white dark:bg-slate-950 border border-gray-300 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-medium"
                     placeholder="20"
                   />
                   <p className="text-[10px] text-slate-400 mt-1">Tránh cào quá nhiều gây tốn tài nguyên hoặc bị khóa IP (tối đa 100 trang).</p>
@@ -922,23 +1099,40 @@ export default function DynamicScraper() {
             )}
           </div>
 
-          <button
-            onClick={handleExecute}
-            disabled={scraping || fields.filter(f => f.label.trim() && f.selector.trim()).length === 0}
-            className="w-full px-6 py-3.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-bold transition-all duration-200 shadow-md shadow-purple-500/10 hover:shadow-purple-500/20"
-          >
-            {scraping ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Đang lấy dữ liệu...</span>
-              </>
-            ) : (
-              <>
-                <Search className="w-5 h-5" />
-                <span>Bắt đầu lấy dữ liệu</span>
-              </>
+          <div className="flex gap-3">
+            <button
+              onClick={handleExecute}
+              disabled={scraping || fields.filter(f => f.label.trim() && f.selector.trim()).length === 0}
+              className={`px-6 py-3.5 text-white rounded-xl disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-400 dark:disabled:text-slate-600 flex items-center justify-center gap-2 font-bold transition-all duration-200 shadow-md ${
+                scraping 
+                  ? 'flex-1 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700' 
+                  : 'w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-purple-500/10 hover:shadow-purple-500/20'
+              }`}
+            >
+              {scraping ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin text-purple-600" />
+                  <span className="text-purple-600">Đang lấy dữ liệu...</span>
+                </>
+              ) : (
+                <>
+                  <Search className="w-5 h-5" />
+                  <span>Bắt đầu lấy dữ liệu</span>
+                </>
+              )}
+            </button>
+
+            {scraping && (
+              <button
+                onClick={handleStop}
+                type="button"
+                className="px-6 py-3.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl flex items-center justify-center gap-2 font-bold transition-all duration-200 shadow-md shadow-rose-500/10 hover:shadow-rose-500/20 animate-pulse"
+              >
+                <XCircle className="w-5 h-5" />
+                <span>Dừng cào</span>
+              </button>
             )}
-          </button>
+          </div>
 
           {/* Real-time Progress Console */}
           {(logs.length > 0 || scraping) && (
