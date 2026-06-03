@@ -341,9 +341,9 @@ app.post('/api/execute-scrape', async (req, res) => {
 
     let results;
     if (crawlMode === 'id_loop') {
-      const { startId, endId } = req.body;
-      console.log(`Executing ID loop scrape at ${url} from ${startId} to ${endId}...`);
-      results = await executeIdLoopScrape(url, startId, endId, config);
+      const { startId, endId, concurrency, scrapeMethod, delayMs } = req.body;
+      console.log(`Executing ID loop scrape at ${url} from ${startId} to ${endId} (method: ${scrapeMethod}, concurrency: ${concurrency})...`);
+      results = await executeIdLoopScrape(url, startId, endId, config, null, { concurrency, scrapeMethod, delayMs });
     } else if (crawlMode === 'multi' && maxDepth > 1) {
       console.log(`Executing recursive scrape at ${url} with depth ${maxDepth}, maxLinks ${maxLinks}, filter "${urlFilter}"...`);
       results = await executeRecursiveScrape(url, config, { maxDepth, maxLinks, urlFilter });
@@ -399,8 +399,8 @@ app.post('/api/execute-scrape-stream', async (req, res) => {
 
     let results;
     if (crawlMode === 'id_loop') {
-      const { startId, endId } = req.body;
-      results = await executeIdLoopScrape(url, startId, endId, config, sendLog);
+      const { startId, endId, concurrency, scrapeMethod, delayMs } = req.body;
+      results = await executeIdLoopScrape(url, startId, endId, config, sendLog, { concurrency, scrapeMethod, delayMs });
     } else if (crawlMode === 'multi' && maxDepth > 1) {
       results = await executeRecursiveScrape(url, config, { maxDepth, maxLinks, urlFilter }, sendLog);
     } else {

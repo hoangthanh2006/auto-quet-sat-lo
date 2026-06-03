@@ -38,6 +38,9 @@ export default function DynamicScraper() {
   const [urlFilter, setUrlFilter] = useState('');
   const [startId, setStartId] = useState(1);
   const [endId, setEndId] = useState(10);
+  const [concurrency, setConcurrency] = useState(15);
+  const [scrapeMethod, setScrapeMethod] = useState('http'); // 'http' | 'browser'
+  const [delayMs, setDelayMs] = useState(0);
   const [loopPathExtension, setLoopPathExtension] = useState('');
   const [logs, setLogs] = useState([]);
   const [analysisLogs, setAnalysisLogs] = useState([]);
@@ -227,7 +230,7 @@ export default function DynamicScraper() {
       const data = await executeScrapeStream(
         crawlMode === 'id_loop' ? getLoopUrlPattern() : url,
         validFields,
-        { crawlMode, maxDepth, maxLinks, urlFilter, startId, endId },
+        { crawlMode, maxDepth, maxLinks, urlFilter, startId, endId, concurrency, scrapeMethod, delayMs },
         (newLog) => {
           setLogs(prev => [...prev, newLog]);
           
@@ -1006,6 +1009,58 @@ export default function DynamicScraper() {
                       onChange={(e) => setEndId(Math.max(startId, Number(e.target.value) || startId))}
                       className="w-full px-3 py-2 bg-white dark:bg-slate-950 border border-gray-300 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-medium"
                       placeholder="10"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 col-span-full pt-4 border-t border-slate-250 dark:border-slate-800/60">
+                  {/* Phương thức cào */}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Phương thức cào</label>
+                    <select
+                      value={scrapeMethod}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setScrapeMethod(val);
+                        if (val === 'http') {
+                          setConcurrency(15);
+                        } else {
+                          setConcurrency(3);
+                        }
+                      }}
+                      className="w-full px-3 py-2 bg-white dark:bg-slate-950 border border-gray-300 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-medium"
+                    >
+                      <option value="http">HTTP siêu tốc (Cheerio)</option>
+                      <option value="browser">Trình duyệt (Puppeteer)</option>
+                    </select>
+                  </div>
+
+                  {/* Số luồng đồng thời */}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
+                      Số luồng đồng thời: <span className="font-bold text-blue-600 dark:text-blue-400">{concurrency}</span>
+                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={scrapeMethod === 'http' ? 100 : 15}
+                      value={concurrency}
+                      onChange={(e) => setConcurrency(Math.max(1, Number(e.target.value) || 1))}
+                      className="w-full px-3 py-2 bg-white dark:bg-slate-950 border border-gray-300 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-medium"
+                    />
+                  </div>
+
+                  {/* Độ trễ */}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Độ trễ request (ms)</label>
+                    <input
+                      type="number"
+                      min={0}
+                      step={100}
+                      value={delayMs}
+                      onChange={(e) => setDelayMs(Math.max(0, Number(e.target.value) || 0))}
+                      className="w-full px-3 py-2 bg-white dark:bg-slate-950 border border-gray-300 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-medium"
+                      placeholder="0"
                     />
                   </div>
                 </div>

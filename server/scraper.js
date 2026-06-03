@@ -1,4 +1,5 @@
 import puppeteer from 'puppeteer';
+import * as cheerio from 'cheerio';
 
 /**
  * Scrapes profile links from daihoidang.vn
@@ -1749,38 +1750,44 @@ export async function executeRecursiveScrape(startUrl, config, options = {}, onL
  * @param {Function} onLog - Optional callback for streaming logs
  * @returns {Promise<Array<Object>>} Array of crawled data rows
  */
-export async function executeIdLoopScrape(urlPattern, startId, endId, config, onLog) {
+/**
+ * Executes scraping on detail pages by looping through incremental IDs
+ * Supports concurrency, Fast HTTP (Cheerio) mode, and concurrent Puppeteer pages.
+ * 
+ * @param {string} urlPattern - The base URL with ID query parameter (e.g. http://chinhsachquandoi.gov.vn/chi-tiet-liet-si.htm?id=)
+ * @param {number} startId - Start ID
+ * @param {number} endId - End ID
+ * @param {Array<{label: string, selector: string, type: string}>} config - Array of field configs
+ * @param {Function} onLog - Optional callback for streaming logs
+ * @param {Object} options - Concurrency and scraping method configuration
+ * @returns {Promise<Array<Object>>} Array of crawled data rows
+ */
+export async function executeIdLoopScrape(urlPattern, startId, endId, config, onLog, options = {}) {
+  const {
+    concurrency = 10,
+    scrapeMethod = 'http',
+    delayMs = 0
+  } = options;
+
   let browser;
+  const start = Number(startId);
+  const end = Number(endId);
+  const totalCount = end - start + 1;
+  const concurrencyLimit = Math.max(1, Number(concurrency) || (scrapeMethod === 'http' ? 10 : 3));
   
   try {
-    if (onLog) onLog(`[Khởi tạo] Bắt đầu cào theo vòng lặp ID (Từ ${startId} đến ${endId})...`);
-    
-    // Validate inputs
-    const start = Number(startId);
-    const end = Number(endId);
+    if (onLog) {
+      onLog(`[Khởi tạo] Bắt đầu cào vòng lặp ID từ ${start} đến ${end}.`);
+      onLog(`[Cấu hình] Phương thức: ${scrapeMethod === 'http' ? 'HTTP siêu tốc (Cheerio)' : 'Trình duyệt (Puppeteer)'} | Số luồng đồng thời: ${concurrencyLimit} | Độ trễ: ${delayMs}ms.`);
+    }
+
     if (isNaN(start) || isNaN(end) || start > end) {
       throw new Error(`Khoảng ID không hợp lệ: ${startId} - ${endId}`);
     }
     
     if (!Array.isArray(config) || config.length === 0) {
-      throw new Error('Config must be a non-empty array');
+      throw new Error('Cấu hình Selector không được để trống.');
     }
-
-    // Launch browser
-    if (onLog) onLog(`[Trình duyệt] Đang khởi chạy trình duyệt Puppeteer...`);
-    browser = await puppeteer.launch({
-      headless: 'new',
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-
-    const page = await browser.newPage();
-    await page.setViewport({ width: 1920, height: 1080 });
-    const navTimeout = Number(process.env.SCRAPE_NAV_TIMEOUT) || 30000;
-
-    const results = [];
-    const totalCount = end - start + 1;
-    let successCount = 0;
 
     // Helper to normalize selectors
     const normalizeSelector = (sel) => {
@@ -1794,89 +1801,126 @@ export async function executeIdLoopScrape(urlPattern, startId, endId, config, on
     
     const normalizedConfig = config.map(c => ({ ...c, selector: normalizeSelector(c.selector) }));
 
+    // If browser mode, launch a single browser instance to share among concurrent pages
+    if (scrapeMethod === 'browser') {
+      if (onLog) onLog(`[Trình duyệt] Đang khởi chạy trình duyệt Puppeteer...`);
+      browser = await puppeteer.launch({
+        headless: 'new',
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+      });
+    }
+
+    const results = [];
+    const ids = [];
     for (let id = start; id <= end; id++) {
+      ids.push(id);
+    }
+
+    const navTimeout = Number(process.env.SCRAPE_NAV_TIMEOUT) || 30000;
+
+    // Define single item worker
+    const processId = async (id, currentStep) => {
       const targetUrl = `${urlPattern}${id}`;
-      const currentStep = id - start + 1;
-      
-      if (onLog) onLog(`[Cào ID ${currentStep}/${totalCount}] Đang cào trang: ${targetUrl}`);
-      console.log(`[ID Loop Scrape ${currentStep}/${totalCount}] Visiting: ${targetUrl}`);
-
+      let base;
       try {
-        await page.goto(targetUrl, {
-          waitUntil: 'domcontentloaded',
-          timeout: navTimeout
-        });
-        
-        // Wait for dynamic content
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Evaluate the page to extract detail fields (single-row)
-        const rowData = await page.evaluate((fieldConfigs, currentId) => {
-          const row = { 'ID': currentId, 'Nguồn URL': window.location.href };
-          
-          const normalizeSelector = (sel) => {
-            const s = (sel || '').trim();
-            if (!s) return s;
-            if (s.startsWith('.') || s.startsWith('#') || s.startsWith('[') || s.includes(' ') || s.includes('>') || s.includes('+') || s.includes('~')) return s;
-            return '.' + s;
-          };
+        base = new URL(targetUrl).origin;
+      } catch (e) {
+        base = '';
+      }
 
-          const toAbsoluteUrl = (url, base) => {
-            if (!url || !base) return null;
-            const cleanUrl = String(url).trim();
+      if (onLog) onLog(`[Cào ID] Trang (${currentStep}/${totalCount}) - Đang tải ID: ${id}`);
+      console.log(`[ID Loop Scrape ${currentStep}/${totalCount}] Starting ID: ${id} at ${targetUrl}`);
+
+      if (scrapeMethod === 'http') {
+        try {
+          if (delayMs > 0) {
+            await new Promise(resolve => setTimeout(resolve, delayMs));
+          }
+
+          const response = await fetch(targetUrl, {
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+              'Accept-Language': 'vi,en-US;q=0.9,en;q=0.8'
+            },
+            signal: AbortSignal.timeout(20000)
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status} ${response.statusText}`);
+          }
+
+          const html = await response.text();
+          const $ = cheerio.load(html);
+          const row = { 'ID': id, 'Nguồn URL': targetUrl };
+
+          const toAbsoluteUrl = (urlVal, baseVal) => {
+            if (!urlVal || !baseVal) return null;
+            const cleanUrl = String(urlVal).trim();
             if (['undefined', 'null', '', '#', 'javascript:void(0)', 'javascript:;'].includes(cleanUrl.toLowerCase())) {
               return null;
             }
-            try { return new URL(cleanUrl, base).href; } catch (e) { return cleanUrl; }
+            try { return new URL(cleanUrl, baseVal).href; } catch (e) { return cleanUrl; }
           };
 
-          const getLinkFromElement = (el, base) => {
-            let href = el.getAttribute('href');
+          const getLinkFromElement = (el, baseVal) => {
+            let href = el.attr('href');
             if (href) {
-              const abs = toAbsoluteUrl(href, base);
+              const abs = toAbsoluteUrl(href, baseVal);
               if (abs) return abs;
             }
-            const a = el.querySelector('a');
-            if (a) {
-              href = a.getAttribute('href');
+            const a = el.find('a').first();
+            if (a && a.length > 0) {
+              href = a.attr('href');
               if (href) {
-                const abs = toAbsoluteUrl(href, base);
+                const abs = toAbsoluteUrl(href, baseVal);
                 if (abs) return abs;
+              }
+            }
+            const dataHref = el.attr('data-href') || el.attr('data-url') || el.attr('data-link');
+            if (dataHref) {
+              const abs = toAbsoluteUrl(dataHref, baseVal);
+              if (abs) return abs;
+            }
+            return null;
+          };
+
+          const getImageSrcFromElement = (el, baseVal) => {
+            let src = el.attr('src') || el.attr('data-src') || el.attr('data-lazy-src') || el.attr('data-url');
+            if (src) {
+              const firstUrl = src.split(',')[0].trim().split(/\s+/)[0];
+              return toAbsoluteUrl(firstUrl, baseVal);
+            }
+            const img = el.find('img').first();
+            if (img && img.length > 0) {
+              src = img.attr('src') || img.attr('data-src') || img.attr('data-lazy-src') || img.attr('data-url');
+              if (src) return toAbsoluteUrl(src, baseVal);
+              const srcset = img.attr('srcset');
+              if (srcset) {
+                const firstUrl = srcset.split(',')[0].trim().split(/\s+/)[0];
+                return toAbsoluteUrl(firstUrl, baseVal);
               }
             }
             return null;
           };
 
-          const getImageSrcFromElement = (el, base) => {
-            let src = el.getAttribute('src') || el.getAttribute('data-src') || el.getAttribute('data-lazy-src');
-            if (src) return toAbsoluteUrl(src, base);
-            const img = el.querySelector('img');
-            if (img) {
-              src = img.getAttribute('src') || img.getAttribute('data-src');
-              if (src) return toAbsoluteUrl(src, base);
-            }
-            return null;
-          };
-
-          const base = window.location.origin;
-
-          fieldConfigs.forEach(({ label, selector, type }) => {
+          normalizedConfig.forEach(({ label, selector, type }) => {
             try {
-              const element = document.querySelector(normalizeSelector(selector));
-              if (!element) {
+              const el = $(selector).first();
+              if (!el || el.length === 0) {
                 row[label] = 'N/A';
                 return;
               }
 
               const typeLower = type.toLowerCase();
               if (typeLower === 'text') {
-                row[label] = element.textContent?.trim() || 'N/A';
+                row[label] = el.text().trim() || 'N/A';
               } else if (typeLower === 'link') {
-                row[label] = getLinkFromElement(element, base) || 'N/A';
+                row[label] = getLinkFromElement(el, base) || 'N/A';
               } else if (typeLower === 'image') {
-                row[label] = getImageSrcFromElement(element, base) || 'N/A';
+                row[label] = getImageSrcFromElement(el, base) || 'N/A';
               } else if (typeLower === 'api') {
-                const dataAttr = element.getAttribute('data-json') || element.getAttribute('data-data');
+                const dataAttr = el.attr('data-json') || el.attr('data-data') || el.attr('data-api') || el.attr('data-url');
                 row[label] = dataAttr || 'N/A';
               } else {
                 row[label] = 'N/A';
@@ -1886,26 +1930,175 @@ export async function executeIdLoopScrape(urlPattern, startId, endId, config, on
             }
           });
 
-          // Check if at least one field was found (not all N/A)
-          const allNA = fieldConfigs.every(({ label }) => row[label] === 'N/A');
-          return allNA ? null : row;
-        }, normalizedConfig, id);
+          const allNA = config.every(({ label }) => row[label] === 'N/A');
+          if (allNA) {
+            if (onLog) onLog(`  ⚠️ [ID ${id}] Không tìm thấy dữ liệu Selector phù hợp.`);
+            return null;
+          }
 
-        if (rowData) {
-          results.push(rowData);
-          successCount++;
-          if (onLog) onLog(`  ↳ Trích xuất thành công dữ liệu cho ID ${id}.`);
-        } else {
-          if (onLog) onLog(`  ⚠️ Không tìm thấy dữ liệu hoặc trang trống cho ID ${id}.`);
+          if (onLog) onLog(`  ↳ [ID ${id}] Trích xuất thành công.`);
+          return row;
+
+        } catch (err) {
+          if (onLog) onLog(`  ❌ [ID ${id}] Lỗi tải trang: ${err.message}`);
+          console.error(`Error HTTP scraping ID ${id}:`, err.message);
+          return null;
         }
+      } else {
+        // Puppeteer Mode
+        let page;
+        try {
+          if (delayMs > 0) {
+            await new Promise(resolve => setTimeout(resolve, delayMs));
+          }
 
-      } catch (err) {
-        if (onLog) onLog(`  ❌ Lỗi cào ID ${id}: ${err.message}`);
-        console.error(`Error scraping ID ${id}:`, err.message);
+          page = await browser.newPage();
+          await page.setViewport({ width: 1920, height: 1080 });
+
+          // Block stylesheets, images, and fonts to speed up and save memory
+          await page.setRequestInterception(true);
+          page.on('request', (req) => {
+            const resourceType = req.resourceType();
+            if (['image', 'stylesheet', 'font', 'media'].includes(resourceType)) {
+              req.abort();
+            } else {
+              req.continue();
+            }
+          });
+
+          await page.goto(targetUrl, {
+            waitUntil: 'domcontentloaded',
+            timeout: navTimeout
+          });
+
+          // Wait a brief moment for page stabilization
+          await new Promise(resolve => setTimeout(resolve, 500));
+
+          const rowData = await page.evaluate((fieldConfigs, currentId) => {
+            const row = { 'ID': currentId, 'Nguồn URL': window.location.href };
+
+            const normalizeSelector = (sel) => {
+              const s = (sel || '').trim();
+              if (!s) return s;
+              if (s.startsWith('.') || s.startsWith('#') || s.startsWith('[') || s.includes(' ') || s.includes('>') || s.includes('+') || s.includes('~')) return s;
+              return '.' + s;
+            };
+
+            const toAbsoluteUrl = (urlVal, baseVal) => {
+              if (!urlVal || !baseVal) return null;
+              const cleanUrl = String(urlVal).trim();
+              if (['undefined', 'null', '', '#', 'javascript:void(0)', 'javascript:;'].includes(cleanUrl.toLowerCase())) {
+                return null;
+              }
+              try { return new URL(cleanUrl, baseVal).href; } catch (e) { return cleanUrl; }
+            };
+
+            const getLinkFromElement = (el, baseVal) => {
+              let href = el.getAttribute('href');
+              if (href) {
+                const abs = toAbsoluteUrl(href, baseVal);
+                if (abs) return abs;
+              }
+              const a = el.querySelector('a');
+              if (a) {
+                href = a.getAttribute('href');
+                if (href) {
+                  const abs = toAbsoluteUrl(href, baseVal);
+                  if (abs) return abs;
+                }
+              }
+              return null;
+            };
+
+            const getImageSrcFromElement = (el, baseVal) => {
+              let src = el.getAttribute('src') || el.getAttribute('data-src') || el.getAttribute('data-lazy-src');
+              if (src) return toAbsoluteUrl(src, baseVal);
+              const img = el.querySelector('img');
+              if (img) {
+                src = img.getAttribute('src') || img.getAttribute('data-src');
+                if (src) return toAbsoluteUrl(src, baseVal);
+              }
+              return null;
+            };
+
+            const baseVal = window.location.origin;
+
+            fieldConfigs.forEach(({ label, selector, type }) => {
+              try {
+                const element = document.querySelector(normalizeSelector(selector));
+                if (!element) {
+                  row[label] = 'N/A';
+                  return;
+                }
+
+                const typeLower = type.toLowerCase();
+                if (typeLower === 'text') {
+                  row[label] = element.textContent?.trim() || 'N/A';
+                } else if (typeLower === 'link') {
+                  row[label] = getLinkFromElement(element, baseVal) || 'N/A';
+                } else if (typeLower === 'image') {
+                  row[label] = getImageSrcFromElement(element, baseVal) || 'N/A';
+                } else if (typeLower === 'api') {
+                  const dataAttr = element.getAttribute('data-json') || element.getAttribute('data-data');
+                  row[label] = dataAttr || 'N/A';
+                } else {
+                  row[label] = 'N/A';
+                }
+              } catch (e) {
+                row[label] = 'N/A';
+              }
+            });
+
+            const allNA = fieldConfigs.every(({ label }) => row[label] === 'N/A');
+            return allNA ? null : row;
+          }, normalizedConfig, id);
+
+          if (rowData) {
+            if (onLog) onLog(`  ↳ [ID ${id}] Trích xuất thành công.`);
+            return rowData;
+          } else {
+            if (onLog) onLog(`  ⚠️ [ID ${id}] Không tìm thấy dữ liệu Selector phù hợp.`);
+            return null;
+          }
+        } catch (err) {
+          if (onLog) onLog(`  ❌ [ID ${id}] Lỗi tải trang: ${err.message}`);
+          console.error(`Error Puppeteer scraping ID ${id}:`, err.message);
+          return null;
+        } finally {
+          if (page) {
+            await page.close();
+          }
+        }
       }
+    };
+
+    // Execute tasks in parallel using a simple concurrent worker pool
+    const activePromises = new Set();
+    let processedCount = 0;
+
+    for (const id of ids) {
+      processedCount++;
+      const step = processedCount;
+
+      if (activePromises.size >= concurrencyLimit) {
+        await Promise.race(activePromises);
+      }
+
+      const p = (async () => {
+        const row = await processId(id, step);
+        if (row) {
+          results.push(row);
+        }
+      })();
+
+      activePromises.add(p);
+      p.finally(() => activePromises.delete(p));
     }
 
-    if (onLog) onLog(`[Hoàn thành] Đã cào xong theo ID! Thành công ${successCount}/${totalCount} trang, lấy được ${results.length} dòng.`);
+    // Wait for all remaining active requests/pages to complete
+    await Promise.all(activePromises);
+
+    if (onLog) onLog(`[Hoàn thành] Đã cào xong theo ID! Thành công ${results.length}/${totalCount} trang.`);
     return results;
 
   } catch (error) {
