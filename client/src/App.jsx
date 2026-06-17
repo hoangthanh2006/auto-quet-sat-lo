@@ -12,7 +12,7 @@ const NAV = [
   { id: 'tool-uvtu', label: 'UVTU theo khóa', icon: Users, color: 'text-blue-500 bg-blue-50 dark:bg-blue-950/30' },
   { id: 'tool-dynamic', label: 'Dynamic Scraper', icon: Zap, color: 'text-purple-500 bg-purple-50 dark:bg-purple-950/30' },
   { id: 'glossary', label: 'Thuật ngữ Scraper', icon: BookOpen, color: 'text-rose-500 bg-rose-50 dark:bg-rose-950/30' },
-  { id: 'other-tools', label: 'Công cụ khác', icon: Wrench, color: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30' },
+  { id: 'other-tools', label: 'Sitemap Scraper', icon: Wrench, color: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30' },
 ];
 
 function App() {

@@ -906,6 +906,18 @@ export async function executeDynamicScrape(url, config, onLog) {
     if (onLog) onLog(`[Phân tích] Trang đã mở. Đang chờ 3 giây để nội dung động tải hoàn tất...`);
     await new Promise(resolve => setTimeout(resolve, 3000));
 
+    // Auto-show chords on thophuong.vn or similar chord sites
+    try {
+      const chordBtn = await page.$('button[data-action="hidden-chord"]');
+      if (chordBtn) {
+        if (onLog) onLog(`[Hợp âm] Phát hiện nút hiển thị hợp âm, đang click hiển thị hợp âm...`);
+        await chordBtn.click();
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    } catch (chordErr) {
+      console.log('No chords button found or click failed in executeDynamicScrape:', chordErr.message);
+    }
+
     // Normalize selector: "thumb-art" -> ".thumb-art" (class), "myId" -> "#myId" only if looks like id
     const normalizeSelector = (sel) => {
       const s = (sel || '').trim();
@@ -1376,6 +1388,17 @@ export async function testSelector(url, selector, type = 'text') {
     // Quick load
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await new Promise(resolve => setTimeout(resolve, 2000));
+
+    // Auto-show chords on thophuong.vn or similar chord sites
+    try {
+      const chordBtn = await page.$('button[data-action="hidden-chord"]');
+      if (chordBtn) {
+        await chordBtn.click();
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    } catch (chordErr) {
+      console.log('No chords button found or click failed in testSelector:', chordErr.message);
+    }
 
     // Normalize selector
     const normalizeSelector = (sel) => {
@@ -2110,5 +2133,278 @@ export async function executeIdLoopScrape(urlPattern, startId, endId, config, on
     }
   }
 }
+
+/**
+ * Fetches and parses a sitemap URL (resolving nested sitemaps recursively if needed)
+ * @param {string} sitemapUrl - The sitemap XML URL
+ * @param {Set<string>} visited - To prevent infinite recursion
+ * @returns {Promise<Array<{url: string, lastmod: string|null, changefreq: string|null, priority: string|null}>>}
+ */
+export async function parseSitemap(sitemapUrl, visited = new Set()) {
+  if (visited.has(sitemapUrl)) return [];
+  visited.add(sitemapUrl);
+  
+  console.log(`Parsing sitemap: ${sitemapUrl}`);
+  const response = await fetch(sitemapUrl, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to fetch sitemap: ${response.status} ${response.statusText}`);
+  }
+  const xmlText = await response.text();
+  const $ = cheerio.load(xmlText, { xmlMode: true });
+  
+  const urls = [];
+  
+  // Check if it's a sitemap index (contains nested sitemaps)
+  const sitemaps = $('sitemap > loc');
+  if (sitemaps.length > 0) {
+    const sitemapLinks = [];
+    sitemaps.each((i, el) => {
+      sitemapLinks.push($(el).text().trim());
+    });
+    
+    // Recursively parse all nested sitemaps in parallel
+    const nestedResults = await Promise.all(
+      sitemapLinks.map(link => parseSitemap(link, visited).catch(err => {
+        console.error(`Error parsing nested sitemap ${link}:`, err);
+        return [];
+      }))
+    );
+    
+    return nestedResults.flat();
+  }
+  
+  // Parse standard url tags
+  $('url').each((i, el) => {
+    const loc = $(el).find('loc').text().trim();
+    const lastmod = $(el).find('lastmod').text().trim();
+    const changefreq = $(el).find('changefreq').text().trim();
+    const priority = $(el).find('priority').text().trim();
+    
+    if (loc) {
+      urls.push({
+        url: loc,
+        lastmod: lastmod || null,
+        changefreq: changefreq || null,
+        priority: priority || null
+      });
+    }
+  });
+  
+  return urls;
+}
+
+/**
+ * Scrapes a specific list of URLs concurrently using custom selectors
+ * @param {Array<string>} urls - Array of URLs to crawl
+ * @param {Array<{label: string, selector: string, type: string}>} config - Selector configuration
+ * @param {Function} onLog - Optional streaming log callback
+ * @param {Object} options - Concurrency and delay settings
+ * @returns {Promise<Array<Object>>} Scraped rows
+ */
+export async function executeListScrape(urls, config, onLog, options = {}) {
+  const concurrencyLimit = Math.min(Number(options.concurrency) || 5, 20);
+  const delayMs = Number(options.delayMs) || 0;
+  let browser;
+
+  try {
+    if (onLog) onLog(`[Khởi tạo] Bắt đầu cào danh sách ${urls.length} URLs (Độ song song: ${concurrencyLimit}, Trễ: ${delayMs}ms)...`);
+    
+    browser = await puppeteer.launch({
+      headless: 'new',
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+
+    const results = [];
+    const totalCount = urls.length;
+    
+    // Helper to normalize selectors
+    const normalizeSelector = (sel) => {
+      const s = (sel || '').trim();
+      if (!s) return s;
+      if (s.startsWith('.') || s.startsWith('#') || s.startsWith('[') || s.includes(' ') || s.includes('>') || s.includes('+') || s.includes('~')) {
+        return s;
+      }
+      return '.' + s;
+    };
+    
+    const normalizedConfig = config.map(c => ({ ...c, selector: normalizeSelector(c.selector) }));
+    const navTimeout = Number(process.env.SCRAPE_NAV_TIMEOUT) || 30000;
+
+    const processUrl = async (url, step) => {
+      let page;
+      try {
+        if (onLog) onLog(`[Cào trang ${step}/${totalCount}] Đang kết nối: ${url}`);
+        
+        page = await browser.newPage();
+        await page.setViewport({ width: 1920, height: 1080 });
+        
+        // Block heavy resources
+        await page.setRequestInterception(true);
+        page.on('request', (request) => {
+          if (['image', 'font'].includes(request.resourceType())) {
+            request.abort();
+          } else {
+            request.continue();
+          }
+        });
+
+        await page.goto(url, {
+          waitUntil: 'domcontentloaded',
+          timeout: navTimeout
+        });
+
+        // Delay to prevent rate limiting or load heavy pages
+        if (delayMs > 0) {
+          await new Promise(resolve => setTimeout(resolve, delayMs));
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+
+        // Auto-show chords on thophuong.vn or similar chord sites
+        try {
+          const chordBtn = await page.$('button[data-action="hidden-chord"]');
+          if (chordBtn) {
+            if (onLog) onLog(`  ↳ [Hợp âm] Phát hiện nút hiển thị hợp âm, đang click hiển thị hợp âm...`);
+            await chordBtn.click();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        } catch (chordErr) {
+          console.log('No chords button found or click failed in executeListScrape:', chordErr.message);
+        }
+
+        const rowData = await page.evaluate((fieldConfigs, currentUrl) => {
+          const row = { 'Nguồn URL': currentUrl };
+
+          const normalizeSelector = (sel) => {
+            const s = (sel || '').trim();
+            if (!s) return s;
+            if (s.startsWith('.') || s.startsWith('#') || s.startsWith('[') || s.includes(' ') || s.includes('>') || s.includes('+') || s.includes('~')) return s;
+            return '.' + s;
+          };
+
+          const toAbsoluteUrl = (urlVal, baseVal) => {
+            if (!urlVal || !baseVal) return null;
+            const cleanUrl = String(urlVal).trim();
+            if (['undefined', 'null', '', '#', 'javascript:void(0)', 'javascript:;'].includes(cleanUrl.toLowerCase())) {
+              return null;
+            }
+            try { return new URL(cleanUrl, baseVal).href; } catch (e) { return cleanUrl; }
+          };
+
+          const getLinkFromElement = (el, baseVal) => {
+            let href = el.getAttribute('href');
+            if (href) {
+              const abs = toAbsoluteUrl(href, baseVal);
+              if (abs) return abs;
+            }
+            const a = el.querySelector('a');
+            if (a) {
+              href = a.getAttribute('href');
+              if (href) {
+                const abs = toAbsoluteUrl(href, baseVal);
+                if (abs) return abs;
+              }
+            }
+            return null;
+          };
+
+          const getImageSrcFromElement = (el, baseVal) => {
+            let src = el.getAttribute('src') || el.getAttribute('data-src') || el.getAttribute('data-lazy-src');
+            if (src) return toAbsoluteUrl(src, baseVal);
+            const img = el.querySelector('img');
+            if (img) {
+              src = img.getAttribute('src') || img.getAttribute('data-src');
+              if (src) return toAbsoluteUrl(src, baseVal);
+            }
+            return null;
+          };
+
+          const baseVal = window.location.origin;
+
+          fieldConfigs.forEach(({ label, selector, type }) => {
+            try {
+              const element = document.querySelector(normalizeSelector(selector));
+              if (!element) {
+                row[label] = 'N/A';
+                return;
+              }
+
+              const typeLower = type.toLowerCase();
+              if (typeLower === 'text') {
+                row[label] = element.textContent?.trim() || 'N/A';
+              } else if (typeLower === 'link') {
+                row[label] = getLinkFromElement(element, baseVal) || 'N/A';
+              } else if (typeLower === 'image') {
+                row[label] = getImageSrcFromElement(element, baseVal) || 'N/A';
+              } else if (typeLower === 'api') {
+                const dataAttr = element.getAttribute('data-json') || element.getAttribute('data-data');
+                row[label] = dataAttr || 'N/A';
+              } else {
+                row[label] = 'N/A';
+              }
+            } catch (e) {
+              row[label] = 'N/A';
+            }
+          });
+
+          return row;
+        }, normalizedConfig, url);
+
+        if (onLog) onLog(`  ↳ [Thành công] [${step}/${totalCount}] Đã cào xong URL.`);
+        return rowData;
+      } catch (err) {
+        if (onLog) onLog(`  ❌ [Lỗi] [${step}/${totalCount}] Lỗi khi cào ${url}: ${err.message}`);
+        console.error(`Error Puppeteer scraping sitemap URL ${url}:`, err.message);
+        return { 'Nguồn URL': url, 'Trạng thái': 'Lỗi: ' + err.message };
+      } finally {
+        if (page) {
+          await page.close().catch(() => {});
+        }
+      }
+    };
+
+    // Run using simple concurrency pool
+    const activePromises = new Set();
+    let processedCount = 0;
+
+    for (const url of urls) {
+      processedCount++;
+      const step = processedCount;
+
+      if (activePromises.size >= concurrencyLimit) {
+        await Promise.race(activePromises);
+      }
+
+      const p = (async () => {
+        const row = await processUrl(url, step);
+        if (row) {
+          results.push(row);
+        }
+      })();
+
+      activePromises.add(p);
+      p.finally(() => activePromises.delete(p));
+    }
+
+    await Promise.all(activePromises);
+
+    if (onLog) onLog(`[Hoàn thành] Đã cào xong tất cả. Thành công ${results.length}/${totalCount} trang.`);
+    return results;
+
+  } catch (error) {
+    console.error('Error in executeListScrape:', error);
+    throw new Error(`Sitemap list scraping failed: ${error.message}`);
+  } finally {
+    if (browser) {
+      await browser.close().catch(() => {});
+    }
+  }
+}
+
 
 

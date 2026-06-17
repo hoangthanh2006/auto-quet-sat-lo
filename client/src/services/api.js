@@ -42,7 +42,7 @@ export const extractContent = async (urls, customSelector = null) => {
     } else if (error.request) {
       // Request was made but no response received
       throw new Error(
-        'Không thể kết nối đến server. Vui lòng đảm bảo backend server đang chạy trên port 3001.'
+        'Không thể kết nối đến server. Vui lòng đảm bảo backend server đang chạy trên port 3002.'
       );
     } else {
       // Something else happened
@@ -66,7 +66,7 @@ export const scrapeCustom = async (url, selectors) => {
       );
     } else if (error.request) {
       throw new Error(
-        'Không thể kết nối đến server. Vui lòng đảm bảo backend server đang chạy trên port 3001.'
+        'Không thể kết nối đến server. Vui lòng đảm bảo backend server đang chạy trên port 3002.'
       );
     } else {
       throw new Error(error.message || 'Failed to scrape custom data');
@@ -88,7 +88,7 @@ export const previewStructure = async (url) => {
       );
     } else if (error.request) {
       throw new Error(
-        'Không thể kết nối đến server. Vui lòng đảm bảo backend server đang chạy trên port 3001.'
+        'Không thể kết nối đến server. Vui lòng đảm bảo backend server đang chạy trên port 3002.'
       );
     } else {
       throw new Error(error.message || 'Failed to preview page structure');
@@ -110,7 +110,7 @@ export const analyzePage = async (url) => {
       );
     } else if (error.request) {
       throw new Error(
-        'Không thể kết nối đến server. Vui lòng đảm bảo backend server đang chạy trên port 3001.'
+        'Không thể kết nối đến server. Vui lòng đảm bảo backend server đang chạy trên port 3002.'
       );
     } else {
       throw new Error(error.message || 'Failed to analyze page');
@@ -134,7 +134,7 @@ export const executeScrape = async (url, config, options = {}) => {
       );
     } else if (error.request) {
       throw new Error(
-        'Không thể kết nối đến server. Vui lòng đảm bảo backend server đang chạy trên port 3001.'
+        'Không thể kết nối đến server. Vui lòng đảm bảo backend server đang chạy trên port 3002.'
       );
     } else {
       throw new Error(error.message || 'Failed to execute scrape');
@@ -272,7 +272,7 @@ export const scrapeSPASidebar = async (params) => {
       );
     } else if (error.request) {
       throw new Error(
-        'Không thể kết nối đến server. Vui lòng đảm bảo backend server đang chạy trên port 3001.'
+        'Không thể kết nối đến server. Vui lòng đảm bảo backend server đang chạy trên port 3002.'
       );
     } else {
       throw new Error(error.message || 'Failed to scrape SPA sidebar');
@@ -296,10 +296,33 @@ export const testSelector = async (url, selector, type) => {
       );
     } else if (error.request) {
       throw new Error(
-        'Không thể kết nối đến server. Vui lòng đảm bảo backend server đang chạy trên port 3001.'
+        'Không thể kết nối đến server. Vui lòng đảm bảo backend server đang chạy trên port 3002.'
       );
     } else {
       throw new Error(error.message || 'Failed to test selector');
     }
   }
 };
+
+export const parseSitemap = async (sitemapUrl) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/parse-sitemap`, {
+      sitemapUrl
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw new Error(
+        error.response?.data?.error || 
+        `Server error: ${error.response.status} ${error.response.statusText}`
+      );
+    } else if (error.request) {
+      throw new Error(
+        'Không thể kết nối đến server. Vui lòng đảm bảo backend server đang chạy trên port 3002.'
+      );
+    } else {
+      throw new Error(error.message || 'Failed to parse sitemap');
+    }
+  }
+};
+

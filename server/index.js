@@ -2,13 +2,13 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { scrapeLinks, scrapeLinksByClicking, scrapeDataBySelectors, previewPageStructure, analyzePageStructure, executeDynamicScrape, executeRecursiveScrape, scrapeSPASidebarContent, testSelector, executeIdLoopScrape } from './scraper.js';
+import { scrapeLinks, scrapeLinksByClicking, scrapeDataBySelectors, previewPageStructure, analyzePageStructure, executeDynamicScrape, executeRecursiveScrape, scrapeSPASidebarContent, testSelector, executeIdLoopScrape, parseSitemap, executeListScrape } from './scraper.js';
 import { extractMultipleContents } from './contentExtractor.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 
 // Middleware
 app.use(cors());
@@ -61,6 +61,33 @@ app.post('/api/scan-links', async (req, res) => {
     res.status(500).json({
       success: false,
       error: error.message || 'Failed to scrape links'
+    });
+  }
+});
+
+// Parse sitemap XML to extract URLs
+app.post('/api/parse-sitemap', async (req, res) => {
+  try {
+    const { sitemapUrl } = req.body;
+    if (!sitemapUrl || typeof sitemapUrl !== 'string' || sitemapUrl.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        error: 'Sitemap URL is required'
+      });
+    }
+    
+    console.log(`Parsing sitemap: ${sitemapUrl}`);
+    const urls = await parseSitemap(sitemapUrl.trim());
+    res.json({
+      success: true,
+      urls,
+      count: urls.length
+    });
+  } catch (error) {
+    console.error('Sitemap parsing error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to parse sitemap'
     });
   }
 });
@@ -296,22 +323,30 @@ app.post('/api/execute-scrape', async (req, res) => {
     console.log('Received execute-scrape request:', req.body);
     const { url, config, crawlMode = 'single', maxDepth = 1, maxLinks = 20, urlFilter = '' } = req.body;
     
-    // Validate URL
-    if (!url || typeof url !== 'string' || url.trim() === '') {
-      return res.status(400).json({
-        success: false,
-        error: 'URL is required and must be a valid string'
-      });
-    }
-
-    // Validate URL format
-    try {
-      new URL(url);
-    } catch (e) {
-      return res.status(400).json({
-        success: false,
-        error: 'Invalid URL format'
-      });
+    // Validate URL/URLs based on mode
+    if (crawlMode !== 'list') {
+      if (!url || typeof url !== 'string' || url.trim() === '') {
+        return res.status(400).json({
+          success: false,
+          error: 'URL is required and must be a valid string'
+        });
+      }
+      try {
+        new URL(url);
+      } catch (e) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid URL format'
+        });
+      }
+    } else {
+      const { urls } = req.body;
+      if (!urls || !Array.isArray(urls) || urls.length === 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'urls array is required for list mode and must not be empty'
+        });
+      }
     }
 
     // Validate config
@@ -347,6 +382,10 @@ app.post('/api/execute-scrape', async (req, res) => {
     } else if (crawlMode === 'multi' && maxDepth > 1) {
       console.log(`Executing recursive scrape at ${url} with depth ${maxDepth}, maxLinks ${maxLinks}, filter "${urlFilter}"...`);
       results = await executeRecursiveScrape(url, config, { maxDepth, maxLinks, urlFilter });
+    } else if (crawlMode === 'list') {
+      const { urls, concurrency, delayMs } = req.body;
+      console.log(`Executing list scrape for ${urls.length} URLs (concurrency: ${concurrency})...`);
+      results = await executeListScrape(urls, config, null, { concurrency, delayMs });
     } else {
       console.log(`Executing dynamic scrape at ${url} with ${config.length} fields...`);
       results = await executeDynamicScrape(url, config);
@@ -355,7 +394,7 @@ app.post('/api/execute-scrape', async (req, res) => {
     res.json({
       success: true,
       data: results,
-      url: url,
+      url: url || '',
       rowCount: results.length,
       fieldCount: config.length
     });
@@ -383,11 +422,20 @@ app.post('/api/execute-scrape-stream', async (req, res) => {
   try {
     const { url, config, crawlMode = 'single', maxDepth = 1, maxLinks = 20, urlFilter = '' } = req.body;
 
-    // Validate URL
-    if (!url || typeof url !== 'string' || url.trim() === '') {
-      res.write(JSON.stringify({ type: 'log', message: '❌ Lỗi: URL không hợp lệ.' }) + '\n');
-      res.write(JSON.stringify({ type: 'error', error: 'URL is required' }) + '\n');
-      return res.end();
+    // Validate URL/URLs based on mode
+    if (crawlMode !== 'list') {
+      if (!url || typeof url !== 'string' || url.trim() === '') {
+        res.write(JSON.stringify({ type: 'log', message: '❌ Lỗi: URL không hợp lệ.' }) + '\n');
+        res.write(JSON.stringify({ type: 'error', error: 'URL is required' }) + '\n');
+        return res.end();
+      }
+    } else {
+      const { urls } = req.body;
+      if (!urls || !Array.isArray(urls) || urls.length === 0) {
+        res.write(JSON.stringify({ type: 'log', message: '❌ Lỗi: Danh sách URLs trống.' }) + '\n');
+        res.write(JSON.stringify({ type: 'error', error: 'urls array is empty' }) + '\n');
+        return res.end();
+      }
     }
 
     // Validate config
@@ -403,6 +451,9 @@ app.post('/api/execute-scrape-stream', async (req, res) => {
       results = await executeIdLoopScrape(url, startId, endId, config, sendLog, { concurrency, scrapeMethod, delayMs });
     } else if (crawlMode === 'multi' && maxDepth > 1) {
       results = await executeRecursiveScrape(url, config, { maxDepth, maxLinks, urlFilter }, sendLog);
+    } else if (crawlMode === 'list') {
+      const { urls, concurrency, delayMs } = req.body;
+      results = await executeListScrape(urls, config, sendLog, { concurrency, delayMs });
     } else {
       results = await executeDynamicScrape(url, config, sendLog);
     }
