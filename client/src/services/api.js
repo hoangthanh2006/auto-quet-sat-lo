@@ -326,3 +326,89 @@ export const parseSitemap = async (sitemapUrl) => {
   }
 };
 
+export const fetchNsoCategories = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/nso/categories`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || error.message || 'Failed to fetch NSO categories');
+  }
+};
+
+export const fetchNsoPxWebTables = async (categoryUrl, categoryDbid) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/nso/pxweb-tables`, {
+      params: { categoryUrl, categoryDbid }
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || error.message || 'Failed to fetch PX-Web tables');
+  }
+};
+
+export const scrapeNsoPxTable = async (pxUrl, maxItemsPerVariable) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/nso/scrape-px-table`, {
+      pxUrl,
+      maxItemsPerVariable
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || error.message || 'Failed to scrape PX-Web table');
+  }
+};
+
+export const scrapeNsoArticles = async (categoryUrl, maxArticles) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/nso/scrape-articles`, {
+      categoryUrl,
+      maxArticles
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || error.message || 'Failed to scrape category articles');
+  }
+};
+
+export const scrapeNsoUrl = async (url) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/nso/scrape-url`, { url });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || error.message || 'Failed to scrape NSO URL');
+  }
+};
+
+// Google Drive API Services
+export const getDriveStatus = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/drive/status`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || error.message || 'Failed to check Drive status');
+  }
+};
+
+export const uploadToDrive = async ({ fileName, content, mimeType }) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/drive/upload`, {
+      fileName,
+      content,
+      mimeType
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || error.message || 'Failed to upload to Google Drive');
+  }
+};
+
+export const saveDriveConfig = async (config) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/drive/config`, config);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || error.message || 'Failed to save Drive config');
+  }
+};
+
+

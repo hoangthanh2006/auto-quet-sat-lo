@@ -2,8 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { scrapeLinks, scrapeLinksByClicking, scrapeDataBySelectors, previewPageStructure, analyzePageStructure, executeDynamicScrape, executeRecursiveScrape, scrapeSPASidebarContent, testSelector, executeIdLoopScrape, parseSitemap, executeListScrape } from './scraper.js';
+import { scrapeLinks, scrapeLinksByClicking, scrapeDataBySelectors, previewPageStructure, analyzePageStructure, executeDynamicScrape, executeRecursiveScrape, scrapeSPASidebarContent, testSelector, executeIdLoopScrape, parseSitemap, executeListScrape, getNsoCategories, getNsoCategoryTables, scrapeNsoPxWebTable, scrapeNsoCategoryArticles, scrapeNsoCustomUrl } from './scraper.js';
 import { extractMultipleContents } from './contentExtractor.js';
+import { uploadToDrive, getDriveStatus, saveDriveConfig } from './driveService.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -534,6 +535,100 @@ app.post('/api/test-selector', async (req, res) => {
       success: false,
       error: error.message || 'Failed to test selector'
     });
+  }
+});
+
+// NSO.GOV.VN Scraping Endpoints
+app.get('/api/nso/categories', (req, res) => {
+  try {
+    const categories = getNsoCategories();
+    res.json({ success: true, data: categories });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/nso/pxweb-tables', async (req, res) => {
+  try {
+    const { categoryUrl, categoryDbid } = req.query;
+    const urlToFetch = categoryUrl || 'https://www.nso.gov.vn/dan-so/';
+    const tables = await getNsoCategoryTables(urlToFetch);
+    res.json({ success: true, data: tables, count: tables.length });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/nso/scrape-px-table', async (req, res) => {
+  try {
+    const { pxUrl, maxItemsPerVariable } = req.body;
+    if (!pxUrl) {
+      return res.status(400).json({ success: false, error: 'pxUrl is required' });
+    }
+    const tableData = await scrapeNsoPxWebTable(pxUrl, { maxItemsPerVariable });
+    res.json({ success: true, data: tableData });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/nso/scrape-articles', async (req, res) => {
+  try {
+    const { categoryUrl, maxArticles } = req.body;
+    if (!categoryUrl) {
+      return res.status(400).json({ success: false, error: 'categoryUrl is required' });
+    }
+    const articles = await scrapeNsoCategoryArticles(categoryUrl, maxArticles || 20);
+    res.json({ success: true, data: articles, count: articles.length });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/nso/scrape-url', async (req, res) => {
+  try {
+    const { url } = req.body;
+    if (!url) {
+      return res.status(400).json({ success: false, error: 'url is required' });
+    }
+    const data = await scrapeNsoCustomUrl(url);
+    res.json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Google Drive API Integration Endpoints
+app.get('/api/drive/status', (req, res) => {
+  try {
+    const status = getDriveStatus();
+    res.json({ success: true, data: status });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/drive/upload', async (req, res) => {
+  try {
+    const { fileName, content, mimeType } = req.body;
+    if (!fileName || content === undefined) {
+      return res.status(400).json({ success: false, error: 'fileName and content are required' });
+    }
+    const result = await uploadToDrive({ fileName, content, mimeType: mimeType || 'text/csv' });
+    res.json(result);
+  } catch (error) {
+    console.error('Drive upload endpoint error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/drive/config', (req, res) => {
+  try {
+    const { credentials, rootFolderId } = req.body;
+    const result = saveDriveConfig({ credentials, rootFolderId });
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 

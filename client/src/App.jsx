@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { LayoutDashboard, Users, Zap, Wrench, Home, Sun, Moon, BookOpen } from 'lucide-react';
+import { LayoutDashboard, Users, Zap, Wrench, Home, Sun, Moon, BookOpen, BarChart3 } from 'lucide-react';
 import DynamicScraper from './components/DynamicScraper';
 import ToolUVTU from './components/ToolUVTU';
+import ToolNSO from './components/ToolNSO';
 import DashboardHome from './components/DashboardHome';
 import OtherTools from './components/OtherTools';
 import UsageGuide from './components/UsageGuide';
@@ -11,6 +12,7 @@ const NAV = [
   { id: 'home', label: 'Trang chủ', icon: Home, color: 'text-indigo-500 bg-indigo-50 dark:bg-indigo-950/30' },
   { id: 'tool-uvtu', label: 'UVTU theo khóa', icon: Users, color: 'text-blue-500 bg-blue-50 dark:bg-blue-950/30' },
   { id: 'tool-dynamic', label: 'Dynamic Scraper', icon: Zap, color: 'text-purple-500 bg-purple-50 dark:bg-purple-950/30' },
+  { id: 'tool-nso', label: 'NSO Scraper', icon: BarChart3, color: 'text-amber-500 bg-amber-50 dark:bg-amber-950/30' },
   { id: 'glossary', label: 'Thuật ngữ Scraper', icon: BookOpen, color: 'text-rose-500 bg-rose-50 dark:bg-rose-950/30' },
   { id: 'other-tools', label: 'Sitemap Scraper', icon: Wrench, color: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30' },
 ];
@@ -94,6 +96,7 @@ function App() {
           )}
           {currentPage === 'tool-uvtu' && <ToolUVTU />}
           {currentPage === 'tool-dynamic' && <DynamicScraper />}
+          {currentPage === 'tool-nso' && <ToolNSO />}
           {currentPage === 'glossary' && <Glossary />}
           {currentPage === 'other-tools' && <OtherTools />}
         </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Search, Loader2, Plus, Trash2, Download, FileText, Table, List, FileJson, Sparkles, CheckCircle, XCircle, MousePointer, Eye, ExternalLink, ChevronLeft, ChevronRight, CornerDownRight } from 'lucide-react';
 import { analyzePage, analyzePageStream, executeScrape, executeScrapeStream, scrapeSPASidebar, testSelector } from '../services/api';
+import DriveUploadButton from './DriveUploadButton';
 
 export default function DynamicScraper() {
   const [url, setUrl] = useState('');
@@ -1256,6 +1257,23 @@ export default function DynamicScraper() {
                     <Download className="w-4 h-4" />
                     <span>CSV</span>
                   </button>
+                  <DriveUploadButton
+                    fileName={`scraped_data_${Date.now()}`}
+                    getData={() => {
+                      if (!scrapeResults || scrapeResults.length === 0) return '';
+                      const allKeys = new Set();
+                      scrapeResults.forEach(row => Object.keys(row).forEach(key => allKeys.add(key)));
+                      const headers = Array.from(allKeys);
+                      const escapeCSV = (value) => {
+                        if (value === null || value === undefined) return '';
+                        const str = String(value);
+                        return (str.includes(',') || str.includes('"') || str.includes('\n')) ? `"${str.replace(/"/g, '""')}"` : str;
+                      };
+                      return '\uFEFF' + [headers.join(','), ...scrapeResults.map(row => headers.map(header => escapeCSV(row[header] || '')).join(','))].join('\n');
+                    }}
+                    mimeType="text/csv"
+                    className="px-4 py-2 text-sm font-medium"
+                  />
                 </div>
               </div>
             </div>

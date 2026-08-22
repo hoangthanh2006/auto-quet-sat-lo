@@ -2406,5 +2406,322 @@ export async function executeListScrape(urls, config, onLog, options = {}) {
   }
 }
 
+/**
+ * Returns structured hierarchy of NSO 5 main categories
+ */
+export function getNsoCategories() {
+  return [
+    {
+      id: 'dan-so-lao-dong',
+      title: 'DÂN SỐ VÀ LAO ĐỘNG',
+      pxdb: 'Dân số và lao động',
+      subcategories: [
+        { name: 'Dân số', url: 'https://www.nso.gov.vn/dan-so/' },
+        { name: 'Lao động việc làm', url: 'https://www.nso.gov.vn/lao-dong/' }
+      ]
+    },
+    {
+      id: 'tai-khoan-quoc-gia-tai-chinh',
+      title: 'TÀI KHOẢN QUỐC GIA VÀ TÀI CHÍNH',
+      pxdb: 'Tài khoản quốc gia',
+      subcategories: [
+        { name: 'Tài khoản quốc gia', url: 'https://www.nso.gov.vn/tai-khoan-quoc-gia/' },
+        { name: 'Ngân hàng, bảo hiểm và thu chi ngân sách', url: 'https://www.nso.gov.vn/ngan-hang-bao-hiem-va-thu-chi-ngan-sach/' }
+      ]
+    },
+    {
+      id: 'kinh-te',
+      title: 'KINH TẾ',
+      pxdb: 'Công nghiệp',
+      subcategories: [
+        { name: 'Nông, Lâm nghiệp và Thủy sản', url: 'https://www.nso.gov.vn/nong-lam-nghiep-va-thuy-san/' },
+        { name: 'Đầu tư và Xây dựng', url: 'https://www.nso.gov.vn/dau-tu-va-xay-dung/', pxdb: 'Đầu tư' },
+        { name: 'Công nghiệp', url: 'https://www.nso.gov.vn/cong-nghiep/', pxdb: 'Công nghiệp' },
+        { name: 'Doanh nghiệp', url: 'https://www.nso.gov.vn/doanh-nghiep/', pxdb: 'Doanh nghiệp' },
+        { name: 'Thương mại và Du lịch', url: 'https://www.nso.gov.vn/thuong-mai-dich-vu/' },
+        { name: 'Thống kê Giá', url: 'https://www.nso.gov.vn/gia/' }
+      ]
+    },
+    {
+      id: 'xa-hoi-moi-truong-hanh-chinh',
+      title: 'XÃ HỘI MÔI TRƯỜNG VÀ ĐƠN VỊ HÀNH CHÍNH',
+      pxdb: 'Giáo dục',
+      subcategories: [
+        { name: 'Khoa học công nghệ, giáo dục', url: 'https://www.nso.gov.vn/giao-duc/' },
+        { name: 'Y tế, mức sống dân cư, văn hóa & môi trường', url: 'https://www.nso.gov.vn/y-te-muc-song-dan-cu-van-hoa-the-thao-trat-tu-an-toan-xa-hoi-va-moi-truong/' },
+        { name: 'Đơn vị hành chính, Đất đai và Khí hậu', url: 'https://www.nso.gov.vn/don-vi-hanh-chinh-dat-dai-va-khi-hau/' }
+      ]
+    },
+    {
+      id: 'tong-dieu-tra',
+      title: 'TỔNG ĐIỀU TRA',
+      pxdb: 'Dân số và lao động',
+      subcategories: [
+        { name: 'Tổng điều tra dân số và nhà ở', url: 'https://www.nso.gov.vn/tong-dieu-tra-dan-so-va-nha-o/' },
+        { name: 'Tổng điều tra nông thôn, nông nghiệp và thủy sản', url: 'https://www.nso.gov.vn/tong-dieu-tra-nong-thon-nong-nghiep-va-thuy-san/' },
+        { name: 'Tổng điều tra kinh tế', url: 'https://www.nso.gov.vn/tong-dieu-tra-kinh-te/' }
+      ]
+    }
+  ];
+}
+
+/**
+ * Get PX-Web statistical tables for a specific category URL by scraping nso.gov.vn page
+ */
+export async function getNsoCategoryTables(categoryUrl) {
+  try {
+    console.log(`Fetching category statistical tables from ${categoryUrl}...`);
+    const res = await fetch(categoryUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    if (!res.ok) {
+      throw new Error(`nso.gov.vn error HTTP ${res.status}`);
+    }
+    const html = await res.text();
+    const $ = cheerio.load(html);
+
+    const pxTables = [];
+    const seenIds = new Set();
+
+    $('a').each((_, el) => {
+      const href = $(el).attr('href');
+      const text = $(el).text().trim().replace(/\s+/g, ' ');
+      if (!href || !text || text.length < 5) return;
+
+      if (href.includes('pxid=')) {
+        // Extract pxid (e.g., pxid=V0201 or pxid=V02.01)
+        const match = href.match(/pxid=([A-Za-z0-9\.\-]+)/);
+        const pxid = match ? match[1] : `PX_${pxTables.length + 1}`;
+
+        if (!seenIds.has(pxid)) {
+          seenIds.add(pxid);
+          const fullUrl = href.startsWith('http') ? href : `https://www.nso.gov.vn${href.startsWith('/') ? '' : '/'}${href}`;
+          pxTables.push({
+            id: `${pxid}.px`,
+            text,
+            pxUrl: fullUrl,
+            categoryUrl
+          });
+        }
+      }
+    });
+
+    console.log(`Found ${pxTables.length} statistical tables for ${categoryUrl}`);
+    return pxTables;
+  } catch (error) {
+    console.error('Error fetching NSO category tables:', error);
+    throw new Error(`Failed to fetch statistical tables for ${categoryUrl}: ${error.message}`);
+  }
+}
+
+/**
+ * Scrapes a PX-Web statistical data table using Puppeteer (handles px-web-2 iframe and direct pxweb)
+ */
+export async function scrapeNsoPxWebTable(pxUrl, options = {}) {
+  let browser;
+  try {
+    browser = await puppeteer.launch({
+      headless: 'new',
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1920, height: 1080 });
+
+    console.log(`Scraping PX-Web table from ${pxUrl}...`);
+    await page.goto(pxUrl, { waitUntil: 'networkidle2', timeout: 35000 });
+
+    // Check if current page is px-web-2 container containing iframe
+    let targetUrl = pxUrl;
+    if (pxUrl.includes('px-web-2') || page.url().includes('px-web-2')) {
+      const iframeSrc = await page.evaluate(() => {
+        const frame = document.querySelector('iframe');
+        return frame ? frame.src : null;
+      });
+
+      if (iframeSrc) {
+        console.log(`Found PX-Web iframe: ${iframeSrc}`);
+        targetUrl = iframeSrc;
+        await page.goto(targetUrl, { waitUntil: 'networkidle2', timeout: 35000 });
+      }
+    }
+
+    // Select options in each listbox
+    await page.evaluate((maxPerSelect) => {
+      const selects = document.querySelectorAll('select[multiple]');
+      selects.forEach(select => {
+        const limit = maxPerSelect && maxPerSelect > 0 ? Math.min(maxPerSelect, select.options.length) : select.options.length;
+        for (let i = 0; i < limit; i++) {
+          select.options[i].selected = true;
+        }
+      });
+    }, options.maxItemsPerVariable || 0);
+
+    // Submit form to generate table
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 35000 }).catch(() => {}),
+      page.click('input[type=submit][id*=ButtonViewTable], input[type=submit][value*=Tiếp]')
+    ]);
+
+    // Extract statistical data table
+    const tableData = await page.evaluate(() => {
+      const mainTable = document.querySelector('table[id*="DataTable"], table.table-class') || document.querySelector('table');
+      if (!mainTable) return null;
+
+      const rows = Array.from(mainTable.querySelectorAll('tr'));
+      const matrix = rows.map(r => Array.from(r.querySelectorAll('th, td')).map(c => c.innerText.trim()));
+
+      const maxCols = Math.max(...matrix.map(r => r.length), 1);
+      const title = document.querySelector('.px_setting_tabletitle, h1, .tabletitle')?.innerText?.trim() || document.title;
+
+      return {
+        title,
+        rowCount: matrix.length,
+        colCount: maxCols,
+        headers: matrix.slice(0, 3),
+        rows: matrix
+      };
+    });
+
+    if (!tableData || !tableData.rows || tableData.rows.length === 0) {
+      throw new Error('No tabular data found on PX-Web result page.');
+    }
+
+    return tableData;
+  } catch (error) {
+    console.error('Error scraping PX-Web table:', error);
+    throw new Error(`Failed to scrape PX-Web table: ${error.message}`);
+  } finally {
+    if (browser) {
+      await browser.close().catch(() => {});
+    }
+  }
+}
+
+
+/**
+ * Scrapes articles, press releases, reports from an nso.gov.vn category page
+ */
+export async function scrapeNsoCategoryArticles(categoryUrl, maxArticles = 20) {
+  try {
+    const res = await fetch(categoryUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    const html = await res.text();
+    const $ = cheerio.load(html);
+
+    const articles = [];
+    const seenUrls = new Set();
+
+    $('a').each((_, el) => {
+      if (articles.length >= maxArticles) return;
+
+      const href = $(el).attr('href');
+      const text = $(el).text().trim().replace(/\s+/g, ' ');
+
+      if (
+        href &&
+        text.length > 15 &&
+        (href.includes('nso.gov.vn/') || href.startsWith('/')) &&
+        !href.includes('#') &&
+        !href.includes('javascript:')
+      ) {
+        const fullUrl = href.startsWith('http') ? href : `https://www.nso.gov.vn${href}`;
+
+        if (
+          !seenUrls.has(fullUrl) &&
+          (fullUrl.includes('/tin-tuc-thong-ke/') ||
+            fullUrl.includes('/du-lieu-va-so-lieu-thong-ke/') ||
+            fullUrl.includes('/bai-top/') ||
+            fullUrl.includes('/su-kien/') ||
+            fullUrl.includes('/default/') ||
+            fullUrl.includes('pxid=') ||
+            fullUrl.includes('px-web'))
+        ) {
+          seenUrls.add(fullUrl);
+          articles.push({
+            title: text,
+            url: fullUrl,
+            type: fullUrl.includes('pxid=') ? 'pxweb_table' : 'article',
+            sourceCategory: categoryUrl
+          });
+        }
+      }
+    });
+
+    return articles;
+  } catch (error) {
+    console.error('Error scraping NSO category articles:', error);
+    throw new Error(`Failed to scrape articles from ${categoryUrl}: ${error.message}`);
+  }
+}
+
+/**
+ * Scrapes a custom nso.gov.vn page and extracts title, text content, tables, and media links
+ */
+export async function scrapeNsoCustomUrl(targetUrl) {
+  try {
+    const res = await fetch(targetUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    const html = await res.text();
+    const $ = cheerio.load(html);
+
+    const title = $('h1').first().text().trim() || $('title').text().trim();
+    const date = $('.post-date, .entry-date, time, .date').first().text().trim() || 'N/A';
+
+    const paragraphs = [];
+    $('article p, .entry-content p, .fusion-post-content p, p').each((_, el) => {
+      const text = $(el).text().trim();
+      if (text.length > 20) paragraphs.push(text);
+    });
+
+    const tables = [];
+    $('table').each((i, tableEl) => {
+      const rows = [];
+      $(tableEl).find('tr').each((_, tr) => {
+        const row = [];
+        $(tr).find('th, td').each((_, cell) => {
+          row.push($(cell).text().trim());
+        });
+        if (row.length > 0) rows.push(row);
+      });
+      if (rows.length > 0) {
+        tables.push({ index: i + 1, rowsCount: rows.length, rows });
+      }
+    });
+
+    const attachments = [];
+    $('a[href$=".pdf"], a[href$=".xlsx"], a[href$=".docx"], a[href$=".zip"]').each((_, el) => {
+      const href = $(el).attr('href');
+      const text = $(el).text().trim() || 'Download File';
+      if (href) {
+        attachments.push({ text, url: href.startsWith('http') ? href : `https://www.nso.gov.vn${href}` });
+      }
+    });
+
+    const images = [];
+    $('article img, .entry-content img, img').each((_, el) => {
+      const src = $(el).attr('src');
+      if (src && !src.includes('logo') && !src.includes('icon')) {
+        images.push(src.startsWith('http') ? src : `https://www.nso.gov.vn${src}`);
+      }
+    });
+
+    return {
+      title,
+      date,
+      url: targetUrl,
+      paragraphsCount: paragraphs.length,
+      paragraphs,
+      tablesCount: tables.length,
+      tables,
+      attachmentsCount: attachments.length,
+      attachments,
+      imagesCount: images.length,
+      images: images.slice(0, 10)
+    };
+  } catch (error) {
+    console.error('Error scraping custom NSO URL:', error);
+    throw new Error(`Failed to scrape URL ${targetUrl}: ${error.message}`);
+  }
+}
+
+
 
 

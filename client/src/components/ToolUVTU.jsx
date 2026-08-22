@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Search, Download, Loader2, ExternalLink, FileText, CheckSquare, Square } from 'lucide-react';
 import { scanLinks, extractContent } from '../services/api';
+import DriveUploadButton from './DriveUploadButton';
 
 const khoaTextMap = {
   1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V',
@@ -293,6 +294,12 @@ export default function ToolUVTU() {
                 >
                   <Download className="w-4 h-4" /> Export CSV
                 </button>
+                <DriveUploadButton
+                  fileName={`uvtu_khoa_${selectedKhoa}`}
+                  getData={() => convertToCSV()}
+                  mimeType="text/csv"
+                  className="py-2.5 px-5 text-sm font-semibold"
+                />
               </>
             )}
             

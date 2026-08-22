@@ -1,4 +1,4 @@
-import { Users, Zap, Wrench } from 'lucide-react';
+import { Users, Zap, Wrench, BarChart3 } from 'lucide-react';
 
 const tools = [
   {
@@ -15,11 +15,19 @@ const tools = [
     icon: Zap,
     color: 'purple',
   },
+  {
+    id: 'tool-nso',
+    title: 'NSO Scraper (nso.gov.vn) - Dữ Liệu Thống Kê',
+    description: 'Trích xuất bảng số liệu thống kê (PX-Web), báo cáo, thông cáo báo chí từ Tổng cục Thống kê theo 5 nhóm chuyên mục chính. Xuất CSV/JSON.',
+    icon: BarChart3,
+    color: 'amber',
+  },
 ];
 
 const colorClasses = {
   blue: 'bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/30 hover:bg-blue-100 dark:hover:bg-blue-900/40',
   purple: 'bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800/30 hover:bg-purple-100 dark:hover:bg-purple-900/40',
+  amber: 'bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/30 hover:bg-amber-100 dark:hover:bg-amber-900/40',
   gray: 'bg-gray-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-gray-200 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-700/50',
 };
 
