@@ -241,7 +241,7 @@ export default function ToolLuquetSatlo() {
     }
   };
 
-  // Thực hiện quét tự động NCHMF và đẩy snapshot vào Firebase RTDB
+  // Thực hiện quét tự động NCHMF và đẩy snapshot vào Firebase RTDB (TẤT CẢ CÁC LỚP)
   const performAutoSync = async (source = 'client_auto') => {
     try {
       setIsSyncingNow(true);
@@ -251,43 +251,60 @@ export default function ToolLuquetSatlo() {
       const hStr = `${pad(now.getHours())}:00:00`;
       const queryDate = `${dStr} ${hStr}`;
 
-      const [cbRes, rdRes] = await Promise.allSettled([
+      // 1. Quét song song TẤT CẢ các lớp dữ liệu
+      const [cbRes, rdRes, slRes, lqRes, tdRes, tmRes] = await Promise.allSettled([
         fetchLuquetSatloCanhBao({ date: queryDate, autoFallback: true }),
-        fetchLuquetSatloRadar()
+        fetchLuquetSatloRadar(),
+        fetchLuquetSatloDiemDaXayRaSatLo(),
+        fetchLuquetSatloDiemDaXayRaLuQuet(),
+        fetchLuquetSatloTrongDiemSLLQ(),
+        fetchLuquetSatloTramMua()
       ]);
 
       const canhBaoList = cbRes.status === 'fulfilled' && cbRes.value?.success ? cbRes.value.data : [];
       const actualDate = cbRes.status === 'fulfilled' && cbRes.value?.actualDate ? cbRes.value.actualDate : queryDate;
       const radarObj = rdRes.status === 'fulfilled' && rdRes.value?.success ? rdRes.value.data : null;
+      const satLoList = slRes.status === 'fulfilled' && slRes.value?.success ? slRes.value.data : [];
+      const luQuetList = lqRes.status === 'fulfilled' && lqRes.value?.success ? lqRes.value.data : [];
+      const trongDiemListObj = tdRes.status === 'fulfilled' && tdRes.value?.success ? tdRes.value.data : [];
+      const tramMuaListObj = tmRes.status === 'fulfilled' && tmRes.value?.success ? tmRes.value.data : [];
 
       if (canhBaoList.length > 0) {
         setCbList(canhBaoList);
         setCbActualDate(actualDate);
-        if (radarObj) setRadarData(radarObj);
-
-        const isManual = source === 'manual_button' || source === 'modal_sync_now';
-        const saveRes = await saveAutoSyncSnapshot({
-          canhBaoData: canhBaoList,
-          radarData: radarObj,
-          actualDate,
-          source,
-          forceSave: isManual
-        });
-
-        const timeStr = now.toLocaleTimeString('vi-VN');
-        setLastAutoSyncTime(timeStr);
-        if (saveRes.isDuplicate) {
-          setFirebaseSuccessMsg(`[Tự động quét] ${saveRes.message}`);
-        } else {
-          setFirebaseSuccessMsg(`[Tự động quét] Đã lưu snapshot mới "${saveRes.snapshotId}" (${saveRes.summary.totalCommunes} xã, Max mưa: ${saveRes.summary.maxRain}mm) lúc ${timeStr}!`);
-        }
-        setTimeout(() => setFirebaseSuccessMsg(null), 8000);
-
-        loadStatisticsTimeline();
       }
+      if (radarObj) setRadarData(radarObj);
+      if (satLoList.length > 0) setDxrSatLoList(satLoList);
+      if (luQuetList.length > 0) setDxrLuQuetList(luQuetList);
+      if (trongDiemListObj.length > 0) setTrongDiemList(trongDiemListObj);
+      if (tramMuaListObj.length > 0) setTramMuaList(tramMuaListObj);
+
+      const isManual = source === 'manual_button' || source === 'modal_sync_now' || source === 'manual_crawl_all';
+      const saveRes = await saveAutoSyncSnapshot({
+        canhBaoData: canhBaoList.length > 0 ? canhBaoList : cbList,
+        radarData: radarObj || radarData,
+        satLoData: satLoList.length > 0 ? satLoList : dxrSatLoList,
+        luQuetData: luQuetList.length > 0 ? luQuetList : dxrLuQuetList,
+        trongDiemData: trongDiemListObj.length > 0 ? trongDiemListObj : trongDiemList,
+        tramMuaData: tramMuaListObj.length > 0 ? tramMuaListObj : tramMuaList,
+        actualDate,
+        source,
+        forceSave: isManual
+      });
+
+      const timeStr = now.toLocaleTimeString('vi-VN');
+      setLastAutoSyncTime(timeStr);
+      if (saveRes.isDuplicate) {
+        setFirebaseSuccessMsg(`[Tự động quét] ${saveRes.message}`);
+      } else {
+        setFirebaseSuccessMsg(`[Quét & Lưu tất cả các lớp] Đã lưu snapshot "${saveRes.snapshotId}" (${saveRes.counts.canh_bao} xã, ${saveRes.counts.sat_lo} sạt lở, ${saveRes.counts.lu_quet} lũ quét, ${saveRes.counts.trong_diem} trọng điểm) lúc ${timeStr}!`);
+      }
+      setTimeout(() => setFirebaseSuccessMsg(null), 8000);
+
+      loadStatisticsTimeline();
     } catch (err) {
       console.error('performAutoSync error:', err);
-      setErrorMsg(`Lỗi tự động quét: ${err.message}`);
+      setErrorMsg(`Lỗi quét dữ liệu: ${err.message}`);
       setTimeout(() => setErrorMsg(null), 8000);
     } finally {
       setIsSyncingNow(false);
@@ -876,21 +893,76 @@ export default function ToolLuquetSatlo() {
       setSavingFirebase('all');
       setErrorMsg(null);
       setFirebaseSuccessMsg(null);
-      const tasks = [];
-      if (radarData) tasks.push(saveLuquetSatloToRTDB({ layer: 'radar', data: radarData, metadata: { name: 'Dữ liệu radar' }, saveHistory: true }));
-      if (dxrSatLoList.length > 0) tasks.push(saveLuquetSatloToRTDB({ layer: 'sat_lo', data: dxrSatLoList, metadata: { name: 'Điểm đã xảy ra sạt lở' }, saveHistory: true }));
-      if (dxrLuQuetList.length > 0) tasks.push(saveLuquetSatloToRTDB({ layer: 'lu_quet', data: dxrLuQuetList, metadata: { name: 'Điểm đã xảy ra lũ quét' }, saveHistory: true }));
-      if (trongDiemList.length > 0) tasks.push(saveLuquetSatloToRTDB({ layer: 'trong_diem', data: trongDiemList, metadata: { name: 'Trọng điểm sạt lở lũ quét' }, saveHistory: true }));
-      if (cbList.length > 0) tasks.push(saveLuquetSatloToRTDB({ layer: 'canh_bao', data: cbList, metadata: { name: 'Cảnh báo nguy cơ lũ quét sạt lở', actualDate: cbActualDate }, saveHistory: true }));
 
-      if (tasks.length === 0) {
-        setErrorMsg('Chưa có dữ liệu nào đang hiển thị để lưu lên Firebase. Hãy tải dữ liệu trước.');
-        return;
+      // Đảm bảo có dữ liệu tất cả các lớp trước khi lưu
+      let currentCb = cbList;
+      let currentRadar = radarData;
+      let currentSatLo = dxrSatLoList;
+      let currentLuQuet = dxrLuQuetList;
+      let currentTrongDiem = trongDiemList;
+      let currentTramMua = tramMuaList;
+
+      const fetchTasks = [];
+      if (currentCb.length === 0) fetchTasks.push(fetchLuquetSatloCanhBao({ autoFallback: true }));
+      else fetchTasks.push(Promise.resolve({ success: true, data: currentCb }));
+
+      if (!currentRadar) fetchTasks.push(fetchLuquetSatloRadar());
+      else fetchTasks.push(Promise.resolve({ success: true, data: currentRadar }));
+
+      if (currentSatLo.length === 0) fetchTasks.push(fetchLuquetSatloDiemDaXayRaSatLo());
+      else fetchTasks.push(Promise.resolve({ success: true, data: currentSatLo }));
+
+      if (currentLuQuet.length === 0) fetchTasks.push(fetchLuquetSatloDiemDaXayRaLuQuet());
+      else fetchTasks.push(Promise.resolve({ success: true, data: currentLuQuet }));
+
+      if (currentTrongDiem.length === 0) fetchTasks.push(fetchLuquetSatloTrongDiemSLLQ());
+      else fetchTasks.push(Promise.resolve({ success: true, data: currentTrongDiem }));
+
+      if (currentTramMua.length === 0) fetchTasks.push(fetchLuquetSatloTramMua());
+      else fetchTasks.push(Promise.resolve({ success: true, data: currentTramMua }));
+
+      const [resCb, resRd, resSl, resLq, resTd, resTm] = await Promise.allSettled(fetchTasks);
+
+      if (resCb.status === 'fulfilled' && resCb.value?.success && resCb.value.data) {
+        currentCb = resCb.value.data;
+        setCbList(currentCb);
+      }
+      if (resRd.status === 'fulfilled' && resRd.value?.success && resRd.value.data) {
+        currentRadar = resRd.value.data;
+        setRadarData(currentRadar);
+      }
+      if (resSl.status === 'fulfilled' && resSl.value?.success && resSl.value.data) {
+        currentSatLo = resSl.value.data;
+        setDxrSatLoList(currentSatLo);
+      }
+      if (resLq.status === 'fulfilled' && resLq.value?.success && resLq.value.data) {
+        currentLuQuet = resLq.value.data;
+        setDxrLuQuetList(currentLuQuet);
+      }
+      if (resTd.status === 'fulfilled' && resTd.value?.success && resTd.value.data) {
+        currentTrongDiem = resTd.value.data;
+        setTrongDiemList(currentTrongDiem);
+      }
+      if (resTm.status === 'fulfilled' && resTm.value?.success && resTm.value.data) {
+        currentTramMua = resTm.value.data;
+        setTramMuaList(currentTramMua);
       }
 
-      await Promise.all(tasks);
-      setFirebaseSuccessMsg(`Đã lưu thành công toàn bộ ${tasks.length} lớp dữ liệu lên Firebase Realtime Database!`);
-      setTimeout(() => setFirebaseSuccessMsg(null), 6000);
+      const saveRes = await saveAutoSyncSnapshot({
+        canhBaoData: currentCb,
+        radarData: currentRadar,
+        satLoData: currentSatLo,
+        luQuetData: currentLuQuet,
+        trongDiemData: currentTrongDiem,
+        tramMuaData: currentTramMua,
+        actualDate: cbActualDate,
+        source: 'manual_save_all',
+        forceSave: true
+      });
+
+      setFirebaseSuccessMsg(`Đã lưu thành công TẤT CẢ các lớp lên Firebase Realtime Database! (Snapshot: "${saveRes.snapshotId}", ${saveRes.counts.canh_bao} xã, ${saveRes.counts.sat_lo} điểm sạt lở, ${saveRes.counts.lu_quet} lũ quét, ${saveRes.counts.trong_diem} trọng điểm)`);
+      setTimeout(() => setFirebaseSuccessMsg(null), 8000);
+      loadStatisticsTimeline();
     } catch (err) {
       setErrorMsg(`Lỗi lưu lên Firebase: ${err.message}`);
     } finally {
@@ -1273,9 +1345,20 @@ export default function ToolLuquetSatlo() {
               Chọn các trường dữ liệu cần trích xuất tương tự giao diện bản đồ NCHMF
             </p>
           </div>
-          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-cyan-100 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300">
-            {Number(checkedRadar) + Number(checkedSatLo) + Number(checkedLuQuet) + Number(checkedTrongDiem)}/4 lớp được chọn
-          </span>
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={() => performAutoSync('manual_crawl_all')}
+              disabled={isSyncingNow}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-bold shadow-md shadow-cyan-600/20 transition-all active:scale-95 disabled:opacity-50"
+              title="Quét cào đồng bộ TẤT CẢ các lớp (Radar, Sạt lở, Lũ quét, Trọng điểm, Cảnh báo, Trạm mưa) và lưu CSDL"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isSyncingNow ? 'animate-spin' : ''}`} />
+              {isSyncingNow ? 'Đang quét tất cả...' : 'Quét & Lưu tất cả các lớp'}
+            </button>
+            <span className="text-xs font-semibold px-2.5 py-1.5 rounded-xl bg-cyan-100 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300">
+              {Number(checkedRadar) + Number(checkedSatLo) + Number(checkedLuQuet) + Number(checkedTrongDiem)}/4 lớp được chọn
+            </span>
+          </div>
         </div>
 
         {/* 4 CHECKBOXES EXACTLY AS IN THE USER IMAGE */}
@@ -1576,16 +1659,6 @@ export default function ToolLuquetSatlo() {
                   </button>
 
                   <button
-                    onClick={() => handleSaveToFirebase('radar', radarData, { name: 'Dữ liệu radar thời tiết CMAX' })}
-                    disabled={!radarData || savingFirebase === 'radar'}
-                    className="px-3 py-1.5 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 border border-orange-200 dark:border-orange-800 hover:bg-orange-100 text-xs font-semibold flex items-center gap-1.5"
-                    title="Lưu dữ liệu radar lên Firebase Realtime Database"
-                  >
-                    <Database className={`w-3.5 h-3.5 ${savingFirebase === 'radar' ? 'animate-spin' : ''}`} />
-                    {savingFirebase === 'radar' ? 'Đang lưu...' : 'Lưu RTDB'}
-                  </button>
-
-                  <button
                     onClick={() => handleLoadFromFirebase('radar')}
                     disabled={loadingFirebase === 'radar'}
                     className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-xs font-semibold flex items-center gap-1.5"
@@ -1761,15 +1834,6 @@ export default function ToolLuquetSatlo() {
                   >
                     <FileCode className="w-3.5 h-3.5 text-purple-500" />
                     JSON
-                  </button>
-                  <button
-                    onClick={() => handleSaveToFirebase('sat_lo', filteredDxrSatLo, { province: dxrSatLoProvince, name: 'Điểm đã xảy ra sạt lở' })}
-                    disabled={filteredDxrSatLo.length === 0 || savingFirebase === 'sat_lo'}
-                    className="px-3 py-1.5 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 border border-orange-200 dark:border-orange-800 hover:bg-orange-100 text-xs font-semibold flex items-center gap-1.5"
-                    title="Lưu dữ liệu điểm sạt lở lên Firebase Realtime Database"
-                  >
-                    <Database className={`w-3.5 h-3.5 ${savingFirebase === 'sat_lo' ? 'animate-spin' : ''}`} />
-                    {savingFirebase === 'sat_lo' ? 'Đang lưu...' : 'Lưu RTDB'}
                   </button>
                   <button
                     onClick={() => handleLoadFromFirebase('sat_lo')}
@@ -1963,15 +2027,6 @@ export default function ToolLuquetSatlo() {
                     JSON
                   </button>
                   <button
-                    onClick={() => handleSaveToFirebase('lu_quet', filteredDxrLuQuet, { province: dxrLuQuetProvince, name: 'Điểm đã xảy ra lũ quét' })}
-                    disabled={filteredDxrLuQuet.length === 0 || savingFirebase === 'lu_quet'}
-                    className="px-3 py-1.5 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 border border-orange-200 dark:border-orange-800 hover:bg-orange-100 text-xs font-semibold flex items-center gap-1.5"
-                    title="Lưu dữ liệu điểm lũ quét lên Firebase Realtime Database"
-                  >
-                    <Database className={`w-3.5 h-3.5 ${savingFirebase === 'lu_quet' ? 'animate-spin' : ''}`} />
-                    {savingFirebase === 'lu_quet' ? 'Đang lưu...' : 'Lưu RTDB'}
-                  </button>
-                  <button
                     onClick={() => handleLoadFromFirebase('lu_quet')}
                     disabled={loadingFirebase === 'lu_quet'}
                     className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-xs font-semibold flex items-center gap-1.5 text-slate-700 dark:text-slate-300"
@@ -2163,15 +2218,6 @@ export default function ToolLuquetSatlo() {
                   >
                     <FileCode className="w-3.5 h-3.5 text-purple-500" />
                     JSON
-                  </button>
-                  <button
-                    onClick={() => handleSaveToFirebase('trong_diem', filteredTrongDiem, { province: trongDiemProvince, name: 'Trọng điểm sạt lở lũ quét' })}
-                    disabled={filteredTrongDiem.length === 0 || savingFirebase === 'trong_diem'}
-                    className="px-3 py-1.5 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 border border-orange-200 dark:border-orange-800 hover:bg-orange-100 text-xs font-semibold flex items-center gap-1.5"
-                    title="Lưu dữ liệu trọng điểm SLLQ lên Firebase Realtime Database"
-                  >
-                    <Database className={`w-3.5 h-3.5 ${savingFirebase === 'trong_diem' ? 'animate-spin' : ''}`} />
-                    {savingFirebase === 'trong_diem' ? 'Đang lưu...' : 'Lưu RTDB'}
                   </button>
                   <button
                     onClick={() => handleLoadFromFirebase('trong_diem')}
@@ -2454,15 +2500,6 @@ export default function ToolLuquetSatlo() {
                 >
                   <FileCode className="w-3.5 h-3.5 text-purple-500" />
                   JSON
-                </button>
-                <button
-                  onClick={() => handleSaveToFirebase('canh_bao', filteredCbList, { actualDate: cbActualDate, name: 'Cảnh báo nguy cơ lũ quét sạt lở' })}
-                  disabled={filteredCbList.length === 0 || savingFirebase === 'canh_bao'}
-                  className="px-3 py-1.5 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 border border-orange-200 dark:border-orange-800 hover:bg-orange-100 text-xs font-semibold flex items-center gap-1.5"
-                  title="Lưu danh sách cảnh báo lên Firebase Realtime Database"
-                >
-                  <Database className={`w-3.5 h-3.5 ${savingFirebase === 'canh_bao' ? 'animate-spin' : ''}`} />
-                  {savingFirebase === 'canh_bao' ? 'Đang lưu...' : 'Lưu RTDB'}
                 </button>
                 <button
                   onClick={() => handleLoadFromFirebase('canh_bao')}

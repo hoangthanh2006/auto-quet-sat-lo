@@ -10,6 +10,9 @@
 import {
   getCanhbaoSLLQ,
   getRadarData,
+  getDiemDaXayRaSatLo,
+  getDiemDaXayRaLuQuet,
+  getTrongDiemSLLQ,
   getTramMua
 } from './luquetSatloService.js';
 
@@ -83,29 +86,42 @@ function computeStatisticsSummary(canhBaoList = []) {
 
 /**
  * Thực hiện 1 lượt quét NCHMF và đẩy vào Firebase Realtime Database
+ * Quét & Lưu TẤT CẢ các lớp: Cảnh báo, Radar, Điểm sạt lở, Điểm lũ quét, Trọng điểm, Trạm mưa
  */
 export async function runAutoSyncOnce() {
   const startTime = Date.now();
-  console.log(`\n[${new Date().toLocaleString('vi-VN')}] 🚀 Bắt đầu quét dữ liệu NCHMF mới nhất...`);
+  console.log(`\n[${new Date().toLocaleString('vi-VN')}] 🚀 Bắt đầu quét TẤT CẢ các lớp dữ liệu NCHMF mới nhất...`);
 
   try {
-    // 1. Cào song song dữ liệu Cảnh báo, Radar và Trạm mưa
-    const [canhBaoRes, radarRes, tramMuaRes] = await Promise.allSettled([
+    // 1. Cào song song TẤT CẢ các lớp dữ liệu
+    const [canhBaoRes, radarRes, satLoRes, luQuetRes, trongDiemRes, tramMuaRes] = await Promise.allSettled([
       getCanhbaoSLLQ({ sogiodubao: 6, autoFallback: true }),
       getRadarData(),
+      getDiemDaXayRaSatLo(),
+      getDiemDaXayRaLuQuet(),
+      getTrongDiemSLLQ(),
       getTramMua()
     ]);
 
     const canhBaoList = canhBaoRes.status === 'fulfilled' && canhBaoRes.value?.success ? canhBaoRes.value.data : [];
     const actualDate = canhBaoRes.status === 'fulfilled' && canhBaoRes.value?.actualDate ? canhBaoRes.value.actualDate : '';
     const radarData = radarRes.status === 'fulfilled' && radarRes.value?.success ? radarRes.value.data : null;
+    const satLoList = satLoRes.status === 'fulfilled' && satLoRes.value?.success ? satLoRes.value.data : [];
+    const luQuetList = luQuetRes.status === 'fulfilled' && luQuetRes.value?.success ? luQuetRes.value.data : [];
+    const trongDiemList = trongDiemRes.status === 'fulfilled' && trongDiemRes.value?.success ? trongDiemRes.value.data : [];
     const tramMuaList = tramMuaRes.status === 'fulfilled' && tramMuaRes.value?.success ? tramMuaRes.value.data : [];
 
-    console.log(`[NCHMF] Đã lấy: ${canhBaoList.length} xã cảnh báo (Thời điểm: ${actualDate || 'N/A'}), Radar: ${radarData ? 'OK' : 'N/A'}, Trạm mưa: ${tramMuaList.length}`);
+    console.log(`[NCHMF] Kết quả quét TẤT CẢ CÁC LỚP:`);
+    console.log(`  • Cảnh báo: ${canhBaoList.length} xã (Thời điểm: ${actualDate || 'N/A'})`);
+    console.log(`  • Radar: ${radarData ? 'OK' : 'N/A'}`);
+    console.log(`  • Điểm đã xảy ra sạt lở: ${satLoList.length} điểm`);
+    console.log(`  • Điểm đã xảy ra lũ quét: ${luQuetList.length} điểm`);
+    console.log(`  • Trọng điểm sạt lở lũ quét: ${trongDiemList.length} điểm`);
+    console.log(`  • Trạm đo mưa: ${tramMuaList.length} trạm`);
 
-    if (canhBaoList.length === 0) {
-      console.warn('[NCHMF] ⚠️ Không có dữ liệu cảnh báo tại thời điểm này. Bỏ qua ghi snapshot.');
-      return { success: false, message: 'Không có dữ liệu cảnh báo để lưu' };
+    if (canhBaoList.length === 0 && satLoList.length === 0) {
+      console.warn('[NCHMF] ⚠️ Không có dữ liệu để lưu tại thời điểm này. Bỏ qua ghi snapshot.');
+      return { success: false, message: 'Không có dữ liệu để lưu' };
     }
 
     // 2. Tính toán các chỉ số thống kê tổng hợp
@@ -121,8 +137,17 @@ export async function runAutoSyncOnce() {
     const minute = pad(now.getMinutes());
     const second = pad(now.getSeconds());
 
+    const counts = {
+      canh_bao: canhBaoList.length,
+      radar: radarData ? (radarData.timeline?.length || 1) : 0,
+      sat_lo: satLoList.length,
+      lu_quet: luQuetList.length,
+      trong_diem: trongDiemList.length,
+      tram_mua: tramMuaList.length
+    };
+
     const cleanActual = (actualDate || '').trim();
-    const dataSignature = `${cleanActual}_communes:${summary.totalCommunes}_rc:${summary.ratCao}_c:${summary.cao}_maxR:${summary.maxRain}`;
+    const dataSignature = `${cleanActual}_communes:${summary.totalCommunes}_rc:${summary.ratCao}_c:${summary.cao}_maxR:${summary.maxRain}_sl:${counts.sat_lo}_lq:${counts.lu_quet}_td:${counts.trong_diem}`;
 
     // Kiểm tra trùng lặp với snapshot mới nhất trong CSDL
     try {
@@ -130,7 +155,7 @@ export async function runAutoSyncOnce() {
       if (statusCheckRes.ok) {
         const lastStatus = await statusCheckRes.json();
         if (lastStatus && lastStatus.lastDataSignature === dataSignature) {
-          console.log(`[Firebase] ⏭️ Dữ liệu NCHMF không đổi (${summary.totalCommunes} xã). Bỏ qua lưu trùng lặp snapshot.`);
+          console.log(`[Firebase] ⏭️ Dữ liệu NCHMF (tất cả các lớp) không đổi. Bỏ qua lưu trùng lặp snapshot.`);
           await fetch(`${FIREBASE_DB_URL}/luquet_satlo/auto_sync_status/lastVerifiedAt.json`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -141,6 +166,7 @@ export async function runAutoSyncOnce() {
             isDuplicate: true,
             snapshotId: lastStatus.lastSnapshotId,
             summary,
+            counts,
             message: 'Dữ liệu không đổi, bỏ qua trùng lặp'
           };
         }
@@ -166,7 +192,7 @@ export async function runAutoSyncOnce() {
     const timeStr = `${hour}:${minute}`;
     const dateStr = `${year}-${month}-${day}`;
 
-    // 3. Chuẩn bị payload
+    // 3. Chuẩn bị payload hợp nhất TẤT CẢ các lớp
     const timelinePayload = {
       snapshotId,
       timestamp,
@@ -183,6 +209,7 @@ export async function runAutoSyncOnce() {
       avgRain: summary.avgRain,
       topProvinces: summary.topProvinces.slice(0, 5),
       radarCurrentFrame: radarData?.currentFrame?.time_vn || null,
+      counts,
       dataSignature,
       source: 'server_worker'
     };
@@ -190,7 +217,16 @@ export async function runAutoSyncOnce() {
     const fullSnapshotPayload = {
       ...timelinePayload,
       summary,
-      data: canhBaoList,
+      counts,
+      data: canhBaoList, // tương thích các màn hình cũ
+      layers: {
+        canh_bao: canhBaoList,
+        radar: radarData,
+        sat_lo: satLoList,
+        lu_quet: luQuetList,
+        trong_diem: trongDiemList,
+        tram_mua: tramMuaList
+      },
       radar: radarData ? {
         bounds: radarData.bounds,
         currentFrame: radarData.currentFrame,
@@ -199,9 +235,9 @@ export async function runAutoSyncOnce() {
     };
 
     // 4. Đẩy lên Firebase Realtime Database qua REST API
-    console.log(`[Firebase] Đang ghi snapshot mới "${snapshotId}" và timeline thống kê...`);
+    console.log(`[Firebase] Đang ghi snapshot hợp nhất TẤT CẢ CÁC LỚP "${snapshotId}"...`);
     
-    const [snapRes, timeRes, statusRes] = await Promise.all([
+    const updatePromises = [
       fetch(`${FIREBASE_DB_URL}/luquet_satlo/snapshots/${snapshotId}.json`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -222,15 +258,61 @@ export async function runAutoSyncOnce() {
           lastTotalCommunes: summary.totalCommunes,
           lastMaxRain: summary.maxRain,
           lastActualDate: actualDate || timelinePayload.actualDate,
+          counts,
           source: 'server_worker',
           updatedAt: now.toLocaleString('vi-VN'),
-          lastCheckMessage: `Đã lưu snapshot "${snapshotId}" thành công`
+          lastCheckMessage: `Đã lưu snapshot "${snapshotId}" (tất cả các lớp) thành công`
         })
       })
-    ]);
+    ];
 
-    if (!snapRes.ok || !timeRes.ok) {
-      throw new Error(`Firebase RTDB REST error: ${snapRes.status} / ${timeRes.status}`);
+    // Cập nhật node latest/{layer} cho mọi lớp để UI luôn có dữ liệu mới nhất
+    if (canhBaoList.length > 0) {
+      updatePromises.push(fetch(`${FIREBASE_DB_URL}/luquet_satlo/latest/canh_bao.json`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ updatedAt: timestamp, clientTime: now.toLocaleString('vi-VN'), count: canhBaoList.length, actualDate, data: canhBaoList })
+      }));
+    }
+    if (radarData) {
+      updatePromises.push(fetch(`${FIREBASE_DB_URL}/luquet_satlo/latest/radar.json`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ updatedAt: timestamp, clientTime: now.toLocaleString('vi-VN'), count: 1, data: radarData })
+      }));
+    }
+    if (satLoList.length > 0) {
+      updatePromises.push(fetch(`${FIREBASE_DB_URL}/luquet_satlo/latest/sat_lo.json`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ updatedAt: timestamp, clientTime: now.toLocaleString('vi-VN'), count: satLoList.length, data: satLoList })
+      }));
+    }
+    if (luQuetList.length > 0) {
+      updatePromises.push(fetch(`${FIREBASE_DB_URL}/luquet_satlo/latest/lu_quet.json`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ updatedAt: timestamp, clientTime: now.toLocaleString('vi-VN'), count: luQuetList.length, data: luQuetList })
+      }));
+    }
+    if (trongDiemList.length > 0) {
+      updatePromises.push(fetch(`${FIREBASE_DB_URL}/luquet_satlo/latest/trong_diem.json`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ updatedAt: timestamp, clientTime: now.toLocaleString('vi-VN'), count: trongDiemList.length, data: trongDiemList })
+      }));
+    }
+    if (tramMuaList.length > 0) {
+      updatePromises.push(fetch(`${FIREBASE_DB_URL}/luquet_satlo/latest/tram_mua.json`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ updatedAt: timestamp, clientTime: now.toLocaleString('vi-VN'), count: tramMuaList.length, data: tramMuaList })
+      }));
+    }
+
+    const results = await Promise.all(updatePromises);
+    if (!results[0].ok || !results[1].ok) {
+      throw new Error(`Firebase RTDB REST error: ${results[0].status} / ${results[1].status}`);
     }
 
     const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);

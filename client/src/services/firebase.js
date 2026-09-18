@@ -253,6 +253,10 @@ export function computeStatisticsSummary(canhBaoList = []) {
 export async function saveAutoSyncSnapshot({
   canhBaoData = [],
   radarData = null,
+  satLoData = [],
+  luQuetData = [],
+  trongDiemData = [],
+  tramMuaData = [],
   actualDate = '',
   source = 'client',
   forceSave = false
@@ -272,7 +276,7 @@ export async function saveAutoSyncSnapshot({
 
   // Tạo chữ ký dữ liệu để phát hiện trùng lặp
   const cleanActual = (actualDate || '').trim();
-  const dataSignature = `${cleanActual}_communes:${summary.totalCommunes}_rc:${summary.ratCao}_c:${summary.cao}_maxR:${summary.maxRain}`;
+  const dataSignature = `${cleanActual}_communes:${summary.totalCommunes}_rc:${summary.ratCao}_c:${summary.cao}_maxR:${summary.maxRain}_sl:${satLoData?.length || 0}_lq:${luQuetData?.length || 0}_td:${trongDiemData?.length || 0}`;
 
   // Kiểm tra chống trùng lặp nếu không phải ép buộc lưu (forceSave)
   try {
@@ -320,6 +324,15 @@ export async function saveAutoSyncSnapshot({
   const timeStr = `${hour}:${minute}`;
   const dateStr = `${year}-${month}-${day}`;
 
+  const counts = {
+    canh_bao: Array.isArray(canhBaoData) ? canhBaoData.length : 0,
+    radar: radarData ? (radarData.timeline?.length || 1) : 0,
+    sat_lo: Array.isArray(satLoData) ? satLoData.length : 0,
+    lu_quet: Array.isArray(luQuetData) ? luQuetData.length : 0,
+    trong_diem: Array.isArray(trongDiemData) ? trongDiemData.length : 0,
+    tram_mua: Array.isArray(tramMuaData) ? tramMuaData.length : 0
+  };
+
   const timelinePayload = {
     snapshotId,
     timestamp,
@@ -336,6 +349,7 @@ export async function saveAutoSyncSnapshot({
     avgRain: summary.avgRain,
     topProvinces: summary.topProvinces.slice(0, 5),
     radarCurrentFrame: radarData?.currentFrame?.time_vn || null,
+    counts,
     dataSignature,
     source
   };
@@ -343,7 +357,16 @@ export async function saveAutoSyncSnapshot({
   const fullSnapshotPayload = {
     ...timelinePayload,
     summary,
-    data: canhBaoData,
+    counts,
+    data: canhBaoData, // tương thích các màn hình cũ
+    layers: {
+      canh_bao: canhBaoData,
+      radar: radarData,
+      sat_lo: satLoData,
+      lu_quet: luQuetData,
+      trong_diem: trongDiemData,
+      tram_mua: tramMuaData
+    },
     radar: radarData ? {
       bounds: radarData.bounds,
       currentFrame: radarData.currentFrame,
@@ -352,12 +375,12 @@ export async function saveAutoSyncSnapshot({
   };
 
   try {
-    // Ghi đồng thời vào cả Snapshot chi tiết và Timeline thống kê nhẹ
+    // Ghi đồng thời vào Snapshot chi tiết, Timeline thống kê và cập nhật latest cho TẤT CẢ các lớp
     const snapshotRef = ref(rtdb, `luquet_satlo/snapshots/${snapshotId}`);
     const timelineRef = ref(rtdb, `luquet_satlo/statistics/timeline/${snapshotId}`);
     const statusRef = ref(rtdb, `luquet_satlo/auto_sync_status`);
 
-    await Promise.all([
+    const updatePromises = [
       set(snapshotRef, fullSnapshotPayload),
       set(timelineRef, timelinePayload),
       set(statusRef, {
@@ -367,18 +390,72 @@ export async function saveAutoSyncSnapshot({
         lastTotalCommunes: summary.totalCommunes,
         lastMaxRain: summary.maxRain,
         lastActualDate: actualDate || timelinePayload.actualDate,
+        counts,
         source,
         updatedAt: now.toLocaleString('vi-VN'),
-        lastCheckMessage: `Đã lưu snapshot mới "${snapshotId}" thành công`
+        lastCheckMessage: `Đã lưu snapshot "${snapshotId}" (tất cả các lớp) thành công`
       })
-    ]);
+    ];
+
+    if (canhBaoData && canhBaoData.length > 0) {
+      updatePromises.push(set(ref(rtdb, 'luquet_satlo/latest/canh_bao'), {
+        updatedAt: timestamp,
+        clientTime: now.toLocaleString('vi-VN'),
+        count: canhBaoData.length,
+        actualDate,
+        data: canhBaoData
+      }));
+    }
+    if (radarData) {
+      updatePromises.push(set(ref(rtdb, 'luquet_satlo/latest/radar'), {
+        updatedAt: timestamp,
+        clientTime: now.toLocaleString('vi-VN'),
+        count: 1,
+        data: radarData
+      }));
+    }
+    if (satLoData && satLoData.length > 0) {
+      updatePromises.push(set(ref(rtdb, 'luquet_satlo/latest/sat_lo'), {
+        updatedAt: timestamp,
+        clientTime: now.toLocaleString('vi-VN'),
+        count: satLoData.length,
+        data: satLoData
+      }));
+    }
+    if (luQuetData && luQuetData.length > 0) {
+      updatePromises.push(set(ref(rtdb, 'luquet_satlo/latest/lu_quet'), {
+        updatedAt: timestamp,
+        clientTime: now.toLocaleString('vi-VN'),
+        count: luQuetData.length,
+        data: luQuetData
+      }));
+    }
+    if (trongDiemData && trongDiemData.length > 0) {
+      updatePromises.push(set(ref(rtdb, 'luquet_satlo/latest/trong_diem'), {
+        updatedAt: timestamp,
+        clientTime: now.toLocaleString('vi-VN'),
+        count: trongDiemData.length,
+        data: trongDiemData
+      }));
+    }
+    if (tramMuaData && tramMuaData.length > 0) {
+      updatePromises.push(set(ref(rtdb, 'luquet_satlo/latest/tram_mua'), {
+        updatedAt: timestamp,
+        clientTime: now.toLocaleString('vi-VN'),
+        count: tramMuaData.length,
+        data: tramMuaData
+      }));
+    }
+
+    await Promise.all(updatePromises);
 
     return {
       success: true,
       isDuplicate: false,
       snapshotId,
       summary,
-      message: `Đã lưu thành công snapshot "${snapshotId}" (${summary.totalCommunes} xã) vào CSDL`
+      counts,
+      message: `Đã lưu thành công snapshot "${snapshotId}" (tất cả các lớp: ${counts.canh_bao} xã, ${counts.sat_lo} điểm sạt lở, ${counts.lu_quet} lũ quét, ${counts.trong_diem} trọng điểm) vào CSDL`
     };
   } catch (error) {
     console.error('saveAutoSyncSnapshot error:', error);
