@@ -1,0 +1,27 @@
+name: NCHMF 24/7 Auto Sync
+
+on:
+  schedule:
+    # Chạy tự động mỗi 20 phút (NCHMF thường cập nhật từ 15-60 phút một lần)
+    - cron: '*/20 * * * *'
+  workflow_dispatch: # Cho phép bấm chạy thủ công trên giao diện GitHub bất cứ lúc nào
+
+jobs:
+  sync:
+    name: Crawl NCHMF & Sync Firebase
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run NCHMF Crawler & Sync to Firebase
+        run: |
+          echo "🚀 Starting NCHMF 24/7 Automated Sync..."
+          node server/autoSyncNCHMF.js
