@@ -67,6 +67,14 @@ Nếu không thấy → Backend chưa chạy, cần start lại backend.
 curl http://localhost:3001/api/health
 ```
 
+## Cào dữ liệu NCHMF tự động 24/7
+
+Để cào dữ liệu tự động 24/7 lưu vào Firebase mà không cần mở trình duyệt hay giữ máy tính cá nhân bật:
+- **Xem chi tiết:** [`CRAWL_24_7.md`](file:///Volumes/Data/vne/Data-crawl/CRAWL_24_7.md)
+- **Đã kích hoạt sẵn:** GitHub Actions định kỳ mỗi 20 phút chạy tự động trên Cloud của GitHub tại repo `hoangthanh2006/auto-quet-sat-lo`.
+- **Chạy thử 1 lần từ máy:** `npm run sync:nchmf` (hoặc `node server/autoSyncNCHMF.js`)
+- **Chạy lặp định kỳ từ máy:** `npm run sync:watch`
+
 ## Lưu ý
 
 - **Luôn start backend trước frontend**
@@ -77,3 +85,4 @@ curl http://localhost:3001/api/health
 ## Troubleshooting
 
 Xem file `TROUBLESHOOTING.md` để biết thêm chi tiết.
+
