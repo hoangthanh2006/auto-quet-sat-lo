@@ -1150,68 +1150,100 @@ export default function ToolLuquetSatlo() {
   return (
     <div className="space-y-6 text-slate-800 dark:text-slate-100 transition-colors duration-300">
       {/* Top Banner */}
-      <div className="bg-gradient-to-r from-cyan-900 via-blue-900 to-indigo-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+      <div className="bg-gradient-to-r from-cyan-950 via-blue-900 to-indigo-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-white/10">
         <div className="absolute right-0 top-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl -z-0"></div>
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-semibold backdrop-blur-sm">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              NCHMF Live Data Crawler
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          
+          {/* Cột Trái: Tiêu đề & Giới thiệu (Chiếm ưu thế không gian, không bị ngắt gãy dòng) */}
+          <div className="flex-1 min-w-0 space-y-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-semibold backdrop-blur-sm">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                NCHMF Live Data Crawler
+              </div>
+              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-white/10 border border-white/15 text-cyan-200/80 font-medium">
+                Cục KTTV • Bộ TN&MT
+              </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight font-heading flex items-center gap-3">
-              <Waves className="w-8 h-8 text-cyan-400" />
-              Lũ Quét & Sạt Lở Đất (NCHMF)
+
+            <h1 className="text-2xl sm:text-3xl lg:text-3xl font-black tracking-tight font-heading flex items-center gap-3 text-white leading-tight">
+              <Waves className="w-8 h-8 text-cyan-400 shrink-0" />
+              <span className="break-words">Lũ Quét & Sạt Lở Đất (NCHMF)</span>
             </h1>
-            <p className="text-cyan-100/80 text-sm max-w-2xl leading-relaxed">
+
+            <p className="text-cyan-100/85 text-xs sm:text-sm leading-relaxed max-w-2xl lg:max-w-3xl">
               Trích xuất dữ liệu từ <strong>Hệ thống cảnh báo nguy cơ lũ quét và sạt lở đất</strong> - Cục Khí tượng Thủy văn (Bộ TN&MT). Tích hợp đầy đủ các trường: Dữ liệu radar, Điểm đã xảy ra sạt lở, Điểm đã xảy ra lũ quét và Trọng điểm sạt lở lũ quét.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 shrink-0">
-            <button
-              onClick={() => setShowAutoSyncModal(true)}
-              className={`inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 ${
-                autoSyncEnabled
-                  ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/30 ring-2 ring-emerald-400/50'
-                  : 'bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md'
-              }`}
-              title="Cài đặt tự động quét định kỳ và lưu vào CSDL"
-            >
-              <Timer className={`w-4 h-4 ${autoSyncEnabled ? 'text-white' : 'text-emerald-400'}`} />
-              {autoSyncEnabled ? (
-                <span>
-                  Tự động quét: BẬT ({Math.floor(nextSyncCountdown / 60)}m{nextSyncCountdown % 60 < 10 ? '0' : ''}{nextSyncCountdown % 60}s)
+          {/* Cột Phải: Khối Action Panel cân đối (Lưới 2x2 nút bấm + Dải trạng thái CSDL) */}
+          <div className="shrink-0 w-full lg:w-[460px] flex flex-col gap-2.5">
+            {/* Lưới 4 nút bấm cân xứng 2x2 */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {/* Nút 1: Tự động quét */}
+              <button
+                onClick={() => setShowAutoSyncModal(true)}
+                className={`inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 ${
+                  autoSyncEnabled
+                    ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/30 ring-2 ring-emerald-400/50'
+                    : 'bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md'
+                }`}
+                title="Cài đặt tự động quét định kỳ và lưu vào CSDL"
+              >
+                <Timer className={`w-4 h-4 shrink-0 ${autoSyncEnabled ? 'text-white' : 'text-emerald-400'}`} />
+                <span className="truncate">
+                  {autoSyncEnabled ? (
+                    `Tự động: BẬT (${Math.floor(nextSyncCountdown / 60)}m${nextSyncCountdown % 60 < 10 ? '0' : ''}${nextSyncCountdown % 60}s)`
+                  ) : (
+                    'Tự động quét & lưu'
+                  )}
                 </span>
-              ) : (
-                <span>Tự động quét & lưu</span>
-              )}
-            </button>
+              </button>
 
-            <button
-              onClick={handleSaveAllToFirebase}
-              disabled={savingFirebase === 'all'}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold shadow-lg shadow-orange-500/30 transition-all active:scale-95 disabled:opacity-50"
-            >
-              <Database className={`w-4 h-4 ${savingFirebase === 'all' ? 'animate-spin' : ''}`} />
-              {savingFirebase === 'all' ? 'Đang lưu lên Firebase...' : 'Lưu tất cả lên Realtime DB'}
-            </button>
-            <button
-              onClick={() => handleOpenHistoryModal(activeLayerSubTab === 'sat-lo' ? 'sat_lo' : activeLayerSubTab === 'lu-quet' ? 'lu_quet' : activeLayerSubTab === 'trong-diem' ? 'trong_diem' : 'canh_bao')}
-              className="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-medium backdrop-blur-md transition-all duration-200"
-              title="Xem lịch sử sao lưu trên Firebase Realtime DB"
-            >
-              <History className="w-4 h-4 text-cyan-300" />
-              Lịch sử sao lưu
-            </button>
-            <a
-              href="https://luquetsatlo.nchmf.gov.vn/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-medium backdrop-blur-md transition-all duration-200"
-            >
-              <ExternalLink className="w-4 h-4" />
-              Mở trang NCHMF
-            </a>
+              {/* Nút 2: Lưu tất cả lên DB */}
+              <button
+                onClick={handleSaveAllToFirebase}
+                disabled={savingFirebase === 'all'}
+                className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold shadow-lg shadow-orange-500/30 transition-all active:scale-95 disabled:opacity-50"
+                title="Lưu dữ liệu các lớp hiện tại lên Firebase Realtime DB"
+              >
+                <Database className={`w-4 h-4 shrink-0 ${savingFirebase === 'all' ? 'animate-spin' : ''}`} />
+                <span className="truncate">{savingFirebase === 'all' ? 'Đang lưu CSDL...' : 'Lưu tất cả lên DB'}</span>
+              </button>
+
+              {/* Nút 3: Lịch sử sao lưu */}
+              <button
+                onClick={() => handleOpenHistoryModal(activeLayerSubTab === 'sat-lo' ? 'sat_lo' : activeLayerSubTab === 'lu-quet' ? 'lu_quet' : activeLayerSubTab === 'trong-diem' ? 'trong_diem' : 'canh_bao')}
+                className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-medium backdrop-blur-md transition-all duration-200 active:scale-95"
+                title="Xem lịch sử sao lưu trên Firebase Realtime DB"
+              >
+                <History className="w-4 h-4 text-cyan-300 shrink-0" />
+                <span className="truncate">Lịch sử sao lưu {timelineData.length > 0 && `(${timelineData.length})`}</span>
+              </button>
+
+              {/* Nút 4: Mở trang NCHMF */}
+              <a
+                href="https://luquetsatlo.nchmf.gov.vn/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-medium backdrop-blur-md transition-all duration-200 active:scale-95"
+                title="Mở website chính thức của Trung tâm KTTV Quốc gia"
+              >
+                <ExternalLink className="w-4 h-4 shrink-0" />
+                <span className="truncate">Mở trang NCHMF</span>
+              </a>
+            </div>
+
+            {/* Dải trạng thái kết nối Cloud / Firebase Realtime DB */}
+            <div className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[11px] text-cyan-200/90 backdrop-blur-sm">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Realtime DB: <strong>Sẵn sàng</strong></span>
+              </div>
+              <span className="text-cyan-300/70 text-[10px] font-mono">
+                {timelineData.length > 0 ? `${timelineData.length} bản ghi snapshot` : 'Hỗ trợ đồng bộ 24/7'}
+              </span>
+            </div>
           </div>
         </div>
       </div>
