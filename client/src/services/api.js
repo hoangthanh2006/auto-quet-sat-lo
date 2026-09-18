@@ -411,4 +411,244 @@ export const saveDriveConfig = async (config) => {
   }
 };
 
+// OCR Scanner Services
+export const checkOcrStatus = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/ocr/status`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || error.message || 'Failed to check OCR status');
+  }
+};
 
+export const scanOcrFile = async (file, options = {}) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (options.langs) formData.append('langs', options.langs);
+    if (options.forceOcr) formData.append('forceOcr', options.forceOcr);
+    if (options.engine) formData.append('engine', options.engine);
+    if (options.isHandwritten) formData.append('isHandwritten', options.isHandwritten);
+
+    const response = await axios.post(`${API_BASE_URL}/ocr/scan`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      },
+      timeout: 180000 // 3 minutes timeout for large PDFs
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || error.message || 'Lỗi khi quét OCR file');
+  }
+};
+
+// ===============================================
+// Lu quét & Sạt lở đất (luquetsatlo.nchmf.gov.vn)
+// Tự động fallback gọi trực tiếp NCHMF khi deploy static trên Firebase
+// ===============================================
+import {
+  fetchDirectProvinces,
+  fetchDirectCanhBao,
+  fetchDirectDiemDaXayRaSatLo,
+  fetchDirectDiemDaXayRaLuQuet,
+  fetchDirectTrongDiemSLLQ,
+  fetchDirectRadar,
+  fetchDirectTramMua,
+  fetchDirectDoAmDat
+} from './nchmfClientService.js';
+
+// Detect if running on a static hosting environment without local backend
+const isStaticHosting = typeof window !== 'undefined' &&
+  !import.meta.env.VITE_API_URL &&
+  (window.location.hostname.includes('web.app') ||
+   window.location.hostname.includes('firebaseapp.com') ||
+   window.location.hostname.includes('github.io') ||
+   window.location.hostname.includes('vercel.app') ||
+   window.location.hostname.includes('netlify.app'));
+
+function isHtmlResponse(data) {
+  if (typeof data === 'string') {
+    const s = data.trim().toLowerCase();
+    return s.startsWith('<!doctype') || s.startsWith('<html') || s.includes('<title>');
+  }
+  return false;
+}
+
+export const fetchLuquetSatloProvinces = async () => {
+  if (isStaticHosting) {
+    return await fetchDirectProvinces();
+  }
+  try {
+    const response = await axios.get(`${API_BASE_URL}/luquet-satlo/provinces`);
+    if (isHtmlResponse(response.data) || !response.data?.success) {
+      throw new Error('Backend returned HTML (Firebase static hosting)');
+    }
+    return response.data;
+  } catch (error) {
+    console.info('[NCHMF] Fallback gọi trực tiếp NCHMF API cho danh sách tỉnh');
+    return await fetchDirectProvinces();
+  }
+};
+
+export const fetchLuquetSatloCanhBao = async ({ date, sogiodubao = 6, autoFallback = true } = {}) => {
+  if (isStaticHosting) {
+    return await fetchDirectCanhBao({ date, sogiodubao, autoFallback });
+  }
+  try {
+    const response = await axios.post(`${API_BASE_URL}/luquet-satlo/canh-bao`, {
+      date,
+      sogiodubao,
+      autoFallback
+    });
+    if (isHtmlResponse(response.data) || !response.data?.success) {
+      throw new Error('Backend returned HTML (Firebase static hosting)');
+    }
+    return response.data;
+  } catch (error) {
+    console.info('[NCHMF] Fallback gọi trực tiếp NCHMF API cho dữ liệu cảnh báo');
+    return await fetchDirectCanhBao({ date, sogiodubao, autoFallback });
+  }
+};
+
+export const fetchLuquetSatloDiemSatLo = async ({ provinceId } = {}) => {
+  if (isStaticHosting) {
+    return await fetchDirectDiemDaXayRaSatLo();
+  }
+  try {
+    const response = await axios.get(`${API_BASE_URL}/luquet-satlo/diem-sat-lo`, {
+      params: provinceId ? { provinceId } : {}
+    });
+    if (isHtmlResponse(response.data) || !response.data?.success) {
+      throw new Error('Backend returned HTML');
+    }
+    return response.data;
+  } catch (error) {
+    return await fetchDirectDiemDaXayRaSatLo();
+  }
+};
+
+export const fetchLuquetSatloTramMua = async ({ thoigian } = {}) => {
+  if (isStaticHosting) {
+    return await fetchDirectTramMua({ thoigian });
+  }
+  try {
+    const response = await axios.post(`${API_BASE_URL}/luquet-satlo/tram-mua`, { thoigian });
+    if (isHtmlResponse(response.data) || !response.data?.success) {
+      throw new Error('Backend returned HTML');
+    }
+    return response.data;
+  } catch (error) {
+    console.info('[NCHMF] Fallback gọi trực tiếp NCHMF API cho trạm đo mưa');
+    return await fetchDirectTramMua({ thoigian });
+  }
+};
+
+export const fetchLuquetSatloDoAmDat = async ({ thoigian, typeHienThi, typeCanhBao } = {}) => {
+  if (isStaticHosting) {
+    return await fetchDirectDoAmDat({ thoigian, typeHienThi, typeCanhBao });
+  }
+  try {
+    const response = await axios.post(`${API_BASE_URL}/luquet-satlo/do-am-dat`, {
+      thoigian,
+      typeHienThi,
+      typeCanhBao
+    });
+    if (isHtmlResponse(response.data) || !response.data?.success) {
+      throw new Error('Backend returned HTML');
+    }
+    return response.data;
+  } catch (error) {
+    console.info('[NCHMF] Fallback gọi trực tiếp NCHMF API cho độ ẩm đất');
+    return await fetchDirectDoAmDat({ thoigian, typeHienThi, typeCanhBao });
+  }
+};
+
+export const fetchLuquetSatloDiemDaXayRaSatLo = async ({ provinceName } = {}) => {
+  if (isStaticHosting) {
+    return await fetchDirectDiemDaXayRaSatLo({ provinceName });
+  }
+  try {
+    const response = await axios.get(`${API_BASE_URL}/luquet-satlo/diem-da-xay-ra-sat-lo`, {
+      params: provinceName ? { provinceName } : {}
+    });
+    if (isHtmlResponse(response.data) || !response.data?.success) {
+      throw new Error('Backend returned HTML');
+    }
+    return response.data;
+  } catch (error) {
+    console.info('[NCHMF] Fallback gọi trực tiếp NCHMF API cho điểm sạt lở');
+    return await fetchDirectDiemDaXayRaSatLo({ provinceName });
+  }
+};
+
+export const fetchLuquetSatloDiemDaXayRaLuQuet = async ({ provinceName } = {}) => {
+  if (isStaticHosting) {
+    return await fetchDirectDiemDaXayRaLuQuet({ provinceName });
+  }
+  try {
+    const response = await axios.get(`${API_BASE_URL}/luquet-satlo/diem-da-xay-ra-lu-quet`, {
+      params: provinceName ? { provinceName } : {}
+    });
+    if (isHtmlResponse(response.data) || !response.data?.success) {
+      throw new Error('Backend returned HTML');
+    }
+    return response.data;
+  } catch (error) {
+    console.info('[NCHMF] Fallback gọi trực tiếp NCHMF API cho điểm lũ quét');
+    return await fetchDirectDiemDaXayRaLuQuet({ provinceName });
+  }
+};
+
+export const fetchLuquetSatloTrongDiemSLLQ = async ({ provinceName } = {}) => {
+  if (isStaticHosting) {
+    return await fetchDirectTrongDiemSLLQ({ provinceName });
+  }
+  try {
+    const response = await axios.get(`${API_BASE_URL}/luquet-satlo/trong-diem-sllq`, {
+      params: provinceName ? { provinceName } : {}
+    });
+    if (isHtmlResponse(response.data) || !response.data?.success) {
+      throw new Error('Backend returned HTML');
+    }
+    return response.data;
+  } catch (error) {
+    console.info('[NCHMF] Fallback gọi trực tiếp NCHMF API cho trọng điểm SLLQ');
+    return await fetchDirectTrongDiemSLLQ({ provinceName });
+  }
+};
+
+export const fetchLuquetSatloRadar = async ({ date } = {}) => {
+  if (isStaticHosting) {
+    return await fetchDirectRadar({ date });
+  }
+  try {
+    const response = await axios.get(`${API_BASE_URL}/luquet-satlo/radar`, {
+      params: date ? { date } : {}
+    });
+    if (isHtmlResponse(response.data) || !response.data?.success) {
+      throw new Error('Backend returned HTML');
+    }
+    return response.data;
+  } catch (error) {
+    console.info('[NCHMF] Fallback gọi trực tiếp NCHMF API cho dữ liệu radar');
+    return await fetchDirectRadar({ date });
+  }
+};
+
+export const triggerServerAutoSync = async () => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/luquet-satlo/sync-now`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || error.message || 'Không thể kích hoạt quét từ server');
+  }
+};
+
+export const getServerAutoSyncStatus = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/luquet-satlo/sync-status`);
+    return response.data;
+  } catch (error) {
+    return { success: false, data: null };
+  }
+};

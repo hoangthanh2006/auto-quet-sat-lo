@@ -84,6 +84,31 @@ export default function UsageGuide() {
               </ol>
             </div>
           </section>
+
+          {/* 3. Lũ quét & Sạt lở đất (NCHMF) */}
+          <section>
+            <h3 className="flex items-center gap-2 font-bold text-slate-800 dark:text-slate-200 mb-3 font-heading">
+              <span className="text-cyan-600 dark:text-cyan-400 font-bold">3.</span>
+              Lũ Quét & Sạt Lở Đất (luquetsatlo.nchmf.gov.vn)
+            </h3>
+            <div className="bg-cyan-50 dark:bg-cyan-950/20 rounded-xl p-4 text-sm text-slate-700 dark:text-slate-300 border border-cyan-100 dark:border-cyan-900/20 space-y-3">
+              <p className="font-semibold text-slate-800 dark:text-slate-200">Khai thác dữ liệu thời gian thực từ Cục Khí tượng Thủy văn:</p>
+              <ul className="list-disc list-inside space-y-2 pl-1 leading-relaxed">
+                <li>
+                  <strong>Cảnh báo thời gian thực:</strong> Chọn ngày, giờ và số giờ dự báo (1h, 3h, 6h) hoặc bấm <strong>Cập nhật mới nhất (Realtime)</strong> để lấy ngay toàn bộ các xã/phường có nguy cơ sạt lở hoặc lũ quét.
+                </li>
+                <li>
+                  <strong>Bộ lọc mạnh mẽ:</strong> Lọc theo 34 tỉnh trọng điểm, cấp nguy cơ (Rất cao, Cao, Trung bình), lượng mưa tối thiểu hoặc tìm kiếm theo tên địa danh.
+                </li>
+                <li>
+                  <strong>Khảo sát thực địa & Trạm đo mưa:</strong> Xem 1.053 điểm sạt lở thực địa lịch sử và hơn 8.400 trạm đo mưa tự động toàn quốc.
+                </li>
+                <li>
+                  <strong>Đa dạng định dạng xuất:</strong> Hỗ trợ xuất <strong>Excel (CSV)</strong>, <strong>JSON</strong>, <strong>GeoJSON (.geojson)</strong> trực tiếp cho bản đồ / GIS và tải lên Google Drive.
+                </li>
+              </ul>
+            </div>
+          </section>
         </div>
       )}
     </div>

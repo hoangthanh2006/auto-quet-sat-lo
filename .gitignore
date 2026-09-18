@@ -12,7 +12,16 @@ client/dist/
 # Environment
 .env
 .env.local
+.env.production
 .env.*.local
+*.local
+
+# Python / Local uploads & configs
+server/venv/
+server/uploads/
+server/driveConfig.json
+*.pdf
+*.png
 
 # Logs
 *.log
@@ -40,5 +49,5 @@ Thumbs.db
 # Misc
 .cache/
 
-# Snyk Security Extension - AI Rules (auto-generated)
-.cursor/rules/snyk_rules.mdc
+# Firebase
+.firebase/

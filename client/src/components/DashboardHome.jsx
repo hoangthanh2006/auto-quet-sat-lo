@@ -1,6 +1,20 @@
-import { Users, Zap, Wrench, BarChart3 } from 'lucide-react';
+import { Users, Zap, Wrench, BarChart3, ScanText, Waves } from 'lucide-react';
 
 const tools = [
+  {
+    id: 'tool-luquet-satlo',
+    title: 'Lũ Quét & Sạt Lở Đất (luquetsatlo.nchmf.gov.vn)',
+    description: 'Dữ liệu thời gian thực từ Cục Khí tượng Thủy văn: Cảnh báo nguy cơ lũ quét sạt lở theo xã/huyện, 1.053 điểm sạt lở thực địa, 8.400+ trạm đo mưa. Xuất CSV/JSON/GeoJSON.',
+    icon: Waves,
+    color: 'cyan',
+  },
+  {
+    id: 'tool-ocr',
+    title: 'Quét OCR Văn Bản (Ảnh & PDF)',
+    description: 'Trích xuất văn bản tự động từ tệp Ảnh (PNG, JPG, WEBP) và tài liệu PDF bằng EasyOCR (Hỗ trợ Tiếng Việt + Tiếng Anh). Xuất TXT/CSV/Google Drive.',
+    icon: ScanText,
+    color: 'teal',
+  },
   {
     id: 'tool-uvtu',
     title: 'Lấy data từ trang Danh sách thành viên UVTU theo khóa',
@@ -25,6 +39,8 @@ const tools = [
 ];
 
 const colorClasses = {
+  cyan: 'bg-cyan-50 dark:bg-cyan-950/30 text-cyan-600 dark:text-cyan-400 border-cyan-200 dark:border-cyan-800/30 hover:bg-cyan-100 dark:hover:bg-cyan-900/40',
+  teal: 'bg-teal-50 dark:bg-teal-950/30 text-teal-600 dark:text-teal-400 border-teal-200 dark:border-teal-800/30 hover:bg-teal-100 dark:hover:bg-teal-900/40',
   blue: 'bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/30 hover:bg-blue-100 dark:hover:bg-blue-900/40',
   purple: 'bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800/30 hover:bg-purple-100 dark:hover:bg-purple-900/40',
   amber: 'bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/30 hover:bg-amber-100 dark:hover:bg-amber-900/40',

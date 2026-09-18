@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "node --watch index.js"
+    "dev": "node --watch index.js",
+    "sync:nchmf": "node autoSyncNCHMF.js",
+    "sync:watch": "node autoSyncNCHMF.js --watch --interval 15"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +18,7 @@
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "googleapis": "^176.0.0",
+    "multer": "^2.2.0",
     "puppeteer": "^21.6.1"
   }
 }

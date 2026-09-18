@@ -2,9 +2,14 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
+import multer from 'multer';
 import { scrapeLinks, scrapeLinksByClicking, scrapeDataBySelectors, previewPageStructure, analyzePageStructure, executeDynamicScrape, executeRecursiveScrape, scrapeSPASidebarContent, testSelector, executeIdLoopScrape, parseSitemap, executeListScrape, getNsoCategories, getNsoCategoryTables, scrapeNsoPxWebTable, scrapeNsoCategoryArticles, scrapeNsoCustomUrl } from './scraper.js';
 import { extractMultipleContents } from './contentExtractor.js';
 import { uploadToDrive, getDriveStatus, saveDriveConfig } from './driveService.js';
+import { executeOcrScan, getOcrStatus } from './ocrService.js';
+import { getProvinces, getCanhbaoSLLQ, getDiemSatLo, getTramMua, getDoAmDat, getDiemDaXayRaSatLo, getDiemDaXayRaLuQuet, getTrongDiemSLLQ, getRadarData } from './luquetSatloService.js';
+import { runAutoSyncOnce } from './autoSyncNCHMF.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -15,10 +20,13 @@ const PORT = process.env.PORT || 3002;
 app.use(cors());
 app.use(express.json());
 
-// Production: serve static frontend (built by Dockerfile)
-if (process.env.NODE_ENV === 'production') {
-  const publicPath = path.join(__dirname, 'public');
-  app.use(express.static(publicPath));
+// Serve static frontend (checks client/dist when running locally, or public folder when in Docker)
+const clientDistPath = path.resolve(__dirname, '../client/dist');
+const serverPublicPath = path.resolve(__dirname, 'public');
+const staticPath = fs.existsSync(clientDistPath) ? clientDistPath : serverPublicPath;
+
+if (fs.existsSync(staticPath)) {
+  app.use(express.static(staticPath));
 }
 
 // Health check endpoint
@@ -632,16 +640,215 @@ app.post('/api/drive/config', (req, res) => {
   }
 });
 
+// Configure Multer for OCR File Uploads
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
-// SPA fallback: serve index.html for non-API routes (production)
-if (process.env.NODE_ENV === 'production') {
-  const publicPath = path.join(__dirname, 'public');
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadsDir),
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, 'ocr-' + uniqueSuffix + ext);
+  }
+});
+
+const uploadMiddleware = multer({
+  storage,
+  limits: { fileSize: 50 * 1024 * 1024 } // 50MB max
+});
+
+// OCR API Endpoints
+app.get('/api/ocr/status', async (req, res) => {
+  try {
+    const status = await getOcrStatus();
+    res.json({ success: true, data: status });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/ocr/scan', uploadMiddleware.single('file'), async (req, res) => {
+  let tempFilePath = null;
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, error: 'File is required' });
+    }
+
+    tempFilePath = req.file.path;
+    const { langs, forceOcr, engine, isHandwritten } = req.body;
+
+    console.log(`Received OCR file scan request: ${req.file.originalname} (${req.file.size} bytes)`);
+
+    const result = await executeOcrScan(tempFilePath, {
+      langs: langs || 'vi,en',
+      forceOcr: forceOcr === 'true' || forceOcr === true,
+      engine: engine || 'auto',
+      isHandwritten: isHandwritten === 'true' || isHandwritten === true
+    });
+
+    res.json(result);
+  } catch (error) {
+    console.error('OCR scan endpoint error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  } finally {
+    if (tempFilePath && fs.existsSync(tempFilePath)) {
+      fs.unlink(tempFilePath, () => {});
+    }
+  }
+});
+
+// ==========================================
+// Lu quét & Sạt lở đất (NCHMF) API Endpoints
+// ==========================================
+
+// 1. Danh sách 34 tỉnh trọng điểm
+app.get('/api/luquet-satlo/provinces', async (req, res) => {
+  try {
+    const provinces = await getProvinces();
+    res.json({ success: true, data: provinces, count: provinces.length });
+  } catch (error) {
+    console.error('API /api/luquet-satlo/provinces error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 2. Cảnh báo Lũ quét & Sạt lở đất theo Xã/Huyện
+app.post('/api/luquet-satlo/canh-bao', async (req, res) => {
+  try {
+    const { date, sogiodubao, autoFallback } = req.body;
+    const result = await getCanhbaoSLLQ({
+      date,
+      sogiodubao: sogiodubao ? Number(sogiodubao) : 6,
+      autoFallback: autoFallback !== false
+    });
+    res.json(result);
+  } catch (error) {
+    console.error('API /api/luquet-satlo/canh-bao error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 3. Cơ sở dữ liệu 1.053 điểm sạt lở thực địa
+app.get('/api/luquet-satlo/diem-sat-lo', async (req, res) => {
+  try {
+    const { provinceId } = req.query;
+    const result = await getDiemSatLo({ provinceId });
+    res.json(result);
+  } catch (error) {
+    console.error('API /api/luquet-satlo/diem-sat-lo error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 4. Trạm đo mưa tự động toàn quốc
+app.post('/api/luquet-satlo/tram-mua', async (req, res) => {
+  try {
+    const { thoigian } = req.body;
+    const result = await getTramMua({ thoigian });
+    res.json(result);
+  } catch (error) {
+    console.error('API /api/luquet-satlo/tram-mua error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 5. Cảnh báo độ ẩm đất
+app.post('/api/luquet-satlo/do-am-dat', async (req, res) => {
+  try {
+    const { thoigian, typeHienThi, typeCanhBao } = req.body;
+    const result = await getDoAmDat({ thoigian, typeHienThi, typeCanhBao });
+    res.json(result);
+  } catch (error) {
+    console.error('API /api/luquet-satlo/do-am-dat error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 6. Điểm ĐÃ XẢY RA SẠT LỞ (ht_satlo_point - 12.506 điểm)
+app.get('/api/luquet-satlo/diem-da-xay-ra-sat-lo', async (req, res) => {
+  try {
+    const provinceName = req.query.provinceName || req.query.province || '';
+    const result = await getDiemDaXayRaSatLo({ provinceName });
+    res.json(result);
+  } catch (error) {
+    console.error('API /api/luquet-satlo/diem-da-xay-ra-sat-lo error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 7. Điểm ĐÃ XẢY RA LŨ QUÉT (ht_luquet_point - 1.048 điểm)
+app.get('/api/luquet-satlo/diem-da-xay-ra-lu-quet', async (req, res) => {
+  try {
+    const provinceName = req.query.provinceName || req.query.province || '';
+    const result = await getDiemDaXayRaLuQuet({ provinceName });
+    res.json(result);
+  } catch (error) {
+    console.error('API /api/luquet-satlo/diem-da-xay-ra-lu-quet error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 8. TRỌNG ĐIỂM SẠT LỞ LŨ QUÉT (tbl_diemnguyco - 776 trọng điểm)
+app.get('/api/luquet-satlo/trong-diem-sllq', async (req, res) => {
+  try {
+    const provinceName = req.query.provinceName || req.query.province || '';
+    const result = await getTrongDiemSLLQ({ provinceName });
+    res.json(result);
+  } catch (error) {
+    console.error('API /api/luquet-satlo/trong-diem-sllq error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 9. DỮ LIỆU RADAR THỜI TIẾT
+app.get('/api/luquet-satlo/radar', async (req, res) => {
+  try {
+    const { date } = req.query;
+    const result = await getRadarData({ date });
+    res.json(result);
+  } catch (error) {
+    console.error('API /api/luquet-satlo/radar error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 10. TỰ ĐỘNG QUÉT & LƯU CSDL PHỤC VỤ THỐNG KÊ (AUTO-SYNC)
+app.post('/api/luquet-satlo/sync-now', async (req, res) => {
+  try {
+    const result = await runAutoSyncOnce();
+    res.json(result);
+  } catch (error) {
+    console.error('API /api/luquet-satlo/sync-now error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/luquet-satlo/sync-status', async (req, res) => {
+  try {
+    const response = await fetch('https://anh-cao-keu-default-rtdb.asia-southeast1.firebasedatabase.app/luquet_satlo/auto_sync_status.json');
+    const data = await response.json();
+    res.json({ success: true, data });
+  } catch (error) {
+    console.error('API /api/luquet-satlo/sync-status error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+
+// SPA fallback: serve index.html for non-API routes
+if (fs.existsSync(path.join(staticPath, 'index.html'))) {
   app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api')) return next();
-    res.sendFile(path.join(publicPath, 'index.html'));
+    res.sendFile(path.join(staticPath, 'index.html'));
   });
 }
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+export default app;
+export { app };
