@@ -1,9 +1,56 @@
 import axios from 'axios';
 
-// Production: use VITE_API_URL (set on Render). Development: use proxy /api
-const API_BASE_URL = import.meta.env.VITE_API_URL
-  ? `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/api`
-  : '/api';
+// Detect if running on a static hosting environment without local backend
+export const isStaticHosting = typeof window !== 'undefined' &&
+  !import.meta.env.VITE_API_URL &&
+  (window.location.hostname.includes('web.app') ||
+   window.location.hostname.includes('firebaseapp.com') ||
+   window.location.hostname.includes('github.io') ||
+   window.location.hostname.includes('vercel.app') ||
+   window.location.hostname.includes('netlify.app'));
+
+export function isHtmlResponse(data) {
+  if (typeof data === 'string') {
+    const s = data.trim().toLowerCase();
+    return s.startsWith('<!doctype') || s.startsWith('<html') || s.includes('<title>');
+  }
+  return false;
+}
+
+export const BACKEND_REQUIRED_MSG = 'Công cụ này yêu cầu Backend Node.js (Puppeteer/Cheerio/OCR). Firebase Hosting chỉ là máy chủ web tĩnh nên không thể chạy backend này. Vui lòng mở máy tính và chạy "cd server && npm start" rồi mở web tại http://localhost:3000, hoặc kết nối Cloud Backend (Render/VPS).';
+
+// Production: use VITE_API_URL (set on Render) or custom backend. Development: use proxy /api
+export const getApiBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    const custom = localStorage.getItem('custom_backend_url');
+    if (custom && custom.trim()) {
+      return `${custom.trim().replace(/\/$/, '')}/api`;
+    }
+  }
+  return import.meta.env.VITE_API_URL
+    ? `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/api`
+    : '/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
+
+// Interceptor to catch HTML response (Firebase rewrite fallback) and provide clear explanation
+axios.interceptors.response.use(
+  (response) => {
+    if (isHtmlResponse(response.data) && response.config?.url?.includes('/api/')) {
+      const err = new Error(BACKEND_REQUIRED_MSG);
+      err.isStaticHostingError = true;
+      return Promise.reject(err);
+    }
+    return response;
+  },
+  (error) => {
+    if (isStaticHosting && (!error.response || isHtmlResponse(error.response?.data))) {
+      return Promise.reject(new Error(BACKEND_REQUIRED_MSG));
+    }
+    return Promise.reject(error);
+  }
+);
 
 export const scanLinks = async (clickLink = false, linkSelector = null, linkText = null, khoaNumber = null, customUrl = null) => {
   try {
@@ -457,22 +504,6 @@ import {
   fetchDirectDoAmDat
 } from './nchmfClientService.js';
 
-// Detect if running on a static hosting environment without local backend
-const isStaticHosting = typeof window !== 'undefined' &&
-  !import.meta.env.VITE_API_URL &&
-  (window.location.hostname.includes('web.app') ||
-   window.location.hostname.includes('firebaseapp.com') ||
-   window.location.hostname.includes('github.io') ||
-   window.location.hostname.includes('vercel.app') ||
-   window.location.hostname.includes('netlify.app'));
-
-function isHtmlResponse(data) {
-  if (typeof data === 'string') {
-    const s = data.trim().toLowerCase();
-    return s.startsWith('<!doctype') || s.startsWith('<html') || s.includes('<title>');
-  }
-  return false;
-}
 
 export const fetchLuquetSatloProvinces = async () => {
   if (isStaticHosting) {
