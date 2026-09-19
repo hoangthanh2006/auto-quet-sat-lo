@@ -568,10 +568,22 @@ export default function ToolTyphoon() {
     });
   }, [historicalStorms, histSearch, histProvinceFilter]);
 
-  const meta = stormData?.storm_meta || {};
-  const stats = stormData?.current_stats || {};
-  const landfall = stormData?.landfall_assessment;
-  const benchmark = stormData?.historical_benchmark;
+  const meta = stormData?.summary || stormData?.storm_meta || {};
+  const currentPos = stormData?.summary?.current_position || stormData?.current_stats || {};
+  const peakPos = stormData?.summary?.peak_forecast || {};
+  const stats = {
+    lat: currentPos.lat,
+    lng: currentPos.lon ?? currentPos.lng,
+    wind_kmh: currentPos.wind_kmh,
+    wind_kt: currentPos.wind_kt,
+    category: currentPos.category,
+    time_vn: currentPos.time_vn,
+    peak_wind_kmh: peakPos.wind_kmh || currentPos.wind_kmh,
+    peak_wind_kt: peakPos.wind_kt || currentPos.wind_kt,
+    peak_time_vn: peakPos.time_vn || currentPos.time_vn
+  };
+  const landfall = stormData?.landfall || stormData?.landfall_assessment;
+  const benchmark = stormData?.historical?.benchmark || stormData?.historical_benchmark;
 
   return (
     <div className="space-y-6">
