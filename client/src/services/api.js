@@ -675,6 +675,22 @@ export const fetchLuquetSatloRadar = async ({ date } = {}) => {
   }
 };
 
+/**
+ * Tạo URL Proxy có CORS cho ảnh Radar nạp vào WebGL canvas của MapLibre
+ */
+export const getRadarProxyUrl = (originalUrl) => {
+  if (!originalUrl) return '';
+  if (typeof window === 'undefined') return originalUrl;
+  
+  // 1. Nếu có backend (Node dev hoặc Render)
+  if (API_BASE_URL && (API_BASE_URL.startsWith('http') || API_BASE_URL.startsWith('/api'))) {
+    return `${API_BASE_URL}/luquet-satlo/radar-proxy?url=${encodeURIComponent(originalUrl)}`;
+  }
+  
+  // 2. Fallback CORS proxy cho static hosting
+  return `https://api.allorigins.win/raw?url=${encodeURIComponent(originalUrl)}`;
+};
+
 export const triggerServerAutoSync = async () => {
   try {
     const response = await axios.post(`${API_BASE_URL}/luquet-satlo/sync-now`);

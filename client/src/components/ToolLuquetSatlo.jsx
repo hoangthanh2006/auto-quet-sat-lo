@@ -1,4 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import * as maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import {
   Waves,
   CloudRain,
@@ -42,7 +45,8 @@ import {
   Bell,
   ArrowUpRight,
   Info,
-  RotateCcw
+  RotateCcw,
+  Maximize2
 } from 'lucide-react';
 import {
   fetchLuquetSatloProvinces,
@@ -54,6 +58,7 @@ import {
   fetchLuquetSatloDiemDaXayRaLuQuet,
   fetchLuquetSatloTrongDiemSLLQ,
   fetchLuquetSatloRadar,
+  getRadarProxyUrl,
   triggerServerAutoSync,
   getServerAutoSyncStatus
 } from '../services/api';
@@ -68,7 +73,17 @@ import {
   deleteSnapshot,
   fetchAutoSyncStatus
 } from '../services/firebase';
+import { MAPLIBRE_BASEMAPS } from '../services/maplibreBasemaps';
 import DriveUploadButton from './DriveUploadButton';
+
+// Setup MapLibre worker for Vite
+if (typeof window !== 'undefined' && maplibregl.setWorkerUrl) {
+  try {
+    maplibregl.setWorkerUrl(workerUrl);
+  } catch (e) {
+    console.warn('Maplibre worker init:', e);
+  }
+}
 
 // Helper to remove accents for filenames
 function removeVietnameseTones(str) {
@@ -148,11 +163,18 @@ export default function ToolLuquetSatlo() {
   // Active view among the 4 layers: 'radar' | 'sat-lo' | 'lu-quet' | 'trong-diem'
   const [activeLayerSubTab, setActiveLayerSubTab] = useState('radar');
 
-  // Layer 1: Radar Data
+  // Layer 1: Radar Data & MapLibre WebGL Basemap
   const [radarData, setRadarData] = useState(null);
   const [loadingRadar, setLoadingRadar] = useState(false);
   const [selectedRadarIdx, setSelectedRadarIdx] = useState(0);
   const [isRadarPlaying, setIsRadarPlaying] = useState(false);
+  const [radarViewMode, setRadarViewMode] = useState('map'); // 'map' | 'image'
+  const [radarBasemap, setRadarBasemap] = useState('dark_matter');
+  const [radarMapOpacity, setRadarMapOpacity] = useState(0.85);
+  const [radarShowMarkers, setRadarShowMarkers] = useState(true);
+  const radarMapContainerRef = useRef(null);
+  const radarMapInstanceRef = useRef(null);
+  const radarMarkersRef = useRef([]);
 
   // Layer 2: Điểm đã xảy ra sạt lở (12.506 điểm)
   const [dxrSatLoList, setDxrSatLoList] = useState([]);
@@ -240,6 +262,105 @@ export default function ToolLuquetSatlo() {
       setLoadingTimeline(false);
     }
   };
+
+  // ----------------------------------------------------
+  // RADAR MAPLIBRE GL JS WEBGEL LIFECYCLE & UPDATE
+  // ----------------------------------------------------
+  useEffect(() => {
+    let timer;
+    if (isRadarPlaying && radarData?.timeline?.length > 0) {
+      timer = setInterval(() => {
+        setSelectedRadarIdx((prev) => (prev + 1) % radarData.timeline.length);
+      }, 1200);
+    }
+    return () => clearInterval(timer);
+  }, [isRadarPlaying, radarData]);
+
+  useEffect(() => {
+    if (activeTab !== 'layers' || activeLayerSubTab !== 'radar' || radarViewMode !== 'map') return;
+    if (!radarMapContainerRef.current) return;
+
+    const frame = radarData?.timeline?.[selectedRadarIdx];
+    const frameUrl = frame?.image_url;
+    if (!frameUrl) return;
+
+    const proxyUrl = getRadarProxyUrl(frameUrl);
+    const basemapConfig = MAPLIBRE_BASEMAPS[radarBasemap] || MAPLIBRE_BASEMAPS.dark_matter;
+    const basemapStyle = basemapConfig.style;
+
+    const boundsCoords = [
+      [97.0, 25.2],  // NW (Top-left)
+      [115.0, 25.2], // NE (Top-right)
+      [115.0, 7.2],  // SE (Bottom-right)
+      [97.0, 7.2]    // SW (Bottom-left)
+    ];
+
+    const updateRadarRaster = (map) => {
+      if (!map || !map.isStyleLoaded()) return;
+
+      const source = map.getSource('radar-cmax-source');
+      if (source && source.updateImage) {
+        source.updateImage({
+          url: proxyUrl,
+          coordinates: boundsCoords
+        });
+      } else if (!source) {
+        map.addSource('radar-cmax-source', {
+          type: 'image',
+          url: proxyUrl,
+          coordinates: boundsCoords
+        });
+        map.addLayer({
+          id: 'radar-cmax-layer',
+          type: 'raster',
+          source: 'radar-cmax-source',
+          paint: {
+            'raster-opacity': radarMapOpacity,
+            'raster-fade-duration': 0
+          }
+        });
+      }
+
+      if (map.getLayer('radar-cmax-layer')) {
+        map.setPaintProperty('radar-cmax-layer', 'raster-opacity', radarMapOpacity);
+      }
+    };
+
+    if (!radarMapInstanceRef.current) {
+      const map = new maplibregl.Map({
+        container: radarMapContainerRef.current,
+        style: basemapStyle,
+        center: [106.5, 16.5],
+        zoom: 5.2,
+        attributionControl: false
+      });
+
+      map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
+      map.addControl(new maplibregl.FullscreenControl(), 'top-right');
+      map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
+
+      map.on('load', () => {
+        updateRadarRaster(map);
+      });
+
+      radarMapInstanceRef.current = map;
+    } else {
+      const map = radarMapInstanceRef.current;
+      if (map.isStyleLoaded()) {
+        updateRadarRaster(map);
+      } else {
+        map.once('style.load', () => updateRadarRaster(map));
+      }
+    }
+  }, [activeTab, activeLayerSubTab, radarViewMode, radarBasemap, selectedRadarIdx, radarMapOpacity, radarData]);
+
+  // Handle Basemap change for Radar Map
+  useEffect(() => {
+    if (!radarMapInstanceRef.current) return;
+    const map = radarMapInstanceRef.current;
+    const basemapConfig = MAPLIBRE_BASEMAPS[radarBasemap] || MAPLIBRE_BASEMAPS.dark_matter;
+    map.setStyle(basemapConfig.style);
+  }, [radarBasemap]);
 
   // Thực hiện quét tự động NCHMF và đẩy snapshot vào Firebase RTDB (TẤT CẢ CÁC LỚP)
   const performAutoSync = async (source = 'client_auto') => {
@@ -970,14 +1091,22 @@ export default function ToolLuquetSatlo() {
     }
   };
 
-  const handleOpenHistoryModal = async (layerKey = 'canh_bao') => {
+  const handleOpenHistoryModal = async (layerKey = 'all_snapshots') => {
     setSelectedHistoryLayer(layerKey);
     setShowFirebaseModal(true);
     setLoadingHistory(true);
     try {
-      const res = await fetchLuquetSatloHistory(layerKey, 15);
-      if (res.success) {
-        setFirebaseHistoryList(res.data || []);
+      if (layerKey === 'all_snapshots') {
+        const res = await fetchStatisticsTimeline(50);
+        if (res.success && Array.isArray(res.data)) {
+          setTimelineData(res.data);
+          setFirebaseHistoryList(res.data);
+        }
+      } else {
+        const res = await fetchLuquetSatloHistory(layerKey, 20);
+        if (res.success) {
+          setFirebaseHistoryList(res.data || []);
+        }
       }
     } catch (err) {
       console.error('Fetch history error:', err);
@@ -1285,9 +1414,12 @@ export default function ToolLuquetSatlo() {
 
               {/* Nút 3: Lịch sử sao lưu */}
               <button
-                onClick={() => handleOpenHistoryModal(activeLayerSubTab === 'sat-lo' ? 'sat_lo' : activeLayerSubTab === 'lu-quet' ? 'lu_quet' : activeLayerSubTab === 'trong-diem' ? 'trong_diem' : 'canh_bao')}
-                className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-medium backdrop-blur-md transition-all duration-200 active:scale-95"
-                title="Xem lịch sử sao lưu trên Firebase Realtime DB"
+                onClick={() => {
+                  setActiveTab('thong-ke');
+                  loadStatisticsTimeline();
+                }}
+                className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-medium backdrop-blur-md transition-all duration-200 active:scale-95 cursor-pointer"
+                title="Xem toàn bộ 14 bản ghi sao lưu tự động & biểu đồ thống kê"
               >
                 <History className="w-4 h-4 text-cyan-300 shrink-0" />
                 <span className="truncate">Lịch sử sao lưu {timelineData.length > 0 && `(${timelineData.length})`}</span>
@@ -1629,21 +1761,80 @@ export default function ToolLuquetSatlo() {
           {/* 1. LAYER SUBTAB: RADAR */}
           {activeLayerSubTab === 'radar' && checkedRadar && (
             <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              {/* Header & Controls */}
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
                 <div>
                   <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 font-heading">
-                    <Radio className="w-5 h-5 text-blue-600" />
+                    <Radio className="w-5 h-5 text-blue-600 animate-pulse" />
                     Dữ liệu Radar thời tiết (CMAX Composite)
                   </h3>
                   <p className="text-xs text-slate-500 mt-1">
-                    Chuỗi ảnh radar phản hồi vô tuyến toàn quốc, cập nhật 10 phút/lần từ Tổng cục KTTV
+                    Chuỗi ảnh radar phản hồi vô tuyến toàn quốc, cập nhật 10 phút/lần từ Tổng cục KTTV tích hợp WebGL 60fps
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  {/* Mode switcher: Map vs Image */}
+                  <div className="flex items-center p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-xs">
+                    <button
+                      onClick={() => setRadarViewMode('map')}
+                      className={`px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 ${
+                        radarViewMode === 'map'
+                          ? 'bg-blue-600 text-white shadow-sm'
+                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                      }`}
+                    >
+                      <Map className="w-3.5 h-3.5" />
+                      Bản đồ Tọa độ (MapLibre)
+                    </button>
+                    <button
+                      onClick={() => setRadarViewMode('image')}
+                      className={`px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 ${
+                        radarViewMode === 'image'
+                          ? 'bg-blue-600 text-white shadow-sm'
+                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                      }`}
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      Ảnh tĩnh gốc
+                    </button>
+                  </div>
+
+                  {/* Basemap switcher (only visible in map mode) */}
+                  {radarViewMode === 'map' && (
+                    <div className="flex items-center gap-1.5">
+                      <select
+                        value={radarBasemap}
+                        onChange={(e) => setRadarBasemap(e.target.value)}
+                        className="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none"
+                      >
+                        <option value="dark_matter">🌙 Nền tối WebGL (ESRI Dark)</option>
+                        <option value="satellite">🛰️ Vệ tinh thực tế (ESRI)</option>
+                        <option value="positron">☀️ Nền sáng tinh tế (ESRI Light)</option>
+                        <option value="osm">🗺️ OpenStreetMap Standard</option>
+                      </select>
+
+                      {/* Opacity slider */}
+                      <div className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs" title="Độ trong suốt của lớp Radar">
+                        <Sliders className="w-3.5 h-3.5 text-slate-500" />
+                        <span className="text-[11px] font-mono text-slate-600 dark:text-slate-300">{Math.round(radarMapOpacity * 100)}%</span>
+                        <input
+                          type="range"
+                          min="0.2"
+                          max="1.0"
+                          step="0.05"
+                          value={radarMapOpacity}
+                          onChange={(e) => setRadarMapOpacity(parseFloat(e.target.value))}
+                          className="w-16 accent-blue-600 cursor-pointer"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Play/Pause Button */}
                   <button
                     onClick={() => setIsRadarPlaying(!isRadarPlaying)}
-                    className="px-3 py-1.5 rounded-xl bg-blue-600 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm"
+                    className="px-3 py-1.5 rounded-xl bg-blue-600 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm hover:bg-blue-700 transition-colors"
                   >
                     {isRadarPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
                     {isRadarPlaying ? 'Tạm dừng' : 'Chạy tuần hoàn'}
@@ -1652,7 +1843,7 @@ export default function ToolLuquetSatlo() {
                   <button
                     onClick={loadRadarData}
                     disabled={loadingRadar}
-                    className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-xs font-semibold flex items-center gap-1.5"
+                    className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${loadingRadar ? 'animate-spin' : ''}`} />
                     Cập nhật mới
@@ -1661,7 +1852,7 @@ export default function ToolLuquetSatlo() {
                   <button
                     onClick={() => handleLoadFromFirebase('radar')}
                     disabled={loadingFirebase === 'radar'}
-                    className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-xs font-semibold flex items-center gap-1.5"
+                    className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors"
                     title="Tải dữ liệu radar từ Firebase Realtime Database"
                   >
                     <DownloadCloud className="w-3.5 h-3.5 text-orange-500" />
@@ -1671,27 +1862,67 @@ export default function ToolLuquetSatlo() {
               </div>
 
               {loadingRadar ? (
-                <div className="p-12 text-center text-slate-400">Đang tải chuỗi ảnh radar...</div>
+                <div className="p-12 text-center text-slate-400 flex flex-col items-center gap-2">
+                  <RefreshCw className="w-6 h-6 animate-spin text-blue-500" />
+                  Đang nạp dữ liệu radar phản hồi vô tuyến toàn quốc...
+                </div>
               ) : radarData?.timeline?.length > 0 ? (
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  {/* Radar Image Preview */}
-                  <div className="lg:col-span-2 bg-slate-950 rounded-2xl p-4 flex flex-col items-center justify-center relative min-h-[360px] border border-slate-800 overflow-hidden">
-                    <div className="absolute top-4 left-4 z-10 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-xl text-white text-xs font-mono flex items-center gap-2 border border-white/10">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                      <span>Khung giờ: {radarData.timeline[selectedRadarIdx]?.time_vn}</span>
+                  {/* Radar Map / Image Viewport Container */}
+                  <div className="lg:col-span-2 bg-slate-950 rounded-2xl flex flex-col relative min-h-[480px] border border-slate-800 overflow-hidden shadow-2xl">
+                    {/* Floating Info Badges */}
+                    <div className="absolute top-4 left-4 z-10 flex flex-wrap items-center gap-2">
+                      <div className="bg-black/75 backdrop-blur-md px-3 py-1.5 rounded-xl text-white text-xs font-mono flex items-center gap-2 border border-white/10 shadow-lg">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span>Khung giờ: <strong>{radarData.timeline[selectedRadarIdx]?.time_vn}</strong></span>
+                      </div>
+                      <div className="bg-blue-900/80 backdrop-blur-md px-2.5 py-1.5 rounded-xl text-blue-200 text-[11px] font-mono border border-blue-700/50 shadow-lg">
+                        CMAX Composite ({radarData.timeline.length} ảnh)
+                      </div>
                     </div>
 
-                    <img
-                      src={radarData.timeline[selectedRadarIdx]?.image_url}
-                      alt="Radar composite"
-                      className="max-h-[460px] w-auto object-contain rounded-lg shadow-2xl"
-                      onError={(e) => {
-                        e.target.src = 'https://images.unsplash.com/photo-1592210454359-9043f067919b?w=600&auto=format&fit=crop&q=60';
-                      }}
-                    />
+                    {/* View mode 1: Interactive MapLibre GL Map */}
+                    {radarViewMode === 'map' ? (
+                      <div className="w-full h-[480px] relative">
+                        <div ref={radarMapContainerRef} className="w-full h-full z-0" />
+                        
+                        {/* Legend in corner */}
+                        <div className="absolute bottom-4 left-4 z-10 bg-black/80 backdrop-blur-md p-2.5 rounded-xl text-white text-[10px] space-y-1 border border-white/10 pointer-events-none select-none">
+                          <div className="font-bold text-cyan-300">Cường độ phản hồi dBZ (KTTV):</div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-2.5 h-2.5 rounded-sm bg-blue-500 inline-block"></span>
+                            <span className="text-slate-300">Mưa nhẹ (15-25 dBZ)</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span>
+                            <span className="text-slate-300">Mưa vừa (30-40 dBZ)</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-2.5 h-2.5 rounded-sm bg-amber-500 inline-block"></span>
+                            <span className="text-slate-300">Mưa to (45-55 dBZ)</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-2.5 h-2.5 rounded-sm bg-rose-600 inline-block"></span>
+                            <span className="text-slate-300">Mưa rất to / Dông lốc (&gt;55 dBZ)</span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      /* View mode 2: Static Image */
+                      <div className="w-full h-[480px] p-4 flex items-center justify-center bg-slate-950">
+                        <img
+                          src={radarData.timeline[selectedRadarIdx]?.image_url}
+                          alt="Radar composite"
+                          className="max-h-[440px] w-auto object-contain rounded-lg shadow-2xl"
+                          onError={(e) => {
+                            e.target.src = 'https://images.unsplash.com/photo-1592210454359-9043f067919b?w=600&auto=format&fit=crop&q=60';
+                          }}
+                        />
+                      </div>
+                    )}
 
-                    {/* Timeline bar under image */}
-                    <div className="w-full mt-4 bg-slate-900/90 rounded-xl p-3 border border-slate-800 flex items-center gap-3">
+                    {/* Timeline 12 Frames bar under map/image */}
+                    <div className="w-full bg-slate-900/95 p-3 border-t border-slate-800 flex items-center gap-3">
                       <span className="text-xs text-slate-400 font-mono shrink-0">12 khung giờ:</span>
                       <div className="flex-1 flex items-center gap-1 overflow-x-auto py-1">
                         {radarData.timeline.map((frame, idx) => (
@@ -1701,10 +1932,10 @@ export default function ToolLuquetSatlo() {
                               setSelectedRadarIdx(idx);
                               setIsRadarPlaying(false);
                             }}
-                            className={`px-2 py-1 rounded text-[11px] font-mono whitespace-nowrap transition-colors ${
+                            className={`px-2.5 py-1 rounded-lg text-[11px] font-mono whitespace-nowrap transition-all ${
                               selectedRadarIdx === idx
-                                ? 'bg-blue-600 text-white font-bold'
-                                : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                                ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/30 ring-1 ring-white/30 scale-105'
+                                : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-slate-200'
                             }`}
                           >
                             {frame.time_vn.split(' ')[0]}
@@ -1717,7 +1948,10 @@ export default function ToolLuquetSatlo() {
                   {/* Radar Info & Export Options */}
                   <div className="space-y-4">
                     <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 space-y-3">
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">Thông số kỹ thuật lớp Radar</h4>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                        <Radio className="w-3.5 h-3.5 text-blue-500" />
+                        Thông số kỹ thuật lớp Radar
+                      </h4>
                       <div className="space-y-2 text-xs">
                         <div className="flex justify-between py-1 border-b border-slate-200/60 dark:border-slate-700/60">
                           <span className="text-slate-500">Loại dữ liệu:</span>
@@ -1732,6 +1966,10 @@ export default function ToolLuquetSatlo() {
                           <span className="font-mono text-[11px] text-slate-700 dark:text-slate-300">
                             [97.0°E, 7.2°N] - [115.0°E, 25.2°N]
                           </span>
+                        </div>
+                        <div className="flex justify-between py-1 border-b border-slate-200/60 dark:border-slate-700/60">
+                          <span className="text-slate-500">Nguồn dữ liệu:</span>
+                          <span className="font-semibold text-blue-600 dark:text-blue-400">VNDMS / Tổng cục KTTV</span>
                         </div>
                         <div className="flex justify-between py-1">
                           <span className="text-slate-500">Số khung giờ lưu trữ:</span>
@@ -3660,6 +3898,7 @@ export default function ToolLuquetSatlo() {
             {/* Tabs chọn Layer để xem lịch sử */}
             <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
               {[
+                { id: 'all_snapshots', label: `⚡ 14 Snapshot Tự Động (${timelineData.length})` },
                 { id: 'canh_bao', label: 'Cảnh báo Realtime' },
                 { id: 'radar', label: 'Dữ liệu radar' },
                 { id: 'sat_lo', label: 'Điểm sạt lở' },
@@ -3687,6 +3926,59 @@ export default function ToolLuquetSatlo() {
                   <RefreshCw className="w-6 h-6 animate-spin text-orange-500" />
                   Đang tải danh sách từ Firebase Realtime DB...
                 </div>
+              ) : selectedHistoryLayer === 'all_snapshots' ? (
+                timelineData.length === 0 ? (
+                  <div className="py-12 text-center text-xs text-slate-400 space-y-2">
+                    <Database className="w-8 h-8 text-slate-300 dark:text-slate-700 mx-auto" />
+                    <p>Chưa có bản ghi snapshot tự động nào trên Firebase.</p>
+                  </div>
+                ) : (
+                  timelineData.map((item, idx) => (
+                    <div
+                      key={item.slotId || idx}
+                      className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs hover:border-orange-300 dark:hover:border-orange-800 transition-colors"
+                    >
+                      <div>
+                        <div className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                          <span className="font-mono text-cyan-600 dark:text-cyan-400 font-bold">{item.displayTime || item.slotId}</span>
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400">
+                            {item.totalCommunes || 0} xã cảnh báo
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3 text-[11px] text-slate-500 mt-1 font-mono">
+                          <span>💧 {item.lakeWaterCount || 22} hồ chứa</span>
+                          <span>🌊 {item.riverWaterCount || 0} trạm sông</span>
+                          <span>🕒 {item.savedAt ? new Date(item.savedAt).toLocaleTimeString('vi-VN') : ''}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          onClick={() => {
+                            setShowFirebaseModal(false);
+                            handleViewSnapshotDetail(item.slotId);
+                          }}
+                          className="px-3 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-semibold text-xs flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          Xem chi tiết
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setShowFirebaseModal(false);
+                            setActiveTab('thong-ke');
+                            loadStatisticsTimeline();
+                          }}
+                          className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
+                        >
+                          <BarChart3 className="w-3.5 h-3.5" />
+                          Mở Thống Kê
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )
               ) : firebaseHistoryList.length === 0 ? (
                 <div className="py-12 text-center text-xs text-slate-400 space-y-2">
                   <Database className="w-8 h-8 text-slate-300 dark:text-slate-700 mx-auto" />

@@ -14,7 +14,9 @@ import {
   uploadTyphoonKmz, 
   getHistoricalLandfalls, 
   getTyphoonProvinceMetrics,
-  getTyphoonPresets
+  getTyphoonPresets,
+  fetchLuquetSatloRadar,
+  getRadarProxyUrl
 } from '../services/api';
 import { MAPLIBRE_BASEMAPS } from '../services/maplibreBasemaps';
 
@@ -74,6 +76,9 @@ export default function ToolTyphoon() {
   const [showWindRadii, setShowWindRadii] = useState(true);
   const [showBestTrack, setShowBestTrack] = useState(true);
   const [showForecastTrack, setShowForecastTrack] = useState(true);
+  const [showRadarOverlay, setShowRadarOverlay] = useState(false);
+  const [radarData, setRadarData] = useState(null);
+  const [radarOpacity, setRadarOpacity] = useState(0.8);
 
   // Refs MapLibre GL
   const mapContainerRef = useRef(null);
@@ -162,7 +167,7 @@ export default function ToolTyphoon() {
     }
   };
 
-  // 3. Tải số liệu thống kê tỉnh thành & lịch sử
+  // 3. Tải số liệu thống kê tỉnh thành & lịch sử & radar
   useEffect(() => {
     loadActiveStorms();
 
@@ -173,6 +178,10 @@ export default function ToolTyphoon() {
     getHistoricalLandfalls({ minWind: 50 })
       .then(res => { if (res.success) setHistoricalStorms(res.data || []); })
       .catch(err => console.warn('Lỗi tải bão lịch sử:', err));
+
+    fetchLuquetSatloRadar()
+      .then(res => { if (res.success && res.data) setRadarData(res.data); })
+      .catch(err => console.warn('Lỗi tải radar cho bản đồ bão:', err));
   }, []);
 
   // Giữ ref stormData và visibility để callback đổi basemap luôn nhận dữ liệu mới nhất
@@ -184,9 +193,71 @@ export default function ToolTyphoon() {
   const showWindRadiiRef = useRef(showWindRadii);
   const showBestTrackRef = useRef(showBestTrack);
   const showForecastTrackRef = useRef(showForecastTrack);
+  const showRadarOverlayRef = useRef(showRadarOverlay);
+  const radarOpacityRef = useRef(radarOpacity);
+  const radarDataRef = useRef(radarData);
+
   useEffect(() => { showWindRadiiRef.current = showWindRadii; }, [showWindRadii]);
   useEffect(() => { showBestTrackRef.current = showBestTrack; }, [showBestTrack]);
   useEffect(() => { showForecastTrackRef.current = showForecastTrack; }, [showForecastTrack]);
+  useEffect(() => { showRadarOverlayRef.current = showRadarOverlay; }, [showRadarOverlay]);
+  useEffect(() => { radarOpacityRef.current = radarOpacity; }, [radarOpacity]);
+  useEffect(() => { radarDataRef.current = radarData; }, [radarData]);
+
+  // Render Radar raster image on MapLibre
+  const renderRadarLayer = (map) => {
+    if (!map || !map.isStyleLoaded()) return;
+    const isRadarActive = showRadarOverlayRef.current || selectedBasemap.startsWith('radar_');
+    const frameUrl = radarDataRef.current?.timeline?.[0]?.image_url;
+
+    if (!isRadarActive || !frameUrl) {
+      if (map.getLayer('radar-cmax-overlay-layer')) {
+        map.setLayoutProperty('radar-cmax-overlay-layer', 'visibility', 'none');
+      }
+      return;
+    }
+
+    const proxyUrl = getRadarProxyUrl(frameUrl);
+    const boundsCoords = [
+      [97.0, 25.2],  // NW
+      [115.0, 25.2], // NE
+      [115.0, 7.2],  // SE
+      [97.0, 7.2]    // SW
+    ];
+
+    const source = map.getSource('radar-cmax-overlay-source');
+    if (source && source.updateImage) {
+      source.updateImage({
+        url: proxyUrl,
+        coordinates: boundsCoords
+      });
+    } else if (!source) {
+      map.addSource('radar-cmax-overlay-source', {
+        type: 'image',
+        url: proxyUrl,
+        coordinates: boundsCoords
+      });
+
+      const beforeLayer = map.getLayer('storm-wind-radii-fill') ? 'storm-wind-radii-fill' : undefined;
+      map.addLayer({
+        id: 'radar-cmax-overlay-layer',
+        type: 'raster',
+        source: 'radar-cmax-overlay-source',
+        layout: {
+          visibility: 'visible'
+        },
+        paint: {
+          'raster-opacity': radarOpacityRef.current,
+          'raster-fade-duration': 0
+        }
+      }, beforeLayer);
+    }
+
+    if (map.getLayer('radar-cmax-overlay-layer')) {
+      map.setLayoutProperty('radar-cmax-overlay-layer', 'visibility', 'visible');
+      map.setPaintProperty('radar-cmax-overlay-layer', 'raster-opacity', radarOpacityRef.current);
+    }
+  };
 
   // 4. Khởi tạo & cập nhật bản đồ MapLibre GL JS khi đổi Basemap
   useEffect(() => {
@@ -207,6 +278,7 @@ export default function ToolTyphoon() {
 
       map.on('load', () => {
         if (stormDataRef.current) renderStormData(map, stormDataRef.current);
+        renderRadarLayer(map);
       });
 
       mapInstanceRef.current = map;
@@ -218,6 +290,7 @@ export default function ToolTyphoon() {
         if (stormDataRef.current) {
           renderStormData(map, stormDataRef.current);
         }
+        renderRadarLayer(map);
       };
 
       map.once('style.load', handleStyleLoaded);
@@ -227,6 +300,13 @@ export default function ToolTyphoon() {
       // Cleanup
     };
   }, [selectedBasemap, maptilerKey, jawgToken]);
+
+  // Effect to update radar layer opacity or toggle
+  useEffect(() => {
+    if (mapInstanceRef.current) {
+      renderRadarLayer(mapInstanceRef.current);
+    }
+  }, [showRadarOverlay, radarOpacity, radarData, selectedBasemap]);
 
   // 5. Cập nhật dữ liệu bão lên MapLibre GL
   const renderStormData = (map, data) => {
@@ -1166,6 +1246,10 @@ export default function ToolTyphoon() {
                   onChange={(e) => handleBasemapChange(e.target.value)}
                   className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 outline-none cursor-pointer shadow-2xs"
                 >
+                  <optgroup label="📡 Basemap Radar Thời Tiết (KTTV)">
+                    <option value="radar_cmax">📡 Radar Thời Tiết CMAX (Nền Tối)</option>
+                    <option value="radar_satellite">🛰️ Vệ Tinh + Radar CMAX</option>
+                  </optgroup>
                   <optgroup label="⚡ Vector WebGL Tự Do (Không cần Key)">
                     <option value="dark_matter">🌙 ESRI Dark Canvas (Tối - Chuẩn khí tượng)</option>
                     <option value="positron">☀️ ESRI Light Canvas (Sáng Tinh Tế)</option>
@@ -1197,7 +1281,36 @@ export default function ToolTyphoon() {
               </div>
 
               {/* Toggles */}
-              <div className="flex items-center gap-3 text-xs">
+              <div className="flex flex-wrap items-center gap-3 text-xs">
+                <label className="flex items-center gap-1.5 cursor-pointer text-slate-600 dark:text-slate-300">
+                  <input
+                    type="checkbox"
+                    checked={showRadarOverlay || selectedBasemap.startsWith('radar_')}
+                    onChange={(e) => setShowRadarOverlay(e.target.checked)}
+                    className="rounded text-cyan-500 focus:ring-0"
+                  />
+                  <span className="flex items-center gap-1 font-bold text-cyan-600 dark:text-cyan-400">
+                    <Radio className="w-3.5 h-3.5 animate-pulse" />
+                    Lớp Radar CMAX
+                  </span>
+                </label>
+
+                {(showRadarOverlay || selectedBasemap.startsWith('radar_')) && (
+                  <div className="flex items-center gap-1 px-2 py-0.5 bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800 rounded-lg text-[11px]" title="Độ trong suốt của lớp Radar">
+                    <Sliders className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
+                    <span className="font-mono text-cyan-700 dark:text-cyan-300">{Math.round(radarOpacity * 100)}%</span>
+                    <input
+                      type="range"
+                      min="0.2"
+                      max="1.0"
+                      step="0.05"
+                      value={radarOpacity}
+                      onChange={(e) => setRadarOpacity(parseFloat(e.target.value))}
+                      className="w-14 accent-cyan-600 cursor-pointer"
+                    />
+                  </div>
+                )}
+
                 <label className="flex items-center gap-1.5 cursor-pointer text-slate-600 dark:text-slate-300">
                   <input
                     type="checkbox"

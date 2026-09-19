@@ -832,6 +832,34 @@ app.get('/api/luquet-satlo/radar', async (req, res) => {
   }
 });
 
+// Proxy trung gian cho ảnh radar CORS WebGL MapLibre
+app.get('/api/luquet-satlo/radar-proxy', async (req, res) => {
+  try {
+    const { url } = req.query;
+    if (!url || typeof url !== 'string' || !url.startsWith('http')) {
+      return res.status(400).send('Invalid url query parameter');
+    }
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'https://vndms.dmc.gov.vn/'
+      }
+    });
+    if (!response.ok) {
+      return res.status(response.status).send(`Upstream server returned error ${response.status}`);
+    }
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    res.setHeader('Content-Type', response.headers.get('content-type') || 'image/png');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cache-Control', 'public, max-age=600, s-maxage=600');
+    res.send(buffer);
+  } catch (error) {
+    console.error('API /api/luquet-satlo/radar-proxy error:', error);
+    res.status(500).send(error.message);
+  }
+});
+
 // 10. TỰ ĐỘNG QUÉT & LƯU CSDL PHỤC VỤ THỐNG KÊ (AUTO-SYNC & HOURLY SCHEDULER)
 app.post('/api/luquet-satlo/sync-now', async (req, res) => {
   try {

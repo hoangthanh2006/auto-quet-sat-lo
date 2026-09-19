@@ -114,6 +114,34 @@ export const MAPLIBRE_BASEMAPS = {
     description: 'Nền tối WebGL 60fps tương phản cao, làm rực rỡ đường bão và vùng gió, không watermark'
   },
 
+  // 1b. Radar CMAX Khí Tượng (Basemap có tích hợp lớp ảnh phản hồi vô tuyến Radar)
+  radar_cmax: {
+    id: 'radar_cmax',
+    name: '📡 Radar Thời Tiết CMAX (Nền Tối Khí Tượng)',
+    provider: 'Tổng cục KTTV & ESRI Dark',
+    isRadarOverlay: true,
+    style: createCompositeStyle(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+      'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
+      '&copy; Tổng cục KTTV & ESRI'
+    ),
+    description: 'Bản đồ nền tối khí tượng tích hợp chuỗi ảnh phản hồi vô tuyến Radar CMAX toàn quốc 10 phút/lần'
+  },
+
+  // 1c. Vệ Tinh + Radar CMAX
+  radar_satellite: {
+    id: 'radar_satellite',
+    name: '🛰️ Vệ Tinh + Radar CMAX Toàn Quốc',
+    provider: 'Tổng cục KTTV & ESRI Satellite',
+    isRadarOverlay: true,
+    style: createCompositeStyle(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+      '&copy; Tổng cục KTTV & Esri'
+    ),
+    description: 'Bản đồ vệ tinh chi tiết tích hợp dữ liệu phản hồi mây mưa Radar CMAX'
+  },
+
   // 2. Chế độ sáng tinh tế (ESRI Light Canvas - Chuẩn báo chí infographic)
   positron: {
     id: 'positron',
