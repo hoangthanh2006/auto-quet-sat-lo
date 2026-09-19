@@ -85,28 +85,32 @@ export default function ToolTyphoon() {
 
     // Quét và tiêu hủy các modal lỗi và backdrop do Google Maps tạo ra
     const cleanModals = () => {
-      const selectors = [
-        '.gm-err-container',
-        '.gm-err-content',
-        '[class*="gm-err"]',
-        '.gm-style-moc',
-        'div[aria-label="Google"][role="dialog"]'
-      ];
-      selectors.forEach(sel => {
-        document.querySelectorAll(sel).forEach(node => {
-          try {
-            node.style.setProperty('display', 'none', 'important');
-            node.style.setProperty('visibility', 'hidden', 'important');
-            node.style.setProperty('opacity', '0', 'important');
-            node.style.setProperty('pointer-events', 'none', 'important');
-            if (node.parentNode) {
-              node.parentNode.removeChild(node);
-            }
-          } catch (e) {}
-        });
+      // 1. Tự động đóng modal cảnh báo của Google Maps bằng cách click hoặc remove container
+      const dismissBtns = document.querySelectorAll('.dismissButton, button[class*="dismiss"]');
+      dismissBtns.forEach(btn => {
+        try {
+          const container = btn.closest('div[style*="z-index"]') || btn.parentElement?.parentElement;
+          if (container && container !== document.body) {
+            container.style.setProperty('display', 'none', 'important');
+            container.style.setProperty('visibility', 'hidden', 'important');
+            container.style.setProperty('opacity', '0', 'important');
+            container.remove();
+          }
+          btn.click();
+        } catch (e) {}
       });
 
-      // Tắt lớp mờ đen trên bản đồ
+      // 2. Xóa các container có z-index cực cao (1000000+) chứa thông báo lỗi Google Maps
+      document.querySelectorAll('div[style*="z-index: 100000"], div[style*="z-index: 100001"], .gm-err-container').forEach(el => {
+        try {
+          el.style.setProperty('display', 'none', 'important');
+          el.style.setProperty('visibility', 'hidden', 'important');
+          el.style.setProperty('opacity', '0', 'important');
+          el.remove();
+        } catch (e) {}
+      });
+
+      // 3. Tắt lớp mờ đen trên bản đồ
       document.querySelectorAll('.gm-style-pbc').forEach(node => {
         try {
           node.style.setProperty('opacity', '0', 'important');
@@ -116,7 +120,7 @@ export default function ToolTyphoon() {
     };
 
     cleanModals();
-    const interval = setInterval(cleanModals, 200);
+    const interval = setInterval(cleanModals, 150);
     const observer = new MutationObserver(cleanModals);
     observer.observe(document.body, { childList: true, subtree: true });
 
@@ -449,7 +453,7 @@ export default function ToolTyphoon() {
 
   // 6b. Khởi tạo bản đồ Leaflet (cho các theme Tự do 100% không watermark)
   useEffect(() => {
-    if (!leafletContainerRef.current) return;
+    if (!isLeafletTheme || !leafletContainerRef.current) return;
 
     if (!leafletInstanceRef.current) {
       const map = L.map(leafletContainerRef.current, {
@@ -459,10 +463,7 @@ export default function ToolTyphoon() {
         scrollWheelZoom: true
       });
 
-      const currentTheme = SNAZZY_THEMES[snazzyTheme]?.isLeaflet 
-        ? SNAZZY_THEMES[snazzyTheme] 
-        : SNAZZY_THEMES.osm_clean;
-
+      const currentTheme = SNAZZY_THEMES[snazzyTheme] || SNAZZY_THEMES.osm_clean;
       const tileLayer = L.tileLayer(currentTheme.tileUrl, {
         attribution: currentTheme.attribution || '&copy; OpenStreetMap',
         maxZoom: 18
@@ -474,9 +475,9 @@ export default function ToolTyphoon() {
       leafletLayersRef.current.markerGroup = L.featureGroup().addTo(map);
 
       leafletInstanceRef.current = map;
-    } else if (SNAZZY_THEMES[snazzyTheme]?.isLeaflet) {
+    } else {
       const map = leafletInstanceRef.current;
-      const theme = SNAZZY_THEMES[snazzyTheme];
+      const theme = SNAZZY_THEMES[snazzyTheme] || SNAZZY_THEMES.osm_clean;
       if (leafletTileLayerRef.current) {
         map.removeLayer(leafletTileLayerRef.current);
       }
@@ -485,16 +486,14 @@ export default function ToolTyphoon() {
         maxZoom: 18
       }).addTo(map);
     }
-  }, [snazzyTheme]);
 
-  // Cập nhật kích thước Leaflet khi chuyển đổi sang Leaflet
-  useEffect(() => {
-    if (isLeafletTheme && leafletInstanceRef.current) {
-      setTimeout(() => {
-        leafletInstanceRef.current?.invalidateSize();
-      }, 100);
-    }
-  }, [isLeafletTheme]);
+    const t1 = setTimeout(() => leafletInstanceRef.current?.invalidateSize(), 50);
+    const t2 = setTimeout(() => leafletInstanceRef.current?.invalidateSize(), 250);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [isLeafletTheme, snazzyTheme]);
 
   // 6c. Vẽ các lớp dữ liệu bão lên Leaflet
   useEffect(() => {
@@ -640,7 +639,10 @@ export default function ToolTyphoon() {
     });
 
     if (bounds.isValid() && isLeafletTheme) {
-      map.fitBounds(bounds, { padding: [40, 40] });
+      setTimeout(() => {
+        map.invalidateSize();
+        map.fitBounds(bounds, { padding: [40, 40] });
+      }, 100);
     }
   }, [stormData, showWindRadii, showBestTrack, showForecastTrack, isLeafletTheme]);
 
