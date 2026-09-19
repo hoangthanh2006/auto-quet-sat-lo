@@ -1,8 +1,31 @@
 import axios from 'axios';
 
-// Detect if running on a static hosting environment without local backend
+// Production: use VITE_API_URL, localStorage custom backend, or Render backend default. Development: proxy /api or VITE_API_URL
+export const getApiBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    const custom = localStorage.getItem('custom_backend_url');
+    if (custom && custom.trim()) {
+      return `${custom.trim().replace(/\/$/, '')}/api`;
+    }
+  }
+  if (import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.trim()) {
+    return `${import.meta.env.VITE_API_URL.trim().replace(/\/$/, '')}/api`;
+  }
+  // In development without explicit env, use local Vite proxy
+  if (import.meta.env.DEV) {
+    return '/api';
+  }
+  // Production fallback: use deployed Render backend
+  return 'https://auto-quet-sat-lo.onrender.com/api';
+};
+
+export const API_BASE_URL = getApiBaseUrl();
+
+// Detect if running on static hosting without ANY backend URL configured
 export const isStaticHosting = typeof window !== 'undefined' &&
   !import.meta.env.VITE_API_URL &&
+  !localStorage.getItem('custom_backend_url') &&
+  !API_BASE_URL.startsWith('http') &&
   (window.location.hostname.includes('web.app') ||
    window.location.hostname.includes('firebaseapp.com') ||
    window.location.hostname.includes('github.io') ||
@@ -17,22 +40,8 @@ export function isHtmlResponse(data) {
   return false;
 }
 
-export const BACKEND_REQUIRED_MSG = 'Công cụ này yêu cầu Backend Node.js (Puppeteer/Cheerio/OCR). Firebase Hosting chỉ là máy chủ web tĩnh nên không thể chạy backend này. Vui lòng mở máy tính và chạy "cd server && npm start" rồi mở web tại http://localhost:3000, hoặc kết nối Cloud Backend (Render/VPS).';
+export const BACKEND_REQUIRED_MSG = 'Không thể kết nối đến máy chủ Backend (Render/Node.js). Nếu Render đang ở chế độ ngủ (Free tier), vui lòng đợi 30-40 giây để server khởi động lại rồi thử lại.';
 
-// Production: use VITE_API_URL (set on Render) or custom backend. Development: use proxy /api
-export const getApiBaseUrl = () => {
-  if (typeof window !== 'undefined') {
-    const custom = localStorage.getItem('custom_backend_url');
-    if (custom && custom.trim()) {
-      return `${custom.trim().replace(/\/$/, '')}/api`;
-    }
-  }
-  return import.meta.env.VITE_API_URL
-    ? `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/api`
-    : '/api';
-};
-
-const API_BASE_URL = getApiBaseUrl();
 
 // Interceptor to catch HTML response (Firebase rewrite fallback) and provide clear explanation
 axios.interceptors.response.use(
