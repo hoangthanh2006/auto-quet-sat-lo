@@ -821,17 +821,173 @@ export async function analyzePageStructure(url, onLog) {
     });
 
     if (onLog) onLog(`[Hoàn thành] Phân tích cấu trúc hoàn tất! Phân loại trang: "${analysis.pageType}" (độ tin cậy ${analysis.confidence}%), Tìm thấy ${analysis.dataRegions.length} vùng dữ liệu triển vọng.`);
-    console.log(`Page analysis complete: Type=${analysis.pageType}, Confidence=${analysis.confidence}%`);
+    if (onLog) onLog(`✅ Phân tích hoàn tất! Xác định loại trang: ${analysis.pageType.toUpperCase()} (Độ tin cậy: ${analysis.confidence}%)`);
     return analysis;
 
   } catch (error) {
-    console.error('Error during page structure analysis:', error);
-    throw new Error(`Page analysis failed: ${error.message}`);
+    console.error('Error during page analysis with Puppeteer:', error.message);
+    if (onLog) onLog(`⚠️ Trình duyệt Puppeteer gặp sự cố (${error.message}). Đang tự động chuyển sang bộ phân tích HTML Cheerio siêu tốc...`);
+    try {
+      return await analyzePageStructureWithCheerio(url, onLog);
+    } catch (fallbackError) {
+      console.error('Error during fallback page analysis:', fallbackError);
+      if (onLog) onLog(`❌ Lỗi phân tích: ${fallbackError.message}`);
+      throw new Error(`Page analysis failed: ${fallbackError.message}`);
+    }
   } finally {
     if (browser) {
-      await browser.close();
+      await browser.close().catch(() => {});
     }
   }
+}
+
+/**
+ * Fallback static HTML analyzer using Cheerio (zero browser/Chrome dependency)
+ */
+export async function analyzePageStructureWithCheerio(url, onLog) {
+  if (onLog) onLog(`[HTTP Fetch] Đang tải mã nguồn HTML trực tiếp từ ${url}...`);
+  const resp = await fetch(url, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+    },
+    signal: AbortSignal.timeout(20000)
+  });
+
+  if (!resp.ok) {
+    throw new Error(`HTTP ${resp.status} ${resp.statusText}`);
+  }
+
+  const html = await resp.text();
+  const $ = cheerio.load(html);
+
+  if (onLog) onLog(`[Phân tích Cheerio] Đang bóc tách cây DOM và thống kê thẻ...`);
+
+  const h1s = $('h1').length;
+  const h2s = $('h2').length;
+  const articlesCount = $('article').length;
+  const tablesCount = $('table').length;
+  const lists = $('ul, ol').length;
+
+  const contentSelectors = [
+    '.content', '.main-content', '.article-content',
+    '.post-content', '.entry-content', '.body-content',
+    '[class*="content"]', '[class*="article"]'
+  ];
+  let contentDivs = 0;
+  contentSelectors.forEach((sel) => {
+    try { contentDivs += $(sel).length; } catch (e) {}
+  });
+
+  const itemSelectors = [
+    '[class*="item"]', '[class*="card"]', '[class*="entry"]',
+    '[class*="post"]', '[class*="profile"]', '[class*="list-item"]'
+  ];
+  let items = 0;
+  let profiles = 0;
+  itemSelectors.forEach((sel) => {
+    try {
+      $(sel).each((_, el) => {
+        const c = $(el).attr('class') || '';
+        if (/item|card|entry/i.test(c)) items++;
+        if (/profile/i.test(c)) profiles++;
+      });
+    } catch (e) {}
+  });
+
+  const regions = [];
+
+  // 1. Tables
+  $('table').each((_, el) => {
+    const text = $(el).text().trim();
+    if (text.length > 50) {
+      const className = $(el).attr('class') || '';
+      const id = $(el).attr('id') || '';
+      const rows = $(el).find('tr').length;
+      regions.push({
+        selector: id ? `#${id}` : (className ? `table.${className.split(' ')[0]}` : 'table'),
+        type: 'table',
+        category: 'tables',
+        textLength: text.length,
+        sampleText: text.substring(0, 100) + '...',
+        className,
+        id,
+        rowCount: rows
+      });
+    }
+  });
+
+  // 2. Articles & Posts
+  $('article, [class*="post"], [class*="article"], main').each((_, el) => {
+    const text = $(el).text().trim();
+    if (text.length > 100) {
+      const className = $(el).attr('class') || '';
+      const id = $(el).attr('id') || '';
+      const tag = el.name || 'div';
+      regions.push({
+        selector: id ? `#${id}` : (className ? `.${className.split(' ')[0]}` : tag),
+        type: tag,
+        category: 'articles',
+        textLength: text.length,
+        sampleText: text.substring(0, 100) + '...',
+        className,
+        id
+      });
+    }
+  });
+
+  // 3. List items
+  $('ul, ol, [class*="list"]').each((_, el) => {
+    const liCount = $(el).find('li').length;
+    if (liCount >= 3) {
+      const className = $(el).attr('class') || '';
+      const id = $(el).attr('id') || '';
+      const tag = el.name || 'ul';
+      regions.push({
+        selector: id ? `#${id}` : (className ? `.${className.split(' ')[0]}` : tag),
+        type: tag,
+        category: 'lists',
+        textLength: $(el).text().trim().length,
+        sampleText: `${liCount} phần tử danh sách`,
+        className,
+        id
+      });
+    }
+  });
+
+  const totalItems = items + profiles;
+  let pageType = 'article';
+  let confidence = 75;
+
+  if (tablesCount >= 1) {
+    pageType = 'table';
+    confidence = 85;
+  } else if (totalItems >= 3 || lists >= 2) {
+    pageType = 'list';
+    confidence = 85;
+  } else if (articlesCount > 0 || contentDivs > 0) {
+    pageType = 'article';
+    confidence = 80;
+  }
+
+  const result = {
+    pageType,
+    confidence,
+    dataRegions: regions.slice(0, 15),
+    statistics: {
+      headings: h1s + h2s,
+      articles: articlesCount,
+      tables: tablesCount,
+      lists,
+      contentDivs,
+      items,
+      profiles
+    },
+    engine: 'cheerio_static_html'
+  };
+
+  if (onLog) onLog(`✅ [Cheerio Fallback] Phân tích hoàn tất! Loại trang: ${pageType.toUpperCase()} (Độ tin cậy: ${confidence}%)`);
+  return result;
 }
 
 /**

@@ -304,9 +304,14 @@ export async function saveAutoSyncSnapshot({
     console.warn('[Firebase] Bỏ qua kiểm tra trùng lặp:', dupCheckErr.message);
   }
 
-  // Tạo snapshotId theo thời gian chi tiết (YYYYMMDD_HHmm hoặc thêm giây nếu forceSave)
-  let snapshotId = '';
-  if (actualDate) {
+  // Khóa snapshot chuẩn theo mốc giờ (Hourly Slot YYYYMMDD_HH00)
+  const hourlySnapshotId = `${year}${month}${day}_${hour}00`;
+  
+  // Tạo snapshotId theo thời gian chi tiết
+  let snapshotId = hourlySnapshotId;
+  if (forceSave) {
+    snapshotId = `${year}${month}${day}_${hour}${minute}_${second}`;
+  } else if (actualDate) {
     const digits = actualDate.replace(/[^0-9]/g, '');
     if (digits.length >= 12) {
       snapshotId = `${digits.slice(0, 8)}_${digits.slice(8, 12)}`;
@@ -315,13 +320,7 @@ export async function saveAutoSyncSnapshot({
     }
   }
 
-  if (!snapshotId || forceSave) {
-    snapshotId = forceSave
-      ? `${year}${month}${day}_${hour}${minute}_${second}`
-      : `${year}${month}${day}_${hour}${minute}`;
-  }
-
-  const timeStr = `${hour}:${minute}`;
+  const timeStr = `${hour}:00`;
   const dateStr = `${year}-${month}-${day}`;
 
   const counts = {

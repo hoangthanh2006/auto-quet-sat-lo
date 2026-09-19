@@ -1,9 +1,10 @@
 const { join } = require('path');
 
 /**
- * @type {import("puppeteer").Configuration}
+ * Configuration file for Puppeteer
+ * Ensures Chrome is installed inside the project cache directory on Render/Linux
  */
 module.exports = {
-  // Store Puppeteer cache inside the server directory so it persists on Render
+  // Changes the cache location for Puppeteer.
   cacheDirectory: join(__dirname, '.cache', 'puppeteer'),
 };

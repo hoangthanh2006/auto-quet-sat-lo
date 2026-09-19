@@ -748,3 +748,12 @@ export const getTyphoonProvinceMetrics = async () => {
   }
 };
 
+export const getTyphoonPresets = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/typhoon/presets`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || error.message || 'Không thể lấy danh sách bão mẫu');
+  }
+};
+

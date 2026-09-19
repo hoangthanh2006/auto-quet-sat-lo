@@ -11,6 +11,6 @@
     "dev:server": "npm run dev --prefix server",
     "dev:client": "npm run dev --prefix client",
     "sync:nchmf": "node server/autoSyncNCHMF.js",
-    "sync:watch": "node server/autoSyncNCHMF.js --watch --interval 15"
+    "sync:watch": "node server/autoSyncNCHMF.js --watch --interval 60"
   }
 }

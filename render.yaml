@@ -1,17 +1,21 @@
-# Exported from Render on 2026-02-01T08:01:43Z
 version: "1"
 projects:
-- name: My project
+- name: Data Crawl Hub
   environments:
   - name: Production
     services:
     - type: web
-      name: Data-crawl
+      name: auto-quet-sat-lo
       runtime: node
-      repo: https://github.com/hoangthanh2006/Data-crawl
+      repo: https://github.com/hoangthanh2006/auto-quet-sat-lo
       plan: free
       region: oregon
-      buildCommand: npm install
+      buildCommand: npm run build
       startCommand: npm start
       autoDeployTrigger: commit
       rootDir: server
+      envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PUPPETEER_CACHE_DIR
+        value: /opt/render/project/src/server/.cache/puppeteer

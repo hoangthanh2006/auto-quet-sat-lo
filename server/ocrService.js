@@ -138,7 +138,7 @@ export async function executeOcrScan(filePath, options = {}) {
     );
 
     req.on('error', (err) => {
-      reject(new Error(`Failed to communicate with OCR daemon: ${err.message}`));
+      reject(new Error(`Không thể kết nối đến OCR Daemon (127.0.0.1:${DAEMON_PORT} - ${err.message}). Máy chủ Python OCR chưa khởi động được do thiếu thư viện Python trên môi trường máy chủ. Hướng dẫn khắc phục: Chạy 'pip install -r requirements.txt' hoặc deploy qua Dockerfile.`));
     });
 
     req.on('timeout', () => {

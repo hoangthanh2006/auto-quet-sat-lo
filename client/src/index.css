@@ -99,3 +99,19 @@
   pointer-events: none !important;
 }
 
+/* Windy-style Cyclone Swirl Spin */
+@keyframes cyclone-spin-ccw {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+.animate-cyclone-spin {
+  animation: cyclone-spin-ccw 2.2s linear infinite;
+  transform-origin: center center;
+}
+
+

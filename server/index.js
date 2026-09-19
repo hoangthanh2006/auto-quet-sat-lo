@@ -9,15 +9,23 @@ import { extractMultipleContents } from './contentExtractor.js';
 import { uploadToDrive, getDriveStatus, saveDriveConfig } from './driveService.js';
 import { executeOcrScan, getOcrStatus } from './ocrService.js';
 import { getProvinces, getCanhbaoSLLQ, getDiemSatLo, getTramMua, getDoAmDat, getDiemDaXayRaSatLo, getDiemDaXayRaLuQuet, getTrongDiemSLLQ, getRadarData } from './luquetSatloService.js';
-import { runAutoSyncOnce } from './autoSyncNCHMF.js';
+import { runAutoSyncOnce, startHourlyAutoSync, getSchedulerStatus, stopHourlyAutoSync } from './autoSyncNCHMF.js';
 import { 
   fetchActiveTyphoons, 
   parseKmzBuffer, 
   parseTextWarningToGeoJson, 
   analyzeStormGeoJson, 
   getProvinceMetrics, 
-  getHistoricalLandfalls 
+  getHistoricalLandfalls,
+  HISTORICAL_PRESETS,
+  generatePresetGeoJson
 } from './typhoonService.js';
+import {
+  crawlLakeWater,
+  crawlRiverWater,
+  crawlLandslideWarnings,
+  getEnvironmentalHubSummary
+} from './environmentalService.js';
 
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -824,13 +832,40 @@ app.get('/api/luquet-satlo/radar', async (req, res) => {
   }
 });
 
-// 10. TỰ ĐỘNG QUÉT & LƯU CSDL PHỤC VỤ THỐNG KÊ (AUTO-SYNC)
+// 10. TỰ ĐỘNG QUÉT & LƯU CSDL PHỤC VỤ THỐNG KÊ (AUTO-SYNC & HOURLY SCHEDULER)
 app.post('/api/luquet-satlo/sync-now', async (req, res) => {
   try {
-    const result = await runAutoSyncOnce();
+    const { forceSave } = req.body || {};
+    const result = await runAutoSyncOnce({ forceSave: forceSave !== false, source: 'manual_api_trigger' });
     res.json(result);
   } catch (error) {
     console.error('API /api/luquet-satlo/sync-now error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/luquet-satlo/scheduler-status', (req, res) => {
+  try {
+    const status = getSchedulerStatus();
+    res.json({ success: true, ...status });
+  } catch (error) {
+    console.error('API /api/luquet-satlo/scheduler-status error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/luquet-satlo/scheduler-toggle', (req, res) => {
+  try {
+    const { enable, intervalMinutes = 60 } = req.body || {};
+    let status;
+    if (enable) {
+      status = startHourlyAutoSync(Number(intervalMinutes) || 60);
+    } else {
+      status = stopHourlyAutoSync();
+    }
+    res.json({ success: true, ...status });
+  } catch (error) {
+    console.error('API /api/luquet-satlo/scheduler-toggle error:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
@@ -839,7 +874,8 @@ app.get('/api/luquet-satlo/sync-status', async (req, res) => {
   try {
     const response = await fetch('https://anh-cao-keu-default-rtdb.asia-southeast1.firebasedatabase.app/luquet_satlo/auto_sync_status.json');
     const data = await response.json();
-    res.json({ success: true, data });
+    const scheduler = getSchedulerStatus();
+    res.json({ success: true, data, scheduler });
   } catch (error) {
     console.error('API /api/luquet-satlo/sync-status error:', error);
     res.status(500).json({ success: false, error: error.message });
@@ -861,11 +897,31 @@ app.get('/api/typhoon/active', async (req, res) => {
   }
 });
 
-// 2. Chi tiết bão (theo ID hoặc URL)
+// 1b. Danh sách bão lịch sử mẫu tiêu biểu (Presets)
+app.get('/api/typhoon/presets', (req, res) => {
+  try {
+    res.json({ success: true, presets: HISTORICAL_PRESETS });
+  } catch (error) {
+    console.error('API /api/typhoon/presets error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 2. Chi tiết bão (theo ID, URL hoặc Preset)
 app.get('/api/typhoon/storm/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { kmzUrl, textUrl, name } = req.query;
+
+    // Kiểm tra nếu là Preset bão lịch sử
+    if (id && id.startsWith('PRESET_')) {
+      const preset = HISTORICAL_PRESETS.find(p => p.id === id);
+      if (preset) {
+        const geojson = generatePresetGeoJson(id);
+        const analysis = analyzeStormGeoJson(geojson, { name: preset.name });
+        return res.json({ success: true, ...analysis, isPreset: true });
+      }
+    }
 
     let targetKmz = kmzUrl;
     let targetText = textUrl;
@@ -886,7 +942,12 @@ app.get('/api/typhoon/storm/:id', async (req, res) => {
 
     if (targetKmz) {
       try {
-        const kmzRes = await fetch(targetKmz, { signal: AbortSignal.timeout(15000) });
+        const kmzRes = await fetch(targetKmz, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+          },
+          signal: AbortSignal.timeout(15000)
+        });
         if (kmzRes.ok) {
           const buffer = Buffer.from(await kmzRes.arrayBuffer());
           geojson = parseKmzBuffer(buffer, stormName);
@@ -897,7 +958,12 @@ app.get('/api/typhoon/storm/:id', async (req, res) => {
     }
 
     if (!geojson && targetText) {
-      const textRes = await fetch(targetText, { signal: AbortSignal.timeout(10000) });
+      const textRes = await fetch(targetText, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        },
+        signal: AbortSignal.timeout(10000)
+      });
       if (textRes.ok) {
         const textContent = await textRes.text();
         geojson = parseTextWarningToGeoJson(textContent, stormName);
@@ -962,6 +1028,58 @@ app.get('/api/typhoon/province-metrics', (req, res) => {
   }
 });
 
+// ==========================================
+// 🌊 ENVIRONMENTAL DATA CRAWLERS APIS
+// (Lake Water, River Levels, Landslide Warnings)
+// ==========================================
+
+// 1. Crawl Mực Nước Hồ Chứa (Thủy Lợi Việt Nam)
+app.post('/api/environmental/lake-water', async (req, res) => {
+  try {
+    const { startDate, endDate } = req.body;
+    const result = await crawlLakeWater(startDate, endDate);
+    res.json(result);
+  } catch (error) {
+    console.error('API /api/environmental/lake-water error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 2. Crawl Mực Nước Sông & Cảnh Báo Lũ (VNDMS)
+app.post('/api/environmental/river-water', async (req, res) => {
+  try {
+    const { days = '7', stationIds } = req.body;
+    const result = await crawlRiverWater(days, stationIds);
+    res.json(result);
+  } catch (error) {
+    console.error('API /api/environmental/river-water error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 3. Crawl Cảnh Báo Sạt Lở & Lũ Quét (NCHMF)
+app.post('/api/environmental/landslide', async (req, res) => {
+  try {
+    const { mode = 'refresh', start, end, targetProvinces } = req.body;
+    const result = await crawlLandslideWarnings({ mode, start, end, targetProvinces });
+    res.json(result);
+  } catch (error) {
+    console.error('API /api/environmental/landslide error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 4. Tổng Hợp Số Liệu Chỉ Huy Môi Trường Toàn Diện
+app.get('/api/environmental/summary', async (req, res) => {
+  try {
+    const result = await getEnvironmentalHubSummary();
+    res.json(result);
+  } catch (error) {
+    console.error('API /api/environmental/summary error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 
 
 // SPA fallback: serve index.html for non-API routes
@@ -974,6 +1092,8 @@ if (fs.existsSync(path.join(staticPath, 'index.html'))) {
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT} (0.0.0.0)`);
+  // Khởi động tiến trình tự động sao lưu dữ liệu NCHMF mỗi giờ 1 lần
+  startHourlyAutoSync(60);
 });
 
 export default app;

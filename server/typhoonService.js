@@ -60,6 +60,34 @@ export function windCategoryCode(windKt) {
 }
 
 // ---------------------------------------------------------------------------
+// 0. HÀM PHÂN TÍCH CSV CHUẨN XỬ LÝ DẤU NGOẶC KÉP VÀ DẤU CÁCH
+// ---------------------------------------------------------------------------
+
+export function parseCsvLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (char === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === ',' && !inQuotes) {
+      result.push(current.trim());
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  result.push(current.trim());
+  return result;
+}
+
+// ---------------------------------------------------------------------------
 // 1. CÀO DANH SÁCH BÃO ĐANG HOẠT ĐỘNG (JTWC RSS + JMA Fallback)
 // ---------------------------------------------------------------------------
 
@@ -71,7 +99,7 @@ export async function fetchActiveTyphoons() {
     const rssUrl = 'https://www.metoc.navy.mil/jtwc/rss/jtwc.rss';
     const res = await fetch(rssUrl, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
       },
       signal: AbortSignal.timeout(12000)
     });
@@ -83,7 +111,6 @@ export async function fetchActiveTyphoons() {
       $('item').each((_, item) => {
         const title = $(item).find('title').text();
         const descHtml = $(item).find('description').text();
-        const $desc = cheerio.load(descHtml);
 
         // Tìm các thẻ bão ví dụ: "Typhoon 24W (Dujuan) Warning #15"
         const stormBlocks = descHtml.split(/(?=<p><b>(?:Typhoon|Tropical Storm|Tropical Cyclone|Super Typhoon|Tropical Depression)\s+[\w\d]+)/i);
@@ -153,6 +180,9 @@ export async function fetchActiveTyphoons() {
   if (storms.length === 0) {
     try {
       const jmaRes = await fetch('https://www.jma.go.jp/bosai/typhoon/data/targetTc.js', {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'
+        },
         signal: AbortSignal.timeout(6000)
       });
       if (jmaRes.ok) {
@@ -191,7 +221,7 @@ export async function fetchActiveTyphoons() {
 }
 
 // ---------------------------------------------------------------------------
-// 2. PARSE KMZ THÀNH GEOJSON (Tương thích kmz_to_geojson.py)
+// 2. PARSE KMZ THÀNH GEOJSON
 // ---------------------------------------------------------------------------
 
 function parseKmlCoordinates(text) {
@@ -273,9 +303,9 @@ export function parseKmzBuffer(buffer, fallbackName = 'TYPHOON') {
     const desc = $(pm).find('description').text() || '';
 
     // 1. Forecast Point
-    // Pattern: "17/00Z ... - 40 knots" hoặc "17/12Z - 50 knots"
+    // Pattern: "19/00Z (TYPHOON 24W (DUJUAN) WARNING NR 15 - 65 knots)" hoặc "19/12Z - 65 knots"
     const fcMatch = name.match(/^(\d{1,2})\/(\d{2})Z\b.*?-\s*(\d+)\s*knots/i);
-    if (fcMatch) {
+    if (fcMatch && $(pm).find('Point').length > 0) {
       const day = parseInt(fcMatch[1], 10);
       const hour = parseInt(fcMatch[2], 10);
       const windKt = parseInt(fcMatch[3], 10);
@@ -301,7 +331,7 @@ export function parseKmzBuffer(buffer, fallbackName = 'TYPHOON') {
       // Movement
       let movDeg = null;
       let movKmh = null;
-      const movMatch = desc.match(/(\d+)\s*DEG AT\s*([\d.]+)\s*KT/i);
+      const movMatch = desc.match(/(\d+)\s*DEG(?:REES)?(?:\s*TRUE)?\s*AT\s*([\d.]+)\s*K(?:T|TS|NOTS)?/i);
       if (movMatch) {
         movDeg = parseInt(movMatch[1], 10);
         movKmh = knotsToKmh(parseFloat(movMatch[2]));
@@ -314,7 +344,7 @@ export function parseKmzBuffer(buffer, fallbackName = 'TYPHOON') {
           geometry: { type: 'Point', coordinates: coords[0] },
           properties: {
             feature_type: 'forecast_point',
-            feature_name_vn: 'Vị trí dự báo',
+            feature_name_vn: currentFcTau === 0 ? 'Vị trí hiện tại' : `Dự báo +${currentFcTau}h`,
             storm_name: stormName,
             tau_h: currentFcTau,
             dtg_utc: dtUtc.toISOString(),
@@ -358,10 +388,10 @@ export function parseKmzBuffer(buffer, fallbackName = 'TYPHOON') {
       return;
     }
 
-    // 3. Best Track Point (vị trí quan trắc quá khứ ví dụ "26031412Z")
+    // 3. Best Track Point (vị trí quan trắc quá khứ ví dụ "26091300Z")
     const btkMatch = name.match(/^(\d{8})Z$/i);
-    if (btkMatch) {
-      const windMatch = desc.match(/(\d+)\s*knots/i);
+    if (btkMatch && $(pm).find('Point').length > 0) {
+      const windMatch = desc.match(/(?:Intensity:\s*)?(\d+)\s*knots/i);
       const windKt = windMatch ? parseInt(windMatch[1], 10) : 0;
       const yr = 2000 + parseInt(btkMatch[1].substring(0, 2), 10);
       const mo = parseInt(btkMatch[1].substring(2, 4), 10);
@@ -397,7 +427,7 @@ export function parseKmzBuffer(buffer, fallbackName = 'TYPHOON') {
     if (lineStringEl.length > 0) {
       const coords = parseKmlCoordinates(lineStringEl.find('coordinates').text());
       if (coords.length >= 2) {
-        const isBestTrack = name.toLowerCase().includes('best track');
+        const isBestTrack = name.toLowerCase().includes('best track') || name.toLowerCase().includes('observed') || name.toLowerCase().includes('historic');
         trackLines.push({
           type: 'Feature',
           geometry: { type: 'LineString', coordinates: coords },
@@ -514,7 +544,7 @@ export function parseTextWarningToGeoJson(text, stormName = 'TYPHOON') {
       geometry: { type: 'Point', coordinates: [lon, lat] },
       properties: {
         feature_type: 'forecast_point',
-        feature_name_vn: 'Vị trí dự báo',
+        feature_name_vn: `Dự báo +${tau}h`,
         storm_name: stormName,
         tau_h: tau,
         dtg_utc: dtUtc.toISOString(),
@@ -687,7 +717,7 @@ export function estimateLandfall(stormGeoJson) {
 
 let cachedLandfalls = null;
 
-function loadLandfallsDataset() {
+export function loadLandfallsDataset() {
   if (cachedLandfalls) return cachedLandfalls;
   if (!fs.existsSync(PATH_LANDFALLS)) return [];
 
@@ -695,12 +725,11 @@ function loadLandfallsDataset() {
   const lines = raw.trim().split('\n');
   if (lines.length < 2) return [];
 
-  const headers = lines[0].split(',').map(h => h.trim());
+  const headers = parseCsvLine(lines[0]);
   const rows = [];
 
   for (let i = 1; i < lines.length; i++) {
-    // Regex tách CSV có chứa dấu ngoặc kép
-    const values = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || lines[i].split(',');
+    const values = parseCsvLine(lines[i]);
     if (values.length >= headers.length) {
       const obj = {};
       headers.forEach((h, idx) => {
@@ -709,10 +738,33 @@ function loadLandfallsDataset() {
         obj[h] = v;
       });
 
-      obj.year = parseInt(obj.SID?.substring(0, 4) || '0', 10);
-      obj.wind_at_landfall_kph = parseFloat(obj.wind_at_landfall_kph || '0');
-      obj.time_on_land_h = parseFloat(obj.time_on_land_h || '0');
-      rows.push(obj);
+      const year = parseInt(obj.SID?.substring(0, 4) || '0', 10);
+      const windKph = parseFloat(obj.wind_at_landfall_kph || '0');
+      const timeOnLand = parseFloat(obj.time_on_land_h || '0');
+      const prov = (obj.province_landfall || '').trim();
+
+      const item = {
+        SID: obj.SID || '',
+        name: obj.NAME || 'UNNAMED',
+        NAME: obj.NAME || 'UNNAMED',
+        year,
+        calc_landfall_time: obj.calc_landfall_time || '',
+        landfall_time: obj.calc_landfall_time || '',
+        landfall_lat: parseFloat(obj.landfall_lat || '0'),
+        landfall_lon: parseFloat(obj.landfall_lon || '0'),
+        wind_at_landfall_kph: windKph,
+        wind_kph: windKph,
+        wind_kmh: windKph,
+        wind_kt: Math.round(windKph / 1.852),
+        province_landfall: prov,
+        province: prov,
+        provinces_crossed: obj.provinces_crossed || '',
+        time_on_land_h: timeOnLand,
+        hours_on_land: timeOnLand,
+        avg_wind_on_land_kph: parseFloat(obj.avg_wind_on_land_kph || '0')
+      };
+
+      rows.push(item);
     }
   }
 
@@ -725,7 +777,18 @@ export function compareHistorical(stormData, landfallEst = null) {
   const dataset = loadLandfallsDataset();
   const total = dataset.length;
   if (total === 0) {
-    return { total_historical_landfalls: 0, note: 'Chưa nạp được dataset lịch sử' };
+    return {
+      total_historical_landfalls: 0,
+      percentile: 0,
+      peak_forecast_percentile: 0,
+      mean_wind: 0,
+      max_wind: 0,
+      p90: 0,
+      historical_wind_stats: { mean_kph: 0, median_kph: 0, max_kph: 0, p75_kph: 0, p90_kph: 0 },
+      similar_intensity_storms: [],
+      similar_storms: [],
+      note: 'Chưa nạp được dataset lịch sử'
+    };
   }
 
   const currentWindKmh = stormData.current_position?.wind_kmh || 0;
@@ -737,11 +800,11 @@ export function compareHistorical(stormData, landfallEst = null) {
 
   // Thống kê sức gió lịch sử
   const winds = dataset.map(s => s.wind_at_landfall_kph).filter(w => w > 0).sort((a, b) => a - b);
-  const meanKmh = Math.round((winds.reduce((a, b) => a + b, 0) / winds.length) * 10) / 10;
-  const maxKmh = Math.max(...winds);
-  const medianKmh = winds[Math.floor(winds.length / 2)] || 0;
-  const p75Kmh = winds[Math.floor(winds.length * 0.75)] || 0;
-  const p90Kmh = winds[Math.floor(winds.length * 0.90)] || 0;
+  const meanKmh = winds.length > 0 ? Math.round((winds.reduce((a, b) => a + b, 0) / winds.length) * 10) / 10 : 0;
+  const maxKmh = winds.length > 0 ? Math.max(...winds) : 0;
+  const medianKmh = winds.length > 0 ? (winds[Math.floor(winds.length / 2)] || 0) : 0;
+  const p75Kmh = winds.length > 0 ? (winds[Math.floor(winds.length * 0.75)] || 0) : 0;
+  const p90Kmh = winds.length > 0 ? (winds[Math.floor(winds.length * 0.90)] || 0) : 0;
 
   // Tìm 10 cơn bão tương đồng về cường độ (±20 km/h)
   const similar = dataset
@@ -749,13 +812,17 @@ export function compareHistorical(stormData, landfallEst = null) {
     .sort((a, b) => b.year - a.year)
     .slice(0, 10)
     .map(s => ({
-      name: s.NAME,
+      name: s.name,
+      NAME: s.NAME,
       year: s.year,
       landfall_time: s.calc_landfall_time?.substring(0, 16) || '',
+      wind_kmh: s.wind_at_landfall_kph,
       wind_kph: s.wind_at_landfall_kph,
-      wind_kt: Math.round(s.wind_at_landfall_kph / 1.852),
+      wind_kt: s.wind_kt,
       province: s.province_landfall,
-      time_on_land_h: s.time_on_land_h
+      province_landfall: s.province_landfall,
+      time_on_land_h: s.time_on_land_h,
+      hours_on_land: s.time_on_land_h
     }));
 
   // Lịch sử của tỉnh thành (nếu có ước tính đổ bộ)
@@ -771,27 +838,38 @@ export function compareHistorical(stormData, landfallEst = null) {
         avg_wind_kph: Math.round((provWinds.reduce((a, b) => a + b, 0) / provWinds.length) * 10) / 10,
         max_wind_kph: Math.max(...provWinds),
         recent_storms: provStorms.slice(-5).map(s => ({
-          name: s.NAME,
+          name: s.name,
           year: s.year,
           wind_kph: s.wind_at_landfall_kph,
+          wind_kmh: s.wind_at_landfall_kph,
           time: s.calc_landfall_time?.substring(0, 10)
         }))
       };
     }
   }
 
+  const windStats = {
+    mean_kph: meanKmh,
+    mean_wind: meanKmh,
+    median_kph: medianKmh,
+    max_kph: maxKmh,
+    max_wind: maxKmh,
+    p75_kph: p75Kmh,
+    p90_kph: p90Kmh,
+    p90: p90Kmh
+  };
+
   return {
     total_historical_landfalls: total,
     year_range: '1950–2025',
     peak_forecast_percentile: percentile,
-    historical_wind_stats: {
-      mean_kph: meanKmh,
-      median_kph: medianKmh,
-      max_kph: maxKmh,
-      p75_kph: p75Kmh,
-      p90_kph: p90Kmh
-    },
+    percentile,
+    mean_wind: meanKmh,
+    max_wind: maxKmh,
+    p90: p90Kmh,
+    historical_wind_stats: windStats,
     similar_intensity_storms: similar,
+    similar_storms: similar,
     province_history: provinceHistory
   };
 }
@@ -835,11 +913,11 @@ export function analyzeStormGeoJson(geojson, options = {}) {
       lat: currentCoords[1],
       wind_kt: current.wind_kt || 0,
       wind_kmh: current.wind_kmh || 0,
-      category: current.category || '',
-      category_code: current.category_code || '',
+      category: current.category || 'Bão',
+      category_code: current.category_code || 'TC',
       time_vn: current.time_vn || '',
-      movement_deg: current.movement_deg,
-      movement_kmh: current.movement_kmh
+      movement_deg: current.movement_deg ?? null,
+      movement_kmh: current.movement_kmh ?? null
     },
     peak_forecast: peakForecast,
     forecast_points_count: forecastPts.length,
@@ -854,8 +932,15 @@ export function analyzeStormGeoJson(geojson, options = {}) {
 
   return {
     summary: stormSummary,
+    storm_meta: {
+      name: stormName,
+      fullName: options.fullName || stormName
+    },
+    current_stats: stormSummary.current_position,
     landfall: landfallEstimate,
+    landfall_assessment: landfallEstimate,
     historical: historicalComparison,
+    historical_benchmark: historicalComparison,
     geojson
   };
 }
@@ -872,14 +957,24 @@ export function getProvinceMetrics() {
 
   const list = [];
   for (let i = 1; i < lines.length; i++) {
-    const parts = lines[i].split(',');
-    if (parts.length >= 5) {
+    const parts = parseCsvLine(lines[i]);
+    if (parts.length >= 4) {
+      const prov = parts[0].trim();
+      const directCount = parseInt(parts[1]?.trim() || '0', 10) || 0;
+      const avgWind = parseFloat(parts[2]?.trim() || '0') || 0;
+      const crossedCount = parseInt(parts[3]?.trim() || '0', 10) || 0;
+      const avgDays = parseFloat(parts[4]?.trim() || '0') || 0;
+
       list.push({
-        province: parts[0].trim(),
-        direct_landfall_count: parseInt(parts[1].trim(), 10) || 0,
-        avg_wind_kph: parseFloat(parts[2].trim()) || 0,
-        crossed_count: parseInt(parts[3].trim(), 10) || 0,
-        avg_days_between: parseFloat(parts[4].trim()) || 0
+        province: prov,
+        direct_landfall_count: directCount,
+        landfall_count: directCount,
+        avg_wind_kph: avgWind,
+        avg_wind_kmh: avgWind,
+        max_wind_kmh: avgWind,
+        crossed_count: crossedCount,
+        swath_count: crossedCount,
+        avg_days_between: avgDays
       });
     }
   }
@@ -905,10 +1000,134 @@ export function getHistoricalLandfalls(query = {}) {
   if (query.search) {
     const q = query.search.toLowerCase();
     results = results.filter(s => 
-      s.NAME?.toLowerCase().includes(q) || 
-      s.province_landfall?.toLowerCase().includes(q)
+      s.name?.toLowerCase().includes(q) || 
+      s.province_landfall?.toLowerCase().includes(q) ||
+      s.year.toString().includes(q)
     );
   }
 
   return results.sort((a, b) => b.year - a.year);
+}
+
+// ---------------------------------------------------------------------------
+// 8. PRESETS CÁC SIÊU BÃO LỊCH SỬ TIÊU BIỂU TẠI VIỆT NAM
+// ---------------------------------------------------------------------------
+
+export const HISTORICAL_PRESETS = [
+  {
+    id: 'PRESET_YAGI_2024',
+    name: 'YAGI (Bão số 3 - 2024)',
+    year: 2024,
+    description: 'Siêu bão lịch sử đổ bộ Quảng Ninh - Hải Phòng (Sức gió cấp 14-16, giật cấp 17)',
+    landfall_province: 'tỉnh Quảng Ninh',
+    peak_wind_kmh: 213,
+    peak_wind_kt: 115,
+    track: [
+      { tau: 0, lat: 18.8, lon: 118.2, wind_kt: 75, wind_kmh: 138.9, time_vn: 'T5, 05/09 07:00' },
+      { tau: 12, lat: 19.3, lon: 115.6, wind_kt: 95, wind_kmh: 175.9, time_vn: 'T5, 05/09 19:00' },
+      { tau: 24, lat: 19.8, lon: 112.8, wind_kt: 115, wind_kmh: 213.0, time_vn: 'T6, 06/09 07:00' },
+      { tau: 36, lat: 20.2, lon: 110.1, wind_kt: 110, wind_kmh: 203.7, time_vn: 'T6, 06/09 19:00' },
+      { tau: 48, lat: 20.8, lon: 107.4, wind_kt: 90, wind_kmh: 166.7, time_vn: 'T7, 07/09 07:00' },
+      { tau: 60, lat: 21.3, lon: 105.8, wind_kt: 55, wind_kmh: 101.9, time_vn: 'T7, 07/09 19:00' },
+      { tau: 72, lat: 21.8, lon: 103.5, wind_kt: 25, wind_kmh: 46.3, time_vn: 'CN, 08/09 07:00' }
+    ]
+  },
+  {
+    id: 'PRESET_MOLAVE_2020',
+    name: 'MOLAVE (Bão số 9 - 2020)',
+    year: 2020,
+    description: 'Bão rất mạnh đổ bộ Quảng Ngãi - Quảng Nam tháng 10/2020',
+    landfall_province: 'tỉnh Quảng Ngãi',
+    peak_wind_kmh: 175.9,
+    peak_wind_kt: 95,
+    track: [
+      { tau: 0, lat: 13.5, lon: 119.5, wind_kt: 70, wind_kmh: 129.6, time_vn: 'T2, 26/10 07:00' },
+      { tau: 12, lat: 13.8, lon: 116.8, wind_kt: 85, wind_kmh: 157.4, time_vn: 'T2, 26/10 19:00' },
+      { tau: 24, lat: 14.3, lon: 113.7, wind_kt: 95, wind_kmh: 175.9, time_vn: 'T3, 27/10 07:00' },
+      { tau: 36, lat: 14.8, lon: 110.8, wind_kt: 90, wind_kmh: 166.7, time_vn: 'T3, 27/10 19:00' },
+      { tau: 48, lat: 15.2, lon: 108.9, wind_kt: 75, wind_kmh: 138.9, time_vn: 'T4, 28/10 07:00' },
+      { tau: 60, lat: 15.5, lon: 106.8, wind_kt: 40, wind_kmh: 74.1, time_vn: 'T4, 28/10 19:00' }
+    ]
+  },
+  {
+    id: 'PRESET_DAMREY_2017',
+    name: 'DAMREY (Bão số 12 - 2017)',
+    year: 2017,
+    description: 'Bão mạnh đổ bộ trực tiếp Khánh Hòa - Nam Trung Bộ tháng 11/2017',
+    landfall_province: 'tỉnh Khánh Hòa',
+    peak_wind_kmh: 138.9,
+    peak_wind_kt: 75,
+    track: [
+      { tau: 0, lat: 12.6, lon: 117.8, wind_kt: 45, wind_kmh: 83.3, time_vn: 'T5, 02/11 07:00' },
+      { tau: 12, lat: 12.7, lon: 115.4, wind_kt: 60, wind_kmh: 111.1, time_vn: 'T5, 02/11 19:00' },
+      { tau: 24, lat: 12.8, lon: 113.1, wind_kt: 75, wind_kmh: 138.9, time_vn: 'T6, 03/11 07:00' },
+      { tau: 36, lat: 12.7, lon: 110.9, wind_kt: 75, wind_kmh: 138.9, time_vn: 'T6, 03/11 19:00' },
+      { tau: 48, lat: 12.6, lon: 109.1, wind_kt: 65, wind_kmh: 120.4, time_vn: 'T7, 04/11 07:00' },
+      { tau: 60, lat: 12.5, lon: 106.7, wind_kt: 30, wind_kmh: 55.6, time_vn: 'T7, 04/11 19:00' }
+    ]
+  },
+  {
+    id: 'PRESET_HAIYAN_2013',
+    name: 'HAIYAN (Siêu bão Hải Yến - 2013)',
+    year: 2013,
+    description: 'Một trong những siêu bão mạnh nhất lịch sử nhân loại càn quét Biển Đông',
+    landfall_province: 'tỉnh Quảng Ninh',
+    peak_wind_kmh: 196.4,
+    peak_wind_kt: 106,
+    track: [
+      { tau: 0, lat: 11.2, lon: 120.5, wind_kt: 120, wind_kmh: 222.2, time_vn: 'T6, 08/11 19:00' },
+      { tau: 12, lat: 13.5, lon: 116.8, wind_kt: 105, wind_kmh: 194.5, time_vn: 'T7, 09/11 07:00' },
+      { tau: 24, lat: 16.2, lon: 112.5, wind_kt: 95, wind_kmh: 175.9, time_vn: 'T7, 09/11 19:00' },
+      { tau: 36, lat: 19.1, lon: 108.9, wind_kt: 80, wind_kmh: 148.2, time_vn: 'CN, 10/11 07:00' },
+      { tau: 48, lat: 21.2, lon: 107.6, wind_kt: 65, wind_kmh: 120.4, time_vn: 'T2, 11/11 07:00' }
+    ]
+  }
+];
+
+export function generatePresetGeoJson(presetId) {
+  const p = HISTORICAL_PRESETS.find(item => item.id === presetId) || HISTORICAL_PRESETS[0];
+  const forecastPoints = [];
+  const coords = [];
+
+  p.track.forEach(pt => {
+    forecastPoints.push({
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [pt.lon, pt.lat] },
+      properties: {
+        feature_type: 'forecast_point',
+        feature_name_vn: pt.tau === 0 ? 'Vị trí bắt đầu' : `Mốc +${pt.tau}h`,
+        storm_name: p.name,
+        tau_h: pt.tau,
+        time_vn: pt.time_vn,
+        wind_kt: pt.wind_kt,
+        wind_kmh: pt.wind_kmh,
+        category: windCategory(pt.wind_kt),
+        category_code: windCategoryCode(pt.wind_kt)
+      }
+    });
+    coords.push([pt.lon, pt.lat]);
+  });
+
+  const trackLine = {
+    type: 'Feature',
+    geometry: { type: 'LineString', coordinates: coords },
+    properties: {
+      feature_type: 'forecast_track',
+      feature_name_vn: 'Đường đi bão lịch sử',
+      name: p.name
+    }
+  };
+
+  return {
+    type: 'FeatureCollection',
+    features: [trackLine, ...forecastPoints],
+    _meta: {
+      source: 'Historical Preset Archive',
+      storm_name: p.name,
+      doc_name: p.name,
+      preset_id: p.id,
+      forecast_count: forecastPoints.length,
+      best_track_count: 0
+    }
+  };
 }

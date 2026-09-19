@@ -6,10 +6,11 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "build": "echo 'No build step required for server'",
+    "build": "bash render-build.sh",
+    "postinstall": "npx puppeteer browsers install chrome || true",
     "dev": "node --watch index.js",
     "sync:nchmf": "node autoSyncNCHMF.js",
-    "sync:watch": "node autoSyncNCHMF.js --watch --interval 15"
+    "sync:watch": "node autoSyncNCHMF.js --watch --interval 60"
   },
   "keywords": [],
   "author": "",
