@@ -69,21 +69,21 @@ export const SNAZZY_THEMES = {
     attribution: '&copy; OpenStreetMap contributors'
   },
 
-  // 6. Carto Dark Matter (Bản đồ Đêm không cần API key, không watermark)
-  carto_dark: {
-    id: 'carto_dark',
-    name: '🌙 Bản đồ Tự do Đêm (Carto Dark)',
+  // 6. ESRI Dark Gray Canvas (Bản đồ Đêm tự do, 100% không cần key, không watermark)
+  esri_dark: {
+    id: 'esri_dark',
+    name: '🌙 Bản đồ Tự do Đêm (ESRI Dark)',
     isLeaflet: true,
-    tileUrl: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    attribution: '&copy; CARTO'
+    tileUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; Esri, HERE, Garmin, FAO, NOAA, USGS'
   },
 
-  // 7. Carto Positron (Bản đồ Sáng tối giản không cần API key, không watermark)
-  carto_light: {
-    id: 'carto_light',
-    name: '☀️ Bản đồ Tự do Sáng (Carto Positron)',
+  // 7. ESRI World Imagery (Vệ tinh tự do không watermark)
+  esri_satellite: {
+    id: 'esri_satellite',
+    name: '🛰️ Bản đồ Vệ Tinh Tự do (ESRI)',
     isLeaflet: true,
-    tileUrl: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    attribution: '&copy; CARTO'
+    tileUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; Esri, Maxar, Earthstar Geographics'
   }
 };

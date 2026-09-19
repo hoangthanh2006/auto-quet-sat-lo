@@ -964,8 +964,8 @@ export default function ToolTyphoon() {
                   </optgroup>
                   <optgroup label="🌐 Bản đồ Tự Do (100% Không Watermark)">
                     <option value="osm_clean">🌐 Bản đồ Tự do (OpenStreetMap)</option>
-                    <option value="carto_dark">🌙 Bản đồ Tự do Đêm (Carto Dark)</option>
-                    <option value="carto_light">☀️ Bản đồ Tự do Sáng (Carto Positron)</option>
+                    <option value="esri_dark">🌙 Bản đồ Tự do Đêm (ESRI Dark)</option>
+                    <option value="esri_satellite">🛰️ Bản đồ Vệ Tinh Tự do (ESRI)</option>
                   </optgroup>
                 </select>
               </div>
