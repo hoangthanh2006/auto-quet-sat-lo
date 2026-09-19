@@ -134,9 +134,9 @@ export default function ToolTyphoon() {
         scrollWheelZoom: true
       });
 
-      // Lớp bản đồ nền CartoDB Positron nhẹ nhàng, dễ đọc
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://carto.com/">CARTO</a>, JTWC, Spotlight VnExpress',
+      // Lớp bản đồ nền OpenStreetMap không cần API key, không watermark
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, JTWC, Spotlight VnExpress',
         maxZoom: 18
       }).addTo(map);
 
