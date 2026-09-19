@@ -676,19 +676,21 @@ export const fetchLuquetSatloRadar = async ({ date } = {}) => {
 };
 
 /**
- * Tạo URL Proxy có CORS cho ảnh Radar nạp vào WebGL canvas của MapLibre
+ * Tạo URL nạp ảnh Radar vào WebGL canvas của MapLibre
+ * Máy chủ vndms.dmc.gov.vn đã hỗ trợ Access-Control-Allow-Origin: * mặc định nên nạp trực tiếp là nhanh và chuẩn xác nhất.
  */
 export const getRadarProxyUrl = (originalUrl) => {
   if (!originalUrl) return '';
+  if (originalUrl.includes('vndms.dmc.gov.vn') || originalUrl.includes('dmc.gov.vn') || originalUrl.includes('dmptc.gov.vn')) {
+    return originalUrl;
+  }
   if (typeof window === 'undefined') return originalUrl;
   
-  // 1. Nếu có backend (Node dev hoặc Render)
-  if (API_BASE_URL && (API_BASE_URL.startsWith('http') || API_BASE_URL.startsWith('/api'))) {
-    return `${API_BASE_URL}/luquet-satlo/radar-proxy?url=${encodeURIComponent(originalUrl)}`;
+  if (import.meta.env.DEV) {
+    return `/api/luquet-satlo/radar-proxy?url=${encodeURIComponent(originalUrl)}`;
   }
   
-  // 2. Fallback CORS proxy cho static hosting
-  return `https://api.allorigins.win/raw?url=${encodeURIComponent(originalUrl)}`;
+  return originalUrl;
 };
 
 export const triggerServerAutoSync = async () => {

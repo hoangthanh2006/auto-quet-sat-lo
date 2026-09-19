@@ -264,7 +264,7 @@ export default function ToolLuquetSatlo() {
   };
 
   // ----------------------------------------------------
-  // RADAR MAPLIBRE GL JS WEBGEL LIFECYCLE & UPDATE
+  // RADAR MAPLIBRE GL JS WEBGL LIFECYCLE & UPDATE
   // ----------------------------------------------------
   useEffect(() => {
     let timer;
@@ -276,18 +276,15 @@ export default function ToolLuquetSatlo() {
     return () => clearInterval(timer);
   }, [isRadarPlaying, radarData]);
 
-  useEffect(() => {
-    if (activeTab !== 'layers' || activeLayerSubTab !== 'radar' || radarViewMode !== 'map') return;
-    if (!radarMapContainerRef.current) return;
+  // Hàm render / update raster radar lên MapLibre
+  const updateRadarRasterLayer = (map) => {
+    if (!map || !map.isStyleLoaded()) return;
 
     const frame = radarData?.timeline?.[selectedRadarIdx];
     const frameUrl = frame?.image_url;
     if (!frameUrl) return;
 
     const proxyUrl = getRadarProxyUrl(frameUrl);
-    const basemapConfig = MAPLIBRE_BASEMAPS[radarBasemap] || MAPLIBRE_BASEMAPS.dark_matter;
-    const basemapStyle = basemapConfig.style;
-
     const boundsCoords = [
       [97.0, 25.2],  // NW (Top-left)
       [115.0, 25.2], // NE (Top-right)
@@ -295,36 +292,45 @@ export default function ToolLuquetSatlo() {
       [97.0, 7.2]    // SW (Bottom-left)
     ];
 
-    const updateRadarRaster = (map) => {
-      if (!map || !map.isStyleLoaded()) return;
-
-      const source = map.getSource('radar-cmax-source');
-      if (source && source.updateImage) {
+    const source = map.getSource('radar-cmax-source');
+    if (source && source.updateImage) {
+      try {
         source.updateImage({
           url: proxyUrl,
           coordinates: boundsCoords
         });
-      } else if (!source) {
-        map.addSource('radar-cmax-source', {
-          type: 'image',
-          url: proxyUrl,
-          coordinates: boundsCoords
-        });
-        map.addLayer({
-          id: 'radar-cmax-layer',
-          type: 'raster',
-          source: 'radar-cmax-source',
-          paint: {
-            'raster-opacity': radarMapOpacity,
-            'raster-fade-duration': 0
-          }
-        });
+      } catch (e) {
+        console.warn('[MapLibre] updateImage warning:', e);
       }
+    } else if (!source) {
+      map.addSource('radar-cmax-source', {
+        type: 'image',
+        url: proxyUrl,
+        coordinates: boundsCoords
+      });
+      map.addLayer({
+        id: 'radar-cmax-layer',
+        type: 'raster',
+        source: 'radar-cmax-source',
+        paint: {
+          'raster-opacity': radarMapOpacity,
+          'raster-fade-duration': 0,
+          'raster-resampling': 'linear'
+        }
+      });
+    }
 
-      if (map.getLayer('radar-cmax-layer')) {
-        map.setPaintProperty('radar-cmax-layer', 'raster-opacity', radarMapOpacity);
-      }
-    };
+    if (map.getLayer('radar-cmax-layer')) {
+      map.setPaintProperty('radar-cmax-layer', 'raster-opacity', radarMapOpacity);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab !== 'layers' || activeLayerSubTab !== 'radar') return;
+    if (!radarMapContainerRef.current) return;
+
+    const basemapConfig = MAPLIBRE_BASEMAPS[radarBasemap] || MAPLIBRE_BASEMAPS.dark_matter;
+    const basemapStyle = basemapConfig.style;
 
     if (!radarMapInstanceRef.current) {
       const map = new maplibregl.Map({
@@ -340,19 +346,19 @@ export default function ToolLuquetSatlo() {
       map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
 
       map.on('load', () => {
-        updateRadarRaster(map);
+        updateRadarRasterLayer(map);
       });
 
       radarMapInstanceRef.current = map;
     } else {
       const map = radarMapInstanceRef.current;
       if (map.isStyleLoaded()) {
-        updateRadarRaster(map);
+        updateRadarRasterLayer(map);
       } else {
-        map.once('style.load', () => updateRadarRaster(map));
+        map.once('style.load', () => updateRadarRasterLayer(map));
       }
     }
-  }, [activeTab, activeLayerSubTab, radarViewMode, radarBasemap, selectedRadarIdx, radarMapOpacity, radarData]);
+  }, [activeTab, activeLayerSubTab, selectedRadarIdx, radarMapOpacity, radarData]);
 
   // Handle Basemap change for Radar Map
   useEffect(() => {
@@ -360,7 +366,19 @@ export default function ToolLuquetSatlo() {
     const map = radarMapInstanceRef.current;
     const basemapConfig = MAPLIBRE_BASEMAPS[radarBasemap] || MAPLIBRE_BASEMAPS.dark_matter;
     map.setStyle(basemapConfig.style);
+    map.once('style.load', () => {
+      updateRadarRasterLayer(map);
+    });
   }, [radarBasemap]);
+
+  // Resize map when radar view mode is switched to map
+  useEffect(() => {
+    if (radarViewMode === 'map' && radarMapInstanceRef.current) {
+      setTimeout(() => {
+        radarMapInstanceRef.current?.resize();
+      }, 50);
+    }
+  }, [radarViewMode]);
 
   // Thực hiện quét tự động NCHMF và đẩy snapshot vào Firebase RTDB (TẤT CẢ CÁC LỚP)
   const performAutoSync = async (source = 'client_auto') => {
@@ -1882,44 +1900,42 @@ export default function ToolLuquetSatlo() {
                     </div>
 
                     {/* View mode 1: Interactive MapLibre GL Map */}
-                    {radarViewMode === 'map' ? (
-                      <div className="w-full h-[480px] relative">
-                        <div ref={radarMapContainerRef} className="w-full h-full z-0" />
-                        
-                        {/* Legend in corner */}
-                        <div className="absolute bottom-4 left-4 z-10 bg-black/80 backdrop-blur-md p-2.5 rounded-xl text-white text-[10px] space-y-1 border border-white/10 pointer-events-none select-none">
-                          <div className="font-bold text-cyan-300">Cường độ phản hồi dBZ (KTTV):</div>
-                          <div className="flex items-center gap-1.5">
-                            <span className="w-2.5 h-2.5 rounded-sm bg-blue-500 inline-block"></span>
-                            <span className="text-slate-300">Mưa nhẹ (15-25 dBZ)</span>
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span>
-                            <span className="text-slate-300">Mưa vừa (30-40 dBZ)</span>
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <span className="w-2.5 h-2.5 rounded-sm bg-amber-500 inline-block"></span>
-                            <span className="text-slate-300">Mưa to (45-55 dBZ)</span>
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <span className="w-2.5 h-2.5 rounded-sm bg-rose-600 inline-block"></span>
-                            <span className="text-slate-300">Mưa rất to / Dông lốc (&gt;55 dBZ)</span>
-                          </div>
+                    <div className={`w-full h-[480px] relative ${radarViewMode === 'map' ? 'block' : 'hidden'}`}>
+                      <div ref={radarMapContainerRef} className="w-full h-full z-0" />
+                      
+                      {/* Legend in corner */}
+                      <div className="absolute bottom-4 left-4 z-10 bg-black/80 backdrop-blur-md p-2.5 rounded-xl text-white text-[10px] space-y-1 border border-white/10 pointer-events-none select-none">
+                        <div className="font-bold text-cyan-300">Cường độ phản hồi dBZ (KTTV):</div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-2.5 h-2.5 rounded-sm bg-blue-500 inline-block"></span>
+                          <span className="text-slate-300">Mưa nhẹ (15-25 dBZ)</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span>
+                          <span className="text-slate-300">Mưa vừa (30-40 dBZ)</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-2.5 h-2.5 rounded-sm bg-amber-500 inline-block"></span>
+                          <span className="text-slate-300">Mưa to (45-55 dBZ)</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-2.5 h-2.5 rounded-sm bg-rose-600 inline-block"></span>
+                          <span className="text-slate-300">Mưa rất to / Dông lốc (&gt;55 dBZ)</span>
                         </div>
                       </div>
-                    ) : (
-                      /* View mode 2: Static Image */
-                      <div className="w-full h-[480px] p-4 flex items-center justify-center bg-slate-950">
-                        <img
-                          src={radarData.timeline[selectedRadarIdx]?.image_url}
-                          alt="Radar composite"
-                          className="max-h-[440px] w-auto object-contain rounded-lg shadow-2xl"
-                          onError={(e) => {
-                            e.target.src = 'https://images.unsplash.com/photo-1592210454359-9043f067919b?w=600&auto=format&fit=crop&q=60';
-                          }}
-                        />
-                      </div>
-                    )}
+                    </div>
+
+                    {/* View mode 2: Static Image */}
+                    <div className={`w-full h-[480px] p-4 flex items-center justify-center bg-slate-950 ${radarViewMode === 'image' ? 'flex' : 'hidden'}`}>
+                      <img
+                        src={radarData.timeline[selectedRadarIdx]?.image_url}
+                        alt="Radar composite"
+                        className="max-h-[440px] w-auto object-contain rounded-lg shadow-2xl"
+                        onError={(e) => {
+                          e.target.src = 'https://images.unsplash.com/photo-1592210454359-9043f067919b?w=600&auto=format&fit=crop&q=60';
+                        }}
+                      />
+                    </div>
 
                     {/* Timeline 12 Frames bar under map/image */}
                     <div className="w-full bg-slate-900/95 p-3 border-t border-slate-800 flex items-center gap-3">
