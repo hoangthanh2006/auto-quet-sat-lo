@@ -1,55 +1,67 @@
-// Cấu hình các bộ basemap vector WebGL cho MapLibre GL JS (Hỗ trợ Protomaps / Jawg / MapTiler / CARTO)
+// Cấu hình các bộ basemap WebGL cho MapLibre GL JS (Hỗ trợ Protomaps / Jawg / MapTiler / CARTO / ESRI)
 
-export const SATELLITE_GL_STYLE = {
+export const createRasterStyle = (tiles, attribution = '', maxzoom = 19) => ({
   version: 8,
-  name: 'ESRI World Imagery Satellite',
   sources: {
-    'esri-satellite-source': {
+    'raster-tiles': {
       type: 'raster',
-      tiles: [
-        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-      ],
+      tiles: Array.isArray(tiles) ? tiles : [tiles],
       tileSize: 256,
-      attribution: '&copy; Esri, Maxar, Earthstar Geographics'
+      attribution
     }
   },
   layers: [
     {
-      id: 'esri-satellite-layer',
+      id: 'raster-layer',
       type: 'raster',
-      source: 'esri-satellite-source',
+      source: 'raster-tiles',
       minzoom: 0,
-      maxzoom: 19
+      maxzoom
     }
   ]
-};
+});
 
 export const MAPLIBRE_BASEMAPS = {
   // 1. Dark Matter (Chế độ tối WebGL - Khuyên dùng cho bão)
   dark_matter: {
     id: 'dark_matter',
     name: '🌙 Protomaps / Dark Matter (Tối)',
-    provider: 'CARTO / OSM Vector',
-    style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+    provider: 'CARTO / OSM WebGL',
+    style: createRasterStyle([
+      'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+      'https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+      'https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+      'https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
+    ], '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'),
     description: 'Nền tối WebGL 60fps, tương phản cao, làm rực rỡ đường bão và vùng gió'
   },
 
-  // 2. Positron (Tối giản / Báo chí)
+  // 2. Positron (Tối giản / Báo chí sáng)
   positron: {
     id: 'positron',
     name: '☀️ Protomaps / Positron (Sáng Tinh Tế)',
-    provider: 'CARTO / OSM Vector',
-    style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+    provider: 'CARTO / OSM WebGL',
+    style: createRasterStyle([
+      'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+      'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+      'https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+      'https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+    ], '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'),
     description: 'Phong cách infographic báo chí hiện đại chuẩn VnExpress Spotlight'
   },
 
-  // 3. Voyager (Chi tiết địa danh)
+  // 3. Voyager (Chi tiết địa danh & đường sá)
   voyager: {
     id: 'voyager',
-    name: '🧭 Voyager (Chi tiết địa hình & nhãn)',
-    provider: 'CARTO / OSM Vector',
-    style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
-    description: 'Hiển thị đầy đủ địa giới, tên đảo, giao thông và thành phố'
+    name: '🧭 Protomaps / Voyager (Địa Hình & Nhãn)',
+    provider: 'CARTO / OSM WebGL',
+    style: createRasterStyle([
+      'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+      'https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+      'https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+      'https://d.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png'
+    ], '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'),
+    description: 'Hiển thị đầy đủ địa giới, tên đảo Hoàng Sa/Trường Sa, giao thông và thành phố'
   },
 
   // 4. Vệ tinh thực tế WebGL
@@ -57,38 +69,64 @@ export const MAPLIBRE_BASEMAPS = {
     id: 'satellite',
     name: '🛰️ Vệ Tinh Thực Tế (ESRI Satellite)',
     provider: 'ESRI WebGL',
-    style: SATELLITE_GL_STYLE,
-    description: 'Ảnh chụp vệ tinh độ phân giải cao toàn khu vực Biển Đông & Thái Bình Dương'
+    style: createRasterStyle([
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+    ], '&copy; Esri, Maxar, Earthstar Geographics'),
+    description: 'Ảnh chụp vệ tinh độ phân giải cao toàn khu vực Biển Đông & Tây Thái Bình Dương'
   },
 
-  // 5. MapLibre Demo Tiles
-  maplibre_demo: {
-    id: 'maplibre_demo',
-    name: '🌐 MapLibre Open Vector',
-    provider: 'MapLibre Org',
-    style: 'https://demotiles.maplibre.org/style.json',
-    description: 'Bản đồ vector nguồn mở tiêu chuẩn từ cộng đồng MapLibre'
+  // 5. OpenStreetMap Chuẩn
+  osm: {
+    id: 'osm',
+    name: '🗺️ OpenStreetMap Standard',
+    provider: 'OSM Org',
+    style: createRasterStyle([
+      'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+    ], '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'),
+    description: 'Bản đồ đường bộ quốc tế nguồn mở toàn cầu'
   },
 
   // 6. MapTiler Dataviz Dark (Nếu có Key)
   maptiler_dark: {
     id: 'maptiler_dark',
-    name: '🗺️ MapTiler Dataviz (Cần Key)',
+    name: '🗺️ MapTiler Dataviz Dark (Vector GL)',
     provider: 'MapTiler',
     requiresKey: true,
     keyParam: 'maptilerKey',
     getStyle: (key) => `https://api.maptiler.com/maps/dataviz-dark/style.json?key=${key || 'get_free_key'}`,
-    description: 'Bản đồ chuyên dụng hiển thị dữ liệu khoa học khí tượng từ MapTiler'
+    description: 'Bản đồ vector chuyên dụng hiển thị dữ liệu khoa học khí tượng từ MapTiler'
   },
 
-  // 7. Jawg Maps Dark (Nếu có Token)
+  // 7. MapTiler Streets (Nếu có Key)
+  maptiler_streets: {
+    id: 'maptiler_streets',
+    name: '🏙️ MapTiler Streets (Vector GL)',
+    provider: 'MapTiler',
+    requiresKey: true,
+    keyParam: 'maptilerKey',
+    getStyle: (key) => `https://api.maptiler.com/maps/streets-v2/style.json?key=${key || 'get_free_key'}`,
+    description: 'Bản đồ vector đường phố đa tầng hiện đại từ MapTiler'
+  },
+
+  // 8. Jawg Maps Dark (Nếu có Token)
   jawg_dark: {
     id: 'jawg_dark',
-    name: '🐆 Jawg Maps Dark (Cần Token)',
+    name: '🐆 Jawg Maps Dark (Vector GL)',
     provider: 'Jawg Maps',
     requiresKey: true,
     keyParam: 'jawgToken',
     getStyle: (token) => `https://api.jawg.io/styles/jawg-dark.json?access-token=${token || 'get_free_token'}`,
-    description: 'Bản đồ vector phong cách cao cấp từ Jawg Maps'
+    description: 'Bản đồ vector phong cách cao cấp siêu nét từ Jawg Maps'
+  },
+
+  // 9. Jawg Maps Sunny (Nếu có Token)
+  jawg_sunny: {
+    id: 'jawg_sunny',
+    name: '☀️ Jawg Maps Sunny (Vector GL)',
+    provider: 'Jawg Maps',
+    requiresKey: true,
+    keyParam: 'jawgToken',
+    getStyle: (token) => `https://api.jawg.io/styles/jawg-sunny.json?access-token=${token || 'get_free_token'}`,
+    description: 'Bản đồ vector tươi sáng cao cấp từ Jawg Maps'
   }
 };

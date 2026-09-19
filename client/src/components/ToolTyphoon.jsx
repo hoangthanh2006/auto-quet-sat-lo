@@ -78,9 +78,12 @@ export default function ToolTyphoon() {
       const res = await getActiveTyphoons();
       if (res.success && res.storms?.length > 0) {
         setActiveStorms(res.storms);
+        const priorityStorm = res.storms.find(s => s.id !== 'FORMATION' && s.isNorthwestPacific) ||
+                              res.storms.find(s => s.id !== 'FORMATION') ||
+                              res.storms[0];
         if (autoSelectFirst && (!selectedStormId || !res.storms.some(s => s.id === selectedStormId))) {
-          setSelectedStormId(res.storms[0].id);
-          loadStormAnalysis(res.storms[0].id, res.storms[0]);
+          setSelectedStormId(priorityStorm.id);
+          loadStormAnalysis(priorityStorm.id, priorityStorm);
         }
       } else {
         setActiveStorms([]);
