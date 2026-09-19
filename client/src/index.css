@@ -87,3 +87,15 @@
   animation: pulse-glow 3s infinite;
 }
 
+/* Clean Google Maps UI / Snazzy Maps */
+.gm-err-container {
+  display: none !important;
+}
+.dismissButton {
+  display: none !important;
+}
+.gm-style-pbc {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+

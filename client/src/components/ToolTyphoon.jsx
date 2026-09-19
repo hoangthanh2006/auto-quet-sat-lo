@@ -59,6 +59,19 @@ export default function ToolTyphoon() {
 
   // 1. Nạp script Google Maps với Snazzy Maps
   useEffect(() => {
+    // Ngăn chặn dialog window.alert gây chặn thao tác của Google Maps trong chế độ development
+    if (typeof window !== 'undefined' && !window.__gmAlertPatched) {
+      const origAlert = window.alert;
+      window.alert = function(...args) {
+        if (args[0] && typeof args[0] === 'string' && (args[0].includes('Google Maps') || args[0].includes('developers.google.com'))) {
+          console.warn('[Google Maps Alert Suppressed]:', ...args);
+          return;
+        }
+        return origAlert.apply(this, args);
+      };
+      window.__gmAlertPatched = true;
+    }
+
     if (window.google && window.google.maps) {
       setGoogleReady(true);
       return;
