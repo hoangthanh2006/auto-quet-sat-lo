@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import L from 'leaflet';
 import { 
   Wind, Eye, Compass, CloudRain, AlertTriangle, Gauge, Clock, MapPin, 
   TrendingUp, BarChart3, UploadCloud, FileText, Download, Copy, Check, 
   RefreshCw, Sliders, ShieldAlert, Layers, ExternalLink, ChevronRight,
-  Info, Sparkles, Navigation, Globe, Palette
+  Info, Sparkles, Navigation, Globe, Palette, AlertCircle
 } from 'lucide-react';
 import { 
   getActiveTyphoons, 
@@ -29,9 +30,9 @@ export default function ToolTyphoon() {
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'historical' | 'provinces'
   const [copiedSummary, setCopiedSummary] = useState(false);
 
-  // Theme Snazzy Maps
+  // Theme Snazzy Maps & Engine
   const [snazzyTheme, setSnazzyTheme] = useState('subtle_grayscale');
-  const [mapType, setMapType] = useState('google'); // 'google' | 'leaflet'
+  const isLeafletTheme = Boolean(SNAZZY_THEMES[snazzyTheme]?.isLeaflet);
   const [googleReady, setGoogleReady] = useState(false);
 
   // Modal upload file KMZ
@@ -51,13 +52,23 @@ export default function ToolTyphoon() {
   const [showBestTrack, setShowBestTrack] = useState(true);
   const [showForecastTrack, setShowForecastTrack] = useState(true);
 
-  // Refs bản đồ Google Maps
+  // Refs Google Maps
   const gmapContainerRef = useRef(null);
   const gmapInstanceRef = useRef(null);
   const gmapOverlaysRef = useRef([]);
   const infoWindowRef = useRef(null);
 
-  // 1. Nạp script Google Maps với Snazzy Maps
+  // Refs Leaflet
+  const leafletContainerRef = useRef(null);
+  const leafletInstanceRef = useRef(null);
+  const leafletTileLayerRef = useRef(null);
+  const leafletLayersRef = useRef({
+    windRadiiGroup: null,
+    trackGroup: null,
+    markerGroup: null
+  });
+
+  // 1. Tự động loại bỏ modal lỗi "Trang này không thể tải Google Maps đúng cách"
   useEffect(() => {
     // Ngăn chặn dialog window.alert gây chặn thao tác của Google Maps trong chế độ development
     if (typeof window !== 'undefined' && !window.__gmAlertPatched) {
@@ -72,35 +83,75 @@ export default function ToolTyphoon() {
       window.__gmAlertPatched = true;
     }
 
+    // Quét và tiêu hủy các modal lỗi và backdrop do Google Maps tạo ra
+    const cleanModals = () => {
+      const selectors = [
+        '.gm-err-container',
+        '.gm-err-content',
+        '[class*="gm-err"]',
+        '.gm-style-moc',
+        'div[aria-label="Google"][role="dialog"]'
+      ];
+      selectors.forEach(sel => {
+        document.querySelectorAll(sel).forEach(node => {
+          try {
+            node.style.setProperty('display', 'none', 'important');
+            node.style.setProperty('visibility', 'hidden', 'important');
+            node.style.setProperty('opacity', '0', 'important');
+            node.style.setProperty('pointer-events', 'none', 'important');
+            if (node.parentNode) {
+              node.parentNode.removeChild(node);
+            }
+          } catch (e) {}
+        });
+      });
+
+      // Tắt lớp mờ đen trên bản đồ
+      document.querySelectorAll('.gm-style-pbc').forEach(node => {
+        try {
+          node.style.setProperty('opacity', '0', 'important');
+          node.style.setProperty('pointer-events', 'none', 'important');
+        } catch (e) {}
+      });
+    };
+
+    cleanModals();
+    const interval = setInterval(cleanModals, 200);
+    const observer = new MutationObserver(cleanModals);
+    observer.observe(document.body, { childList: true, subtree: true });
+
     if (window.google && window.google.maps) {
       setGoogleReady(true);
-      return;
-    }
-
-    const scriptId = 'google-maps-sdk';
-    if (document.getElementById(scriptId)) {
-      const checkInterval = setInterval(() => {
-        if (window.google && window.google.maps) {
+    } else {
+      const scriptId = 'google-maps-sdk';
+      if (document.getElementById(scriptId)) {
+        const checkInterval = setInterval(() => {
+          if (window.google && window.google.maps) {
+            setGoogleReady(true);
+            clearInterval(checkInterval);
+          }
+        }, 200);
+      } else {
+        const script = document.createElement('script');
+        script.id = scriptId;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_KEY}&libraries=geometry`;
+        script.async = true;
+        script.defer = true;
+        script.onload = () => {
           setGoogleReady(true);
-          clearInterval(checkInterval);
-        }
-      }, 200);
-      return () => clearInterval(checkInterval);
+        };
+        script.onerror = () => {
+          console.warn('Không thể nạp Google Maps API, chuyển sang chế độ dự phòng');
+          setSnazzyTheme('osm_clean');
+        };
+        document.head.appendChild(script);
+      }
     }
 
-    const script = document.createElement('script');
-    script.id = scriptId;
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_KEY}&libraries=geometry`;
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      setGoogleReady(true);
+    return () => {
+      clearInterval(interval);
+      observer.disconnect();
     };
-    script.onerror = () => {
-      console.warn('Không thể nạp Google Maps API, chuyển sang chế độ dự phòng');
-      setMapType('leaflet');
-    };
-    document.head.appendChild(script);
   }, []);
 
   // 2. Tải danh sách bão đang hoạt động từ JTWC/JMA
@@ -396,6 +447,203 @@ export default function ToolTyphoon() {
     }
   }, [stormData, showWindRadii, showBestTrack, showForecastTrack, googleReady]);
 
+  // 6b. Khởi tạo bản đồ Leaflet (cho các theme Tự do 100% không watermark)
+  useEffect(() => {
+    if (!leafletContainerRef.current) return;
+
+    if (!leafletInstanceRef.current) {
+      const map = L.map(leafletContainerRef.current, {
+        center: [18.0, 116.0],
+        zoom: 5,
+        zoomControl: true,
+        scrollWheelZoom: true
+      });
+
+      const currentTheme = SNAZZY_THEMES[snazzyTheme]?.isLeaflet 
+        ? SNAZZY_THEMES[snazzyTheme] 
+        : SNAZZY_THEMES.osm_clean;
+
+      const tileLayer = L.tileLayer(currentTheme.tileUrl, {
+        attribution: currentTheme.attribution || '&copy; OpenStreetMap',
+        maxZoom: 18
+      }).addTo(map);
+      leafletTileLayerRef.current = tileLayer;
+
+      leafletLayersRef.current.windRadiiGroup = L.featureGroup().addTo(map);
+      leafletLayersRef.current.trackGroup = L.featureGroup().addTo(map);
+      leafletLayersRef.current.markerGroup = L.featureGroup().addTo(map);
+
+      leafletInstanceRef.current = map;
+    } else if (SNAZZY_THEMES[snazzyTheme]?.isLeaflet) {
+      const map = leafletInstanceRef.current;
+      const theme = SNAZZY_THEMES[snazzyTheme];
+      if (leafletTileLayerRef.current) {
+        map.removeLayer(leafletTileLayerRef.current);
+      }
+      leafletTileLayerRef.current = L.tileLayer(theme.tileUrl, {
+        attribution: theme.attribution || '&copy; OpenStreetMap',
+        maxZoom: 18
+      }).addTo(map);
+    }
+  }, [snazzyTheme]);
+
+  // Cập nhật kích thước Leaflet khi chuyển đổi sang Leaflet
+  useEffect(() => {
+    if (isLeafletTheme && leafletInstanceRef.current) {
+      setTimeout(() => {
+        leafletInstanceRef.current?.invalidateSize();
+      }, 100);
+    }
+  }, [isLeafletTheme]);
+
+  // 6c. Vẽ các lớp dữ liệu bão lên Leaflet
+  useEffect(() => {
+    const map = leafletInstanceRef.current;
+    if (!map || !stormData?.geojson?.features) return;
+
+    const { windRadiiGroup, trackGroup, markerGroup } = leafletLayersRef.current;
+    if (!windRadiiGroup || !trackGroup || !markerGroup) return;
+
+    windRadiiGroup.clearLayers();
+    trackGroup.clearLayers();
+    markerGroup.clearLayers();
+
+    const features = stormData.geojson.features;
+    const bounds = L.latLngBounds();
+
+    // A. Vẽ các vùng gió nguy hiểm
+    if (showWindRadii) {
+      features.forEach(f => {
+        const type = f.properties?.feature_type;
+        if (type === 'wind_radii' || type === 'danger_swath') {
+          const coords = f.geometry.coordinates;
+          if (coords && coords[0]) {
+            const latlngs = coords[0].map(c => [c[1], c[0]]);
+            const radiiKt = f.properties?.radii_kt || 34;
+
+            let color = '#f59e0b';
+            if (radiiKt >= 64) color = '#dc2626';
+            else if (radiiKt >= 50) color = '#ea580c';
+
+            const poly = L.polygon(latlngs, {
+              color,
+              weight: 1.5,
+              opacity: 0.85,
+              fillColor: color,
+              fillOpacity: 0.22,
+              dashArray: type === 'danger_swath' ? '4, 4' : null
+            });
+
+            poly.bindTooltip(`
+              <div class="font-sans text-xs p-1">
+                <div class="font-bold text-slate-800">${f.properties?.feature_name_vn || 'Vùng gió nguy hiểm'}</div>
+                <div class="text-slate-600">Sức gió: ≥ ${radiiKt} kt (${f.properties?.radii_kmh || Math.round(radiiKt * 1.852)} km/h)</div>
+                ${f.properties?.time_vn ? `<div class="text-slate-500 text-[11px]">${f.properties.time_vn}</div>` : ''}
+              </div>
+            `, { sticky: true });
+
+            windRadiiGroup.addLayer(poly);
+            latlngs.forEach(ll => bounds.extend(ll));
+          }
+        }
+      });
+    }
+
+    // B. Đường đi thực tế & Đường dự báo
+    features.forEach(f => {
+      const type = f.properties?.feature_type;
+      if (f.geometry?.type === 'LineString') {
+        const latlngs = f.geometry.coordinates.map(c => [c[1], c[0]]);
+        if (latlngs.length < 2) return;
+
+        if (type === 'best_track' && showBestTrack) {
+          const line = L.polyline(latlngs, {
+            color: '#2563eb',
+            weight: 3.5,
+            opacity: 0.85
+          }).bindTooltip('Đường thực tế quan trắc');
+          trackGroup.addLayer(line);
+          latlngs.forEach(ll => bounds.extend(ll));
+        } else if (type === 'forecast_track' && showForecastTrack) {
+          const line = L.polyline(latlngs, {
+            color: '#dc2626',
+            weight: 3.5,
+            opacity: 0.9,
+            dashArray: '8, 6'
+          }).bindTooltip('Đường dự báo 5 ngày (JTWC)');
+          trackGroup.addLayer(line);
+          latlngs.forEach(ll => bounds.extend(ll));
+        }
+      }
+    });
+
+    // C. Markers
+    features.forEach(f => {
+      const type = f.properties?.feature_type;
+      if (f.geometry?.type === 'Point') {
+        const coords = f.geometry.coordinates;
+        const latlng = [coords[1], coords[0]];
+        const p = f.properties;
+
+        if (type === 'forecast_point' && showForecastTrack) {
+          const isCurrent = p.tau_h === 0;
+          const icon = L.divIcon({
+            className: 'custom-storm-icon',
+            html: isCurrent ? `
+              <div class="relative flex items-center justify-center">
+                <div class="absolute w-8 h-8 rounded-full bg-rose-500/30 animate-ping"></div>
+                <div class="w-6 h-6 rounded-full bg-rose-600 border-2 border-white shadow-lg flex items-center justify-center text-white text-[10px] font-black">
+                  🌪️
+                </div>
+              </div>
+            ` : `
+              <div class="w-3.5 h-3.5 rounded-full bg-amber-500 border-2 border-white shadow-md hover:scale-125 transition-transform"></div>
+            `,
+            iconSize: isCurrent ? [32, 32] : [14, 14],
+            iconAnchor: isCurrent ? [16, 16] : [7, 7]
+          });
+
+          const marker = L.marker(latlng, { icon });
+          marker.bindPopup(`
+            <div class="font-sans text-xs p-1 max-w-[220px]">
+              <div class="font-bold text-sm text-slate-800 border-b pb-1 mb-1.5 flex items-center justify-between">
+                <span>${isCurrent ? 'Tâm bão hiện tại' : `Dự báo +${p.tau_h}h`}</span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-rose-100 text-rose-700 font-bold">${p.category_code || 'TC'}</span>
+              </div>
+              <div class="space-y-1 text-slate-600 text-xs">
+                <div><strong>Thời điểm:</strong> ${p.time_vn || 'N/A'}</div>
+                <div><strong>Vị trí:</strong> ${latlng[0].toFixed(1)}°N, ${latlng[1].toFixed(1)}°E</div>
+                <div><strong>Sức gió:</strong> <span class="text-rose-600 font-bold">${p.wind_kmh || 0} km/h</span> (${p.wind_kt} kt)</div>
+                <div><strong>Cấp bão:</strong> ${p.category || 'Áp thấp'}</div>
+              </div>
+            </div>
+          `);
+          markerGroup.addLayer(marker);
+          bounds.extend(latlng);
+        } else if (type === 'best_point' && showBestTrack) {
+          const icon = L.divIcon({
+            className: 'history-dot-icon',
+            html: `<div class="w-2.5 h-2.5 rounded-full bg-blue-500 border border-white shadow-xs"></div>`,
+            iconSize: [10, 10],
+            iconAnchor: [5, 5]
+          });
+          const marker = L.marker(latlng, { icon });
+          marker.bindTooltip(`
+            <div class="font-sans text-xs p-1">
+              <strong>${p.time_vn || ''}</strong>: ${p.wind_kmh || 0} km/h (${p.wind_kt} kt)
+            </div>
+          `);
+          markerGroup.addLayer(marker);
+          bounds.extend(latlng);
+        }
+      }
+    });
+
+    if (bounds.isValid() && isLeafletTheme) {
+      map.fitBounds(bounds, { padding: [40, 40] });
+    }
+  }, [stormData, showWindRadii, showBestTrack, showForecastTrack, isLeafletTheme]);
+
   // 7. Xử lý Upload file KMZ
   const handleUploadKmz = async (e) => {
     e.preventDefault();
@@ -680,10 +928,24 @@ export default function ToolTyphoon() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* CỘT TRÁI: BẢN ĐỒ TƯƠNG TÁC (7 COLUMNS) */}
         <div className="lg:col-span-7 flex flex-col gap-4">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-xs overflow-hidden flex flex-col h-[620px]">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-xs overflow-hidden flex flex-col h-[640px]">
+            {/* Scoped CSS để triệt tiêu hoàn toàn hộp thông báo lỗi & backdrop mờ của Google Maps */}
+            <style>{`
+              .gm-err-container, .gm-err-content, [class*="gm-err"], .gm-style-moc {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
+              }
+              .gm-style-pbc {
+                opacity: 0 !important;
+                pointer-events: none !important;
+              }
+            `}</style>
+
             {/* Map Header with Snazzy Maps Theme Switcher & Layer Toggles */}
             <div className="p-3.5 px-4 bg-slate-50/90 dark:bg-slate-900/60 border-b border-slate-200/80 dark:border-slate-700/80 flex flex-wrap items-center justify-between gap-2.5">
-              {/* Snazzy Maps Style Selector */}
+              {/* Snazzy Maps & Free Tile Selector */}
               <div className="flex items-center gap-2">
                 <Palette className="w-4 h-4 text-indigo-500" />
                 <span className="text-xs font-bold text-slate-800 dark:text-slate-100">Giao diện Bản đồ:</span>
@@ -692,9 +954,17 @@ export default function ToolTyphoon() {
                   onChange={(e) => setSnazzyTheme(e.target.value)}
                   className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 outline-none cursor-pointer shadow-2xs"
                 >
-                  {Object.values(SNAZZY_THEMES).map(t => (
-                    <option key={t.id} value={t.id}>{t.name}</option>
-                  ))}
+                  <optgroup label="🌟 Snazzy Maps (Google Maps API)">
+                    <option value="subtle_grayscale">Snazzy Tinh Tế (Grayscale)</option>
+                    <option value="midnight_dark">Snazzy Đêm (Midnight)</option>
+                    <option value="editorial_light">Snazzy Báo Chí (Editorial)</option>
+                    <option value="satellite_hybrid">Google Vệ Tinh (Satellite)</option>
+                  </optgroup>
+                  <optgroup label="🌐 Bản đồ Tự Do (100% Không Watermark)">
+                    <option value="osm_clean">🌐 Bản đồ Tự do (OpenStreetMap)</option>
+                    <option value="carto_dark">🌙 Bản đồ Tự do Đêm (Carto Dark)</option>
+                    <option value="carto_light">☀️ Bản đồ Tự do Sáng (Carto Positron)</option>
+                  </optgroup>
                 </select>
               </div>
 
@@ -730,15 +1000,46 @@ export default function ToolTyphoon() {
               </div>
             </div>
 
-            {/* Google Map Container with Snazzy Maps styling */}
-            <div className="relative flex-1 w-full h-full">
-              <div ref={gmapContainerRef} className="w-full h-full z-0" />
+            {/* Thông báo hướng dẫn API Key & Watermark khi dùng Google Maps */}
+            {!isLeafletTheme && (
+              <div className="px-4 py-2 bg-amber-50/90 dark:bg-amber-950/40 border-b border-amber-200/80 dark:border-amber-800/60 text-[11px] flex items-center justify-between gap-3 text-amber-800 dark:text-amber-300">
+                <div className="flex items-center gap-2">
+                  <Info className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                  <span>
+                    <strong>Chế độ Snazzy Maps (Google API):</strong> Bản đồ đang chạy tốt. Để gỡ vĩnh viễn watermark <em>"For development purposes only"</em>, bạn chỉ cần liên kết Billing trên Google Cloud Console (miễn phí $200/tháng). Hoặc chuyển sang Bản đồ Tự do để xem sạch 100%.
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSnazzyTheme('osm_clean')}
+                  className="shrink-0 px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-md font-semibold text-[11px] transition-colors shadow-2xs cursor-pointer"
+                >
+                  Chuyển sang Bản đồ Tự do
+                </button>
+              </div>
+            )}
+
+            {/* Dual Map Viewport */}
+            <div className="relative flex-1 w-full h-full min-h-[480px]">
+              {/* Google Map Container with Snazzy Maps styling */}
+              <div 
+                ref={gmapContainerRef} 
+                className={`w-full h-full z-0 ${!isLeafletTheme ? 'block' : 'hidden'}`} 
+              />
+
+              {/* Leaflet Map Container with Clean Free Tiles */}
+              <div 
+                ref={leafletContainerRef} 
+                className={`w-full h-full z-0 ${isLeafletTheme ? 'block' : 'hidden'}`} 
+              />
 
               {/* Map Legend (Chú giải góc bản đồ) */}
-              <div className="absolute bottom-4 left-4 z-10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-3 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-lg text-[11px] space-y-1.5">
+              <div className="absolute bottom-4 left-4 z-10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-3 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-lg text-[11px] space-y-1.5 pointer-events-none select-none">
                 <div className="font-bold text-slate-800 dark:text-slate-100 flex items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-1">
                   <span>Chú giải bản đồ:</span>
-                  <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-medium">Snazzy Style</span>
+                  <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-medium">
+                    {isLeafletTheme ? 'Bản đồ Tự Do' : 'Snazzy Maps Style'}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-3.5 h-3.5 rounded-full bg-blue-600 inline-block border border-white"></span>

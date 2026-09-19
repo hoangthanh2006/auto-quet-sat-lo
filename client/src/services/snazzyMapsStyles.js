@@ -58,5 +58,32 @@ export const SNAZZY_THEMES = {
     name: 'Google Vệ Tinh (Satellite)',
     isSatellite: true,
     styles: []
+  },
+
+  // 5. OpenStreetMap Tự Do (Không cần API key, 100% không watermark)
+  osm_clean: {
+    id: 'osm_clean',
+    name: '🌐 Bản đồ Tự do (OpenStreetMap)',
+    isLeaflet: true,
+    tileUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; OpenStreetMap contributors'
+  },
+
+  // 6. Carto Dark Matter (Bản đồ Đêm không cần API key, không watermark)
+  carto_dark: {
+    id: 'carto_dark',
+    name: '🌙 Bản đồ Tự do Đêm (Carto Dark)',
+    isLeaflet: true,
+    tileUrl: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    attribution: '&copy; CARTO'
+  },
+
+  // 7. Carto Positron (Bản đồ Sáng tối giản không cần API key, không watermark)
+  carto_light: {
+    id: 'carto_light',
+    name: '☀️ Bản đồ Tự do Sáng (Carto Positron)',
+    isLeaflet: true,
+    tileUrl: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+    attribution: '&copy; CARTO'
   }
 };
