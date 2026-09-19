@@ -692,3 +692,59 @@ export const getServerAutoSyncStatus = async () => {
     return { success: false, data: null };
   }
 };
+
+// ============================================================================
+// TYPHOON TRACKING & ANALYSIS (THEO DÕI & PHÂN TÍCH BÃO)
+// ============================================================================
+
+export const getActiveTyphoons = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/typhoon/active`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || error.message || 'Không thể lấy danh sách bão đang hoạt động');
+  }
+};
+
+export const getStormDetails = async (id, params = {}) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/typhoon/storm/${id}`, { params });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || error.message || `Không thể tải dữ liệu bão ${id}`);
+  }
+};
+
+export const uploadTyphoonKmz = async (file, stormName = '') => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (stormName) formData.append('stormName', stormName);
+
+    const response = await axios.post(`${API_BASE_URL}/typhoon/upload-kmz`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || error.message || 'Lỗi khi tải lên và phân tích file KMZ');
+  }
+};
+
+export const getHistoricalLandfalls = async (params = {}) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/typhoon/historical`, { params });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || error.message || 'Không thể lấy dữ liệu bão lịch sử');
+  }
+};
+
+export const getTyphoonProvinceMetrics = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/typhoon/province-metrics`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || error.message || 'Không thể lấy thống kê bão theo tỉnh');
+  }
+};
+

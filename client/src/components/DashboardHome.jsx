@@ -1,6 +1,13 @@
-import { Users, Zap, Wrench, BarChart3, ScanText, Waves } from 'lucide-react';
+import { Users, Zap, Wrench, BarChart3, ScanText, Waves, Wind } from 'lucide-react';
 
 const tools = [
+  {
+    id: 'tool-typhoon',
+    title: 'Theo Dõi & Phân Tích Bão (JTWC & JMA)',
+    description: 'Dữ liệu thời gian thực từ Hải quân Mỹ (JTWC) & Nhật Bản (JMA): Bản đồ đường đi bão 5 ngày, bán kính gió nguy hiểm, ước lượng đổ bộ đất liền VN, và so sánh tương quan với 500+ cơn bão lịch sử (1950 - nay).',
+    icon: Wind,
+    color: 'rose',
+  },
   {
     id: 'tool-luquet-satlo',
     title: 'Lũ Quét & Sạt Lở Đất (luquetsatlo.nchmf.gov.vn)',
@@ -39,6 +46,7 @@ const tools = [
 ];
 
 const colorClasses = {
+  rose: 'bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800/30 hover:bg-rose-100 dark:hover:bg-rose-900/40',
   cyan: 'bg-cyan-50 dark:bg-cyan-950/30 text-cyan-600 dark:text-cyan-400 border-cyan-200 dark:border-cyan-800/30 hover:bg-cyan-100 dark:hover:bg-cyan-900/40',
   teal: 'bg-teal-50 dark:bg-teal-950/30 text-teal-600 dark:text-teal-400 border-teal-200 dark:border-teal-800/30 hover:bg-teal-100 dark:hover:bg-teal-900/40',
   blue: 'bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/30 hover:bg-blue-100 dark:hover:bg-blue-900/40',

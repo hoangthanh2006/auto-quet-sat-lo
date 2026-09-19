@@ -1,5 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
-import { LayoutDashboard, Users, Zap, Wrench, Home, Sun, Moon, BookOpen, BarChart3, ScanText, Waves, Loader2, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, Zap, Wrench, Home, Sun, Moon, BookOpen, BarChart3, ScanText, Waves, Loader2, LogOut, Wind } from 'lucide-react';
 import LoginPage from './components/LoginPage';
 import { getStoredAuthUser, logoutSpotlightUser } from './services/firebase';
 
@@ -8,6 +8,7 @@ const ToolUVTU = lazy(() => import('./components/ToolUVTU'));
 const ToolNSO = lazy(() => import('./components/ToolNSO'));
 const ToolOCR = lazy(() => import('./components/ToolOCR'));
 const ToolLuquetSatlo = lazy(() => import('./components/ToolLuquetSatlo'));
+const ToolTyphoon = lazy(() => import('./components/ToolTyphoon'));
 const DashboardHome = lazy(() => import('./components/DashboardHome'));
 const OtherTools = lazy(() => import('./components/OtherTools'));
 const UsageGuide = lazy(() => import('./components/UsageGuide'));
@@ -24,6 +25,7 @@ const PageFallback = () => (
 
 const NAV = [
   { id: 'home', label: 'Trang chủ', icon: Home, color: 'text-indigo-500 bg-indigo-50 dark:bg-indigo-950/30' },
+  { id: 'tool-typhoon', label: 'Theo dõi & Phân tích bão', icon: Wind, color: 'text-amber-500 bg-amber-50 dark:bg-amber-950/30' },
   { id: 'tool-luquet-satlo', label: 'Lũ quét & Sạt lở (NCHMF)', icon: Waves, color: 'text-cyan-500 bg-cyan-50 dark:bg-cyan-950/30' },
   { id: 'tool-ocr', label: 'Quét OCR (Ảnh & PDF)', icon: ScanText, color: 'text-teal-500 bg-teal-50 dark:bg-teal-950/30' },
   { id: 'tool-uvtu', label: 'UVTU theo khóa', icon: Users, color: 'text-blue-500 bg-blue-50 dark:bg-blue-950/30' },
@@ -156,6 +158,7 @@ function App() {
                 <DashboardHome onSelectTool={setCurrentPage} />
               </>
             )}
+            {currentPage === 'tool-typhoon' && <ToolTyphoon />}
             {currentPage === 'tool-luquet-satlo' && <ToolLuquetSatlo />}
             {currentPage === 'tool-ocr' && <ToolOCR />}
             {currentPage === 'tool-uvtu' && <ToolUVTU />}

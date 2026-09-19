@@ -10,6 +10,15 @@ import { uploadToDrive, getDriveStatus, saveDriveConfig } from './driveService.j
 import { executeOcrScan, getOcrStatus } from './ocrService.js';
 import { getProvinces, getCanhbaoSLLQ, getDiemSatLo, getTramMua, getDoAmDat, getDiemDaXayRaSatLo, getDiemDaXayRaLuQuet, getTrongDiemSLLQ, getRadarData } from './luquetSatloService.js';
 import { runAutoSyncOnce } from './autoSyncNCHMF.js';
+import { 
+  fetchActiveTyphoons, 
+  parseKmzBuffer, 
+  parseTextWarningToGeoJson, 
+  analyzeStormGeoJson, 
+  getProvinceMetrics, 
+  getHistoricalLandfalls 
+} from './typhoonService.js';
+
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -836,6 +845,123 @@ app.get('/api/luquet-satlo/sync-status', async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
+
+// ============================================================================
+// TYPHOON TRACKING & ANALYSIS (THEO DÕI & PHÂN TÍCH BÃO)
+// ============================================================================
+
+// 1. Danh sách bão đang hoạt động
+app.get('/api/typhoon/active', async (req, res) => {
+  try {
+    const data = await fetchActiveTyphoons();
+    res.json(data);
+  } catch (error) {
+    console.error('API /api/typhoon/active error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 2. Chi tiết bão (theo ID hoặc URL)
+app.get('/api/typhoon/storm/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { kmzUrl, textUrl, name } = req.query;
+
+    let targetKmz = kmzUrl;
+    let targetText = textUrl;
+    let stormName = name;
+
+    // Nếu không truyền URL, tìm trong danh sách bão đang hoạt động
+    if (!targetKmz && !targetText) {
+      const active = await fetchActiveTyphoons();
+      const matched = active.storms.find(s => s.id.toLowerCase() === id.toLowerCase() || s.name.toLowerCase() === id.toLowerCase());
+      if (matched) {
+        targetKmz = matched.kmzUrl;
+        targetText = matched.textUrl;
+        stormName = stormName || matched.name;
+      }
+    }
+
+    let geojson = null;
+
+    if (targetKmz) {
+      try {
+        const kmzRes = await fetch(targetKmz, { signal: AbortSignal.timeout(15000) });
+        if (kmzRes.ok) {
+          const buffer = Buffer.from(await kmzRes.arrayBuffer());
+          geojson = parseKmzBuffer(buffer, stormName);
+        }
+      } catch (kmzErr) {
+        console.warn(`Lỗi tải KMZ bão ${id}, thử fallback sang warning text:`, kmzErr.message);
+      }
+    }
+
+    if (!geojson && targetText) {
+      const textRes = await fetch(targetText, { signal: AbortSignal.timeout(10000) });
+      if (textRes.ok) {
+        const textContent = await textRes.text();
+        geojson = parseTextWarningToGeoJson(textContent, stormName);
+      }
+    }
+
+    if (!geojson) {
+      return res.status(404).json({ success: false, error: `Không thể tải dữ liệu KMZ hoặc Warning Text của cơn bão ${id}` });
+    }
+
+    const analysis = analyzeStormGeoJson(geojson, { name: stormName });
+    res.json({ success: true, ...analysis });
+  } catch (error) {
+    console.error(`API /api/typhoon/storm/${req.params.id} error:`, error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 3. Tải lên file KMZ/KML để phân tích
+app.post('/api/typhoon/upload-kmz', uploadMiddleware.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, error: 'Vui lòng chọn file KMZ để tải lên' });
+    }
+
+    const filePath = req.file.path;
+    const fileBuffer = fs.readFileSync(filePath);
+    const customName = req.body.stormName || req.file.originalname.replace(/\.(kmz|kml)$/i, '').toUpperCase();
+
+    const geojson = parseKmzBuffer(fileBuffer, customName);
+    const analysis = analyzeStormGeoJson(geojson, { name: customName });
+
+    // Dọn dẹp file tạm
+    try { fs.unlinkSync(filePath); } catch {}
+
+    res.json({ success: true, ...analysis });
+  } catch (error) {
+    console.error('API /api/typhoon/upload-kmz error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 4. Danh sách bão lịch sử (1950 - nay)
+app.get('/api/typhoon/historical', (req, res) => {
+  try {
+    const data = getHistoricalLandfalls(req.query);
+    res.json({ success: true, total: data.length, data });
+  } catch (error) {
+    console.error('API /api/typhoon/historical error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 5. Thống kê mức độ tổn thương theo tỉnh thành
+app.get('/api/typhoon/province-metrics', (req, res) => {
+  try {
+    const data = getProvinceMetrics();
+    res.json({ success: true, data });
+  } catch (error) {
+    console.error('API /api/typhoon/province-metrics error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 
 
 // SPA fallback: serve index.html for non-API routes
