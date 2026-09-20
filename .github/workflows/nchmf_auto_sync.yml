@@ -2,13 +2,29 @@ name: NCHMF 24/7 Auto Sync
 
 on:
   schedule:
-    # Chạy tự động mỗi 20 phút (NCHMF thường cập nhật từ 15-60 phút một lần)
-    - cron: '*/20 * * * *'
-  workflow_dispatch: # Cho phép bấm chạy thủ công trên giao diện GitHub bất cứ lúc nào
+    # Chạy tự động 2 lần mỗi giờ (ở phút thứ 15 và 45)
+    # Lệch phút 00 để tránh tắc nghẽn hàng đợi cron của GitHub Actions
+    - cron: '15,45 * * * *'
+  workflow_dispatch: # Bấm nút "Run workflow" thủ công trên GitHub UI bất cứ lúc nào
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/nchmf_auto_sync.yml'
+      - 'server/autoSyncNCHMF.js'
+      - 'server/luquetSatloService.js'
+      - 'server/environmentalService.js'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nchmf-247-sync
+  cancel-in-progress: false
 
 jobs:
   sync:
-    name: Crawl NCHMF & Sync Firebase
+    name: Crawl NCHMF & Sync Firebase RTDB
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -16,12 +32,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 20 LTS
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install Server Dependencies
+        run: |
+          echo "📦 Cài đặt thư viện backend (nhanh không tải browser)..."
+          npm install --prefix server --omit=dev --ignore-scripts
 
       - name: Run NCHMF Crawler & Sync to Firebase
         run: |
-          echo "🚀 Starting NCHMF 24/7 Automated Sync..."
+          echo "🚀 Khởi động NCHMF 24/7 Automated Sync..."
           node server/autoSyncNCHMF.js
+
+      - name: Keepalive Workflow (Chống GitHub tự động tắt Cron sau 60 ngày)
+        uses: gautamkrishnar/keepalive-workflow@v2
+        if: always()
