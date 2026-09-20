@@ -27,6 +27,8 @@ jobs:
     name: Crawl NCHMF & Sync Firebase RTDB
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      TZ: 'Asia/Ho_Chi_Minh'
 
     steps:
       - name: Checkout repository

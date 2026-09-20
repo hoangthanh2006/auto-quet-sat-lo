@@ -146,11 +146,15 @@ export async function runAutoSyncOnce(options = {}) {
     const timestamp = now.toISOString();
     const pad = (n) => String(n).padStart(2, '0');
 
-    const year = now.getFullYear();
-    const month = pad(now.getMonth() + 1);
-    const day = pad(now.getDate());
-    const hour = pad(now.getHours());
-    const minute = pad(now.getMinutes());
+    // Chuyển đổi chuẩn xác sang giờ Việt Nam (UTC+7) bất kể môi trường chạy (GitHub Actions UTC hay Local)
+    const vnTimeMs = now.getTime() + (7 * 60 + now.getTimezoneOffset()) * 60 * 1000;
+    const vnDate = new Date(vnTimeMs);
+
+    const year = vnDate.getFullYear();
+    const month = pad(vnDate.getMonth() + 1);
+    const day = pad(vnDate.getDate());
+    const hour = pad(vnDate.getHours());
+    const minute = pad(vnDate.getMinutes());
 
     const counts = {
       canh_bao: canhBaoList.length,
@@ -164,7 +168,7 @@ export async function runAutoSyncOnce(options = {}) {
     const cleanActual = (actualDate || '').trim();
     const dataSignature = `${cleanActual}_communes:${summary.totalCommunes}_rc:${summary.ratCao}_c:${summary.cao}_maxR:${summary.maxRain}_sl:${counts.sat_lo}_lq:${counts.lu_quet}_td:${counts.trong_diem}`;
 
-    // Khóa snapshot chuẩn theo mốc giờ (Hourly Slot YYYYMMDD_HH00)
+    // Khóa snapshot chuẩn theo mốc giờ Việt Nam (Hourly Slot YYYYMMDD_HH00)
     // Đảm bảo mỗi giờ một snapshot cố định cho biểu đồ xu hướng
     const hourlySnapshotId = `${year}${month}${day}_${hour}00`;
     
