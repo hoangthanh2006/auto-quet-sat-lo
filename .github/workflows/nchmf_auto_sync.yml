@@ -16,7 +16,7 @@ on:
       - 'server/environmentalService.js'
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: nchmf-247-sync
@@ -41,14 +41,10 @@ jobs:
 
       - name: Install Server Dependencies
         run: |
-          echo "📦 Cài đặt thư viện backend (nhanh không tải browser)..."
+          echo "📦 Cài đặt thư viện backend..."
           npm install --prefix server --omit=dev --ignore-scripts
 
       - name: Run NCHMF Crawler & Sync to Firebase
         run: |
           echo "🚀 Khởi động NCHMF 24/7 Automated Sync..."
           node server/autoSyncNCHMF.js
-
-      - name: Keepalive Workflow (Chống GitHub tự động tắt Cron sau 60 ngày)
-        uses: gautamkrishnar/keepalive-workflow@v2
-        if: always()
