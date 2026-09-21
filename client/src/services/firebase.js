@@ -15,6 +15,7 @@ import {
 import {
   getAuth,
   onAuthStateChanged,
+  signInWithEmailAndPassword,
   signOut
 } from 'firebase/auth';
 
@@ -38,8 +39,36 @@ export const rtdb = getDatabase(app);
 // Initialize Firebase Auth
 export const auth = getAuth(app);
 
+let authInitPromise = null;
+
 export function ensureAuth() {
-  return Promise.resolve(auth.currentUser || null);
+  if (auth.currentUser) {
+    return Promise.resolve(auth.currentUser);
+  }
+  if (!authInitPromise) {
+    authInitPromise = new Promise((resolve) => {
+      const unsubscribe = onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          unsubscribe();
+          resolve(user);
+        } else {
+          const stored = getStoredAuthUser();
+          if (stored) {
+            try {
+              const cred = await signInWithEmailAndPassword(auth, ALLOWED_USER.email, 'datajournalism2023');
+              unsubscribe();
+              return resolve(cred.user);
+            } catch (e) {
+              console.warn('[Firebase Auth] Auto sign-in failed:', e);
+            }
+          }
+          unsubscribe();
+          resolve(null);
+        }
+      });
+    });
+  }
+  return authInitPromise;
 }
 
 /**
@@ -131,6 +160,7 @@ export async function fetchLuquetSatloFromRTDB(layer) {
  */
 export async function fetchLuquetSatloHistory(layer, limitCount = 10) {
   try {
+    await ensureAuth();
     const historyQuery = query(
       ref(rtdb, `luquet_satlo/history/${layer}`),
       limitToLast(limitCount)
@@ -273,6 +303,12 @@ export async function saveAutoSyncSnapshot({
   const second = pad(now.getSeconds());
 
   const summary = computeStatisticsSummary(canhBaoData);
+
+  try {
+    await ensureAuth();
+  } catch (authErr) {
+    console.warn('[Firebase] ensureAuth warning:', authErr.message);
+  }
 
   // Tạo chữ ký dữ liệu để phát hiện trùng lặp
   const cleanActual = (actualDate || '').trim();
@@ -496,6 +532,7 @@ export async function fetchStatisticsTimeline(limitCount = 100) {
  */
 export async function fetchSnapshotDetail(snapshotId) {
   try {
+    await ensureAuth();
     const snapshotRef = ref(rtdb, `luquet_satlo/snapshots/${snapshotId}`);
     const res = await get(snapshotRef);
     if (res.exists()) {
@@ -513,6 +550,7 @@ export async function fetchSnapshotDetail(snapshotId) {
  */
 export async function deleteSnapshot(snapshotId) {
   try {
+    await ensureAuth();
     const snapshotRef = ref(rtdb, `luquet_satlo/snapshots/${snapshotId}`);
     const timelineRef = ref(rtdb, `luquet_satlo/statistics/timeline/${snapshotId}`);
     await Promise.all([
@@ -531,6 +569,7 @@ export async function deleteSnapshot(snapshotId) {
  */
 export async function fetchAutoSyncStatus() {
   try {
+    await ensureAuth();
     const statusRef = ref(rtdb, 'luquet_satlo/auto_sync_status');
     const res = await get(statusRef);
     if (res.exists()) {
@@ -575,12 +614,18 @@ export async function loginWithSpotlightCredentials(email, password, rememberMe 
     throw new Error('Email hoặc mật khẩu không chính xác. Hệ thống chỉ cho phép tài khoản được ủy quyền.');
   }
 
+  // Thực hiện đăng nhập chính thức với Firebase Auth
+  const userCredential = await signInWithEmailAndPassword(auth, normalizedEmail, trimmedPassword);
+
   const userSession = {
+    uid: userCredential.user?.uid || 'dn4QJYL571cG8D2jZtdVW83VbUo1',
     email: ALLOWED_USER.email,
-    displayName: ALLOWED_USER.name,
+    displayName: userCredential.user?.displayName || ALLOWED_USER.name,
     agency: ALLOWED_USER.agency,
     loggedInAt: new Date().toISOString()
   };
+
+  authInitPromise = Promise.resolve(userCredential.user);
 
   if (rememberMe) {
     localStorage.setItem(SPOTLIGHT_AUTH_KEY, JSON.stringify(userSession));
@@ -593,11 +638,10 @@ export async function loginWithSpotlightCredentials(email, password, rememberMe 
 
 export async function logoutSpotlightUser() {
   try {
+    authInitPromise = null;
     localStorage.removeItem(SPOTLIGHT_AUTH_KEY);
     sessionStorage.removeItem(SPOTLIGHT_AUTH_KEY);
-    if (auth.currentUser) {
-      await signOut(auth);
-    }
+    await signOut(auth);
   } catch (e) {
     console.warn('Logout error:', e);
   }

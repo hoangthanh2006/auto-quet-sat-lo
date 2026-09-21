@@ -9,7 +9,7 @@ import { extractMultipleContents } from './contentExtractor.js';
 import { uploadToDrive, getDriveStatus, saveDriveConfig } from './driveService.js';
 import { executeOcrScan, getOcrStatus } from './ocrService.js';
 import { getProvinces, getCanhbaoSLLQ, getDiemSatLo, getTramMua, getDoAmDat, getDiemDaXayRaSatLo, getDiemDaXayRaLuQuet, getTrongDiemSLLQ, getRadarData } from './luquetSatloService.js';
-import { runAutoSyncOnce, startHourlyAutoSync, getSchedulerStatus, stopHourlyAutoSync } from './autoSyncNCHMF.js';
+import { runAutoSyncOnce, startHourlyAutoSync, getSchedulerStatus, stopHourlyAutoSync, fetchFirebaseRTDB } from './autoSyncNCHMF.js';
 import { 
   fetchActiveTyphoons, 
   parseKmzBuffer, 
@@ -904,7 +904,7 @@ app.post('/api/luquet-satlo/scheduler-toggle', (req, res) => {
 
 app.get('/api/luquet-satlo/sync-status', async (req, res) => {
   try {
-    const response = await fetch('https://anh-cao-keu-default-rtdb.asia-southeast1.firebasedatabase.app/luquet_satlo/auto_sync_status.json');
+    const response = await fetchFirebaseRTDB('/luquet_satlo/auto_sync_status.json');
     const data = await response.json();
     const scheduler = getSchedulerStatus();
     res.json({ success: true, data, scheduler });

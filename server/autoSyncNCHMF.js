@@ -19,6 +19,50 @@ import {
 import { crawlLakeWater, crawlRiverWater } from './environmentalService.js';
 
 const FIREBASE_DB_URL = 'https://anh-cao-keu-default-rtdb.asia-southeast1.firebasedatabase.app';
+const FIREBASE_API_KEY = 'AIzaSyBge4vaLT4ADI_wFDtV7h69TeM762w7opk';
+
+let cachedAuthToken = null;
+let tokenExpiresAt = 0;
+
+export async function getFirebaseAuthToken() {
+  const now = Date.now();
+  if (cachedAuthToken && now < tokenExpiresAt - 60000) {
+    return cachedAuthToken;
+  }
+
+  try {
+    const res = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_API_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: 'spotlight.vnexpress@gmail.com',
+        password: 'datajournalism2023',
+        returnSecureToken: true
+      })
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      console.warn(`[Firebase Auth] Failed to get token: HTTP ${res.status}: ${errText}`);
+      return null;
+    }
+
+    const data = await res.json();
+    cachedAuthToken = data.idToken;
+    tokenExpiresAt = now + (parseInt(data.expiresIn, 10) || 3600) * 1000;
+    return cachedAuthToken;
+  } catch (err) {
+    console.error('[Firebase Auth Error]:', err.message);
+    return null;
+  }
+}
+
+export async function fetchFirebaseRTDB(path, options = {}) {
+  const token = await getFirebaseAuthToken();
+  const sep = path.includes('?') ? '&' : '?';
+  const url = `${FIREBASE_DB_URL}${path}${token ? `${sep}auth=${token}` : ''}`;
+  return fetch(url, options);
+}
 
 // Trạng thái Scheduler chạy ngầm trên Server
 const schedulerState = {
@@ -233,19 +277,19 @@ export async function runAutoSyncOnce(options = {}) {
     
     const updatePromises = [
       // 1. Lưu snapshot chi tiết theo mốc giờ
-      fetch(`${FIREBASE_DB_URL}/luquet_satlo/snapshots/${hourlySnapshotId}.json`, {
+      fetchFirebaseRTDB(`/luquet_satlo/snapshots/${hourlySnapshotId}.json`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(fullSnapshotPayload)
       }),
       // 2. Lưu mốc timeline theo giờ
-      fetch(`${FIREBASE_DB_URL}/luquet_satlo/statistics/timeline/${hourlySnapshotId}.json`, {
+      fetchFirebaseRTDB(`/luquet_satlo/statistics/timeline/${hourlySnapshotId}.json`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(timelinePayload)
       }),
       // 3. Cập nhật trạng thái sao lưu toàn hệ thống
-      fetch(`${FIREBASE_DB_URL}/luquet_satlo/auto_sync_status.json`, {
+      fetchFirebaseRTDB(`/luquet_satlo/auto_sync_status.json`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -267,12 +311,12 @@ export async function runAutoSyncOnce(options = {}) {
     // Nếu có mốc bản tin cụ thể khác mốc giờ, lưu thêm bản tin gốc
     if (bulletinSnapshotId && bulletinSnapshotId !== hourlySnapshotId) {
       updatePromises.push(
-        fetch(`${FIREBASE_DB_URL}/luquet_satlo/snapshots/${bulletinSnapshotId}.json`, {
+        fetchFirebaseRTDB(`/luquet_satlo/snapshots/${bulletinSnapshotId}.json`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...fullSnapshotPayload, snapshotId: bulletinSnapshotId })
         }),
-        fetch(`${FIREBASE_DB_URL}/luquet_satlo/statistics/timeline/${bulletinSnapshotId}.json`, {
+        fetchFirebaseRTDB(`/luquet_satlo/statistics/timeline/${bulletinSnapshotId}.json`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...timelinePayload, snapshotId: bulletinSnapshotId, time: actualDate.split(' ')[1] || timeStr })
@@ -282,42 +326,42 @@ export async function runAutoSyncOnce(options = {}) {
 
     // Cập nhật node latest/{layer} cho mọi lớp để UI luôn có dữ liệu mới nhất
     if (canhBaoList.length > 0) {
-      updatePromises.push(fetch(`${FIREBASE_DB_URL}/luquet_satlo/latest/canh_bao.json`, {
+      updatePromises.push(fetchFirebaseRTDB(`/luquet_satlo/latest/canh_bao.json`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ updatedAt: timestamp, clientTime: now.toLocaleString('vi-VN'), count: canhBaoList.length, actualDate, data: canhBaoList })
       }));
     }
     if (radarData) {
-      updatePromises.push(fetch(`${FIREBASE_DB_URL}/luquet_satlo/latest/radar.json`, {
+      updatePromises.push(fetchFirebaseRTDB(`/luquet_satlo/latest/radar.json`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ updatedAt: timestamp, clientTime: now.toLocaleString('vi-VN'), count: 1, data: radarData })
       }));
     }
     if (satLoList.length > 0) {
-      updatePromises.push(fetch(`${FIREBASE_DB_URL}/luquet_satlo/latest/sat_lo.json`, {
+      updatePromises.push(fetchFirebaseRTDB(`/luquet_satlo/latest/sat_lo.json`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ updatedAt: timestamp, clientTime: now.toLocaleString('vi-VN'), count: satLoList.length, data: satLoList })
       }));
     }
     if (luQuetList.length > 0) {
-      updatePromises.push(fetch(`${FIREBASE_DB_URL}/luquet_satlo/latest/lu_quet.json`, {
+      updatePromises.push(fetchFirebaseRTDB(`/luquet_satlo/latest/lu_quet.json`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ updatedAt: timestamp, clientTime: now.toLocaleString('vi-VN'), count: luQuetList.length, data: luQuetList })
       }));
     }
     if (trongDiemList.length > 0) {
-      updatePromises.push(fetch(`${FIREBASE_DB_URL}/luquet_satlo/latest/trong_diem.json`, {
+      updatePromises.push(fetchFirebaseRTDB(`/luquet_satlo/latest/trong_diem.json`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ updatedAt: timestamp, clientTime: now.toLocaleString('vi-VN'), count: trongDiemList.length, data: trongDiemList })
       }));
     }
     if (tramMuaList.length > 0) {
-      updatePromises.push(fetch(`${FIREBASE_DB_URL}/luquet_satlo/latest/tram_mua.json`, {
+      updatePromises.push(fetchFirebaseRTDB(`/luquet_satlo/latest/tram_mua.json`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ updatedAt: timestamp, clientTime: now.toLocaleString('vi-VN'), count: tramMuaList.length, data: tramMuaList })
@@ -327,7 +371,7 @@ export async function runAutoSyncOnce(options = {}) {
     // Đồng bộ thêm Nước Hồ Chứa & Mực Nước Sông vào Firebase RTDB phục vụ Web Static
     crawlLakeWater().then((lakeRes) => {
       if (lakeRes?.success && lakeRes.data?.length > 0) {
-        fetch(`${FIREBASE_DB_URL}/environmental/latest/lake_water.json`, {
+        fetchFirebaseRTDB(`/environmental/latest/lake_water.json`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -342,7 +386,7 @@ export async function runAutoSyncOnce(options = {}) {
 
     crawlRiverWater('7').then((riverRes) => {
       if (riverRes?.success && riverRes.data?.length > 0) {
-        fetch(`${FIREBASE_DB_URL}/environmental/latest/river_water.json`, {
+        fetchFirebaseRTDB(`/environmental/latest/river_water.json`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
