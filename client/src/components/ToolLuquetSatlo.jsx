@@ -481,6 +481,12 @@ export default function ToolLuquetSatlo() {
       map.addControl(new maplibregl.FullscreenControl(), 'top-right');
       map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
 
+      map.on('error', (e) => {
+        if (e?.error?.status === 404 || e?.status === 404) {
+          console.info('[Radar] Radar composite image frame is being synced:', e?.error?.url || e?.url || '');
+        }
+      });
+
       map.on('load', () => {
         updateRadarRasterLayer(map);
       });

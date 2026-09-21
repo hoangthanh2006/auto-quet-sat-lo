@@ -351,13 +351,14 @@ export async function fetchDirectTrongDiemSLLQ({ provinceName = '' } = {}) {
  * 6. Dữ liệu Radar thời tiết (CMAX Composite)
  */
 export async function fetchDirectRadar({ date = null } = {}) {
-  const targetDate = date ? new Date(date) : new Date();
+  // Lùi 15 phút so với thời gian hiện tại vì VNDMS/NCHMF cần 10-15 phút để thu nhận và ghép ảnh radar composite CMAX
+  const targetDate = date ? new Date(date) : new Date(Date.now() - 15 * 60 * 1000);
   const pad = (n) => String(n).padStart(2, '0');
 
   const frames = [];
   const baseUtc = new Date(targetDate.getTime());
 
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < 18; i++) {
     const frameTime = new Date(baseUtc.getTime() - i * 10 * 60 * 1000);
     const m10 = Math.floor(frameTime.getUTCMinutes() / 10) * 10;
     frameTime.setUTCMinutes(m10, 0, 0);

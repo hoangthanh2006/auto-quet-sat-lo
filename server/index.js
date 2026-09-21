@@ -708,8 +708,12 @@ app.post('/api/ocr/scan', uploadMiddleware.single('file'), async (req, res) => {
 
     res.json(result);
   } catch (error) {
-    console.error('OCR scan endpoint error:', error);
-    res.status(500).json({ success: false, error: error.message });
+    console.error('OCR scan endpoint error:', error.message);
+    res.json({
+      success: false,
+      error: error.message || 'Lỗi khi thực hiện nhận dạng OCR.',
+      help: 'Máy chủ Python OCR chưa cài đặt đủ thư viện (PyMuPDF, OpenCV, PaddleOCR). Vui lòng chạy pip install -r requirements.txt trên server.'
+    });
   } finally {
     if (tempFilePath && fs.existsSync(tempFilePath)) {
       fs.unlink(tempFilePath, () => {});
