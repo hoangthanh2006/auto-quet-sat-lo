@@ -23,6 +23,8 @@ import {
   FileCode,
   Map,
   ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
   Activity,
   Droplets,
   ShieldAlert,
@@ -97,6 +99,103 @@ function removeVietnameseTones(str) {
     .toLowerCase();
 }
 
+// Helper đánh giá độ ưu tiên mức độ nguy cơ (Rất cao > Cao > Trung bình > Thấp)
+function getRiskPriority(str) {
+  if (!str) return 0;
+  const s = String(str).toLowerCase();
+  if (s.includes('rất cao') || s.includes('rat cao')) return 4;
+  if (s.includes('cao')) return 3;
+  if (s.includes('trung')) return 2;
+  if (s.includes('thấp') || s.includes('thap')) return 1;
+  return 0;
+}
+
+// Helper so sánh giá trị theo cột (Hỗ trợ chữ cái A-Z/Z-A, số lượng/lượng mưa Cao/Thấp, và cấp độ nguy cơ)
+function compareTableValues(a, b, field, dir = 'asc') {
+  if (!a || !b) return 0;
+
+  // 1. So sánh theo cấp độ nguy cơ trọng điểm
+  if (field === 'nguy_co' && (a.soho_nguyco_ratcao !== undefined || b.soho_nguyco_ratcao !== undefined)) {
+    const pA = Number(a.soho_nguyco_ratcao || 0) * 1000 + Number(a.soho_nguyco_cao || 0);
+    const pB = Number(b.soho_nguyco_ratcao || 0) * 1000 + Number(b.soho_nguyco_cao || 0);
+    if (pA !== pB) {
+      return dir === 'asc' ? pA - pB : pB - pA;
+    }
+  }
+
+  let valA = a[field];
+  let valB = b[field];
+
+  if (valA === undefined || valA === null) valA = '';
+  if (valB === undefined || valB === null) valB = '';
+
+  // 2. So sánh theo cấp độ nguy cơ chuỗi chữ (Rất cao > Cao > Trung bình > Thấp)
+  if (field.includes('nguyco') || field.includes('nguy_co')) {
+    const pA = getRiskPriority(valA);
+    const pB = getRiskPriority(valB);
+    if (pA !== pB) {
+      return dir === 'asc' ? pA - pB : pB - pA;
+    }
+  }
+
+  // 3. So sánh theo số thực / lượng mưa / số hộ / tọa độ / timestamp / phần trăm
+  const numA = typeof valA === 'number' ? valA : parseFloat(String(valA).replace(/[^0-9.-]+/g, ''));
+  const numB = typeof valB === 'number' ? valB : parseFloat(String(valB).replace(/[^0-9.-]+/g, ''));
+
+  const isNumA = !isNaN(numA) && String(valA).trim() !== '';
+  const isNumB = !isNaN(numB) && String(valB).trim() !== '';
+
+  if (isNumA && isNumB) {
+    return dir === 'asc' ? numA - numB : numB - numA;
+  }
+
+  // 4. So sánh theo chuỗi tiếng Việt (chữ cái A-Z / Z-A)
+  const strA = String(valA).trim();
+  const strB = String(valB).trim();
+  return dir === 'asc'
+    ? strA.localeCompare(strB, 'vi', { numeric: true, sensitivity: 'base' })
+    : strB.localeCompare(strA, 'vi', { numeric: true, sensitivity: 'base' });
+}
+
+// Component Header cột bảng có chức năng Sort (A-Z, Z-A, Cao-Thấp, Thấp-Cao)
+function SortTh({ field, label, currentField, currentDir, onSort, align = 'left', className = '' }) {
+  const isActive = currentField === field;
+  return (
+    <th
+      onClick={() => onSort(field)}
+      className={`p-3 select-none cursor-pointer transition-colors group hover:bg-slate-100 dark:hover:bg-slate-700/60 ${
+        align === 'center' ? 'text-center' : align === 'right' ? 'text-right' : 'text-left'
+      } ${isActive ? 'text-blue-600 dark:text-blue-400 font-bold bg-blue-50/60 dark:bg-blue-950/30' : ''} ${className}`}
+      title={`Bấm để sắp xếp theo ${label} (${
+        isActive
+          ? currentDir === 'asc'
+            ? 'Đang: Tăng dần (A-Z / Thấp-Cao) → Bấm để đảo chiều'
+            : 'Đang: Giảm dần (Z-A / Cao-Thấp) → Bấm để đảo chiều'
+          : 'Bấm để sắp xếp (A-Z hoặc Cao/Thấp)'
+      })`}
+    >
+      <div
+        className={`inline-flex items-center gap-1.5 ${
+          align === 'center' ? 'justify-center' : align === 'right' ? 'justify-end' : 'justify-start'
+        }`}
+      >
+        <span>{label}</span>
+        <span className="shrink-0 transition-transform">
+          {isActive ? (
+            currentDir === 'asc' ? (
+              <ArrowUp className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 stroke-[2.5]" />
+            ) : (
+              <ArrowDown className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 stroke-[2.5]" />
+            )
+          ) : (
+            <ArrowUpDown className="w-3 h-3 text-slate-400 opacity-40 group-hover:opacity-100" />
+          )}
+        </span>
+      </div>
+    </th>
+  );
+}
+
 export default function ToolLuquetSatlo() {
   // Navigation tabs: 'layers' (Bộ 4 lớp như hình) | 'canh-bao' | 'tram-mua' | 'do-am-dat'
   const [activeTab, setActiveTab] = useState('layers');
@@ -138,6 +237,10 @@ export default function ToolLuquetSatlo() {
   const [loadingSnapshotDetail, setLoadingSnapshotDetail] = useState(false);
   const [showSnapshotDetailModal, setShowSnapshotDetailModal] = useState(false);
   const [snapshotSearch, setSnapshotSearch] = useState('');
+  const [snapshotSortField, setSnapshotSortField] = useState('luongmua_tong');
+  const [snapshotSortDir, setSnapshotSortDir] = useState('desc');
+  const [timelineSortField, setTimelineSortField] = useState('timestamp');
+  const [timelineSortDir, setTimelineSortDir] = useState('desc');
   const [activeStatProvince, setActiveStatProvince] = useState('all');
   const [statTimeframe, setStatTimeframe] = useState('all'); // 'all' | 'today' | 'week'
 
@@ -181,6 +284,8 @@ export default function ToolLuquetSatlo() {
   const [loadingDxrSatLo, setLoadingDxrSatLo] = useState(false);
   const [dxrSatLoSearch, setDxrSatLoSearch] = useState('');
   const [dxrSatLoProvince, setDxrSatLoProvince] = useState('');
+  const [dxrSatLoSortField, setDxrSatLoSortField] = useState('tinh');
+  const [dxrSatLoSortDir, setDxrSatLoSortDir] = useState('asc');
   const [dxrSatLoPage, setDxrSatLoPage] = useState(1);
   const [dxrSatLoPageSize, setDxrSatLoPageSize] = useState(25);
 
@@ -189,6 +294,8 @@ export default function ToolLuquetSatlo() {
   const [loadingDxrLuQuet, setLoadingDxrLuQuet] = useState(false);
   const [dxrLuQuetSearch, setDxrLuQuetSearch] = useState('');
   const [dxrLuQuetProvince, setDxrLuQuetProvince] = useState('');
+  const [dxrLuQuetSortField, setDxrLuQuetSortField] = useState('tinh');
+  const [dxrLuQuetSortDir, setDxrLuQuetSortDir] = useState('asc');
   const [dxrLuQuetPage, setDxrLuQuetPage] = useState(1);
   const [dxrLuQuetPageSize, setDxrLuQuetPageSize] = useState(25);
 
@@ -197,6 +304,8 @@ export default function ToolLuquetSatlo() {
   const [loadingTrongDiem, setLoadingTrongDiem] = useState(false);
   const [trongDiemSearch, setTrongDiemSearch] = useState('');
   const [trongDiemProvince, setTrongDiemProvince] = useState('');
+  const [trongDiemSortField, setTrongDiemSortField] = useState('ten_tinh');
+  const [trongDiemSortDir, setTrongDiemSortDir] = useState('asc');
   const [trongDiemPage, setTrongDiemPage] = useState(1);
   const [trongDiemPageSize, setTrongDiemPageSize] = useState(25);
 
@@ -229,7 +338,10 @@ export default function ToolLuquetSatlo() {
   const [tramMuaList, setTramMuaList] = useState([]);
   const [loadingTramMua, setLoadingTramMua] = useState(false);
   const [tmSearch, setTmSearch] = useState('');
+  const [tmProvinceFilter, setTmProvinceFilter] = useState('');
   const [tmOnlyRain, setTmOnlyRain] = useState(false);
+  const [tmSortField, setTmSortField] = useState('luongmua_12h');
+  const [tmSortDir, setTmSortDir] = useState('desc');
   const [tmPage, setTmPage] = useState(1);
   const [tmPageSize, setTmPageSize] = useState(25);
 
@@ -237,8 +349,32 @@ export default function ToolLuquetSatlo() {
   const [doAmDatList, setDoAmDatList] = useState([]);
   const [loadingDoAmDat, setLoadingDoAmDat] = useState(false);
   const [dadSearch, setDadSearch] = useState('');
+  const [dadSortField, setDadSortField] = useState('do_am');
+  const [dadSortDir, setDadSortDir] = useState('desc');
   const [dadPage, setDadPage] = useState(1);
   const [dadPageSize, setDadPageSize] = useState(25);
+
+  // Helper toggle sorting direction or set new field
+  const handleSortToggle = (field, currentField, setField, currentDir, setDir) => {
+    if (currentField === field) {
+      setDir((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setField(field);
+      const isNumericOrRisk =
+        field.includes('luongmua') ||
+        field.includes('mua') ||
+        field.includes('nguyco') ||
+        field.includes('nguy_co') ||
+        field.includes('so_ho') ||
+        field.includes('rain') ||
+        field.includes('communes') ||
+        field.includes('count') ||
+        field.includes('ratCao') ||
+        field.includes('cao') ||
+        field.includes('do_am');
+      setDir(isNumericOrRisk ? 'desc' : 'asc');
+    }
+  };
 
   // Initial load
   useEffect(() => {
@@ -1134,27 +1270,30 @@ export default function ToolLuquetSatlo() {
   };
 
   // ----------------------------------------------------
-  // FILTERING LOGIC
+  // FILTERING & SORTING LOGIC
   // ----------------------------------------------------
   // Điểm đã xảy ra sạt lở
   const filteredDxrSatLo = useMemo(() => {
-    return dxrSatLoList.filter((it) => {
-      if (dxrSatLoProvince && !it.tinh?.toLowerCase().includes(dxrSatLoProvince.toLowerCase())) {
-        return false;
-      }
-      if (dxrSatLoSearch.trim()) {
-        const q = dxrSatLoSearch.trim().toLowerCase();
-        return (
-          (it.xa || '').toLowerCase().includes(q) ||
-          (it.huyen || '').toLowerCase().includes(q) ||
-          (it.tinh || '').toLowerCase().includes(q) ||
-          (it.site_id || '').toLowerCase().includes(q) ||
-          (it.nguyen_nhan || '').toLowerCase().includes(q)
-        );
-      }
-      return true;
-    });
-  }, [dxrSatLoList, dxrSatLoProvince, dxrSatLoSearch]);
+    return dxrSatLoList
+      .filter((it) => {
+        if (dxrSatLoProvince && !it.tinh?.toLowerCase().includes(dxrSatLoProvince.toLowerCase())) {
+          return false;
+        }
+        if (dxrSatLoSearch.trim()) {
+          const q = dxrSatLoSearch.trim().toLowerCase();
+          return (
+            (it.xa || '').toLowerCase().includes(q) ||
+            (it.huyen || '').toLowerCase().includes(q) ||
+            (it.tinh || '').toLowerCase().includes(q) ||
+            (it.site_id || '').toLowerCase().includes(q) ||
+            (it.nguyen_nhan || '').toLowerCase().includes(q) ||
+            (it.thiet_hai || '').toLowerCase().includes(q)
+          );
+        }
+        return true;
+      })
+      .sort((a, b) => compareTableValues(a, b, dxrSatLoSortField, dxrSatLoSortDir));
+  }, [dxrSatLoList, dxrSatLoProvince, dxrSatLoSearch, dxrSatLoSortField, dxrSatLoSortDir]);
 
   const paginatedDxrSatLo = useMemo(() => {
     const start = (dxrSatLoPage - 1) * dxrSatLoPageSize;
@@ -1164,23 +1303,27 @@ export default function ToolLuquetSatlo() {
 
   // Điểm đã xảy ra lũ quét
   const filteredDxrLuQuet = useMemo(() => {
-    return dxrLuQuetList.filter((it) => {
-      if (dxrLuQuetProvince && !it.tinh?.toLowerCase().includes(dxrLuQuetProvince.toLowerCase())) {
-        return false;
-      }
-      if (dxrLuQuetSearch.trim()) {
-        const q = dxrLuQuetSearch.trim().toLowerCase();
-        return (
-          (it.xa || '').toLowerCase().includes(q) ||
-          (it.huyen || '').toLowerCase().includes(q) ||
-          (it.tinh || '').toLowerCase().includes(q) ||
-          (it.thon || '').toLowerCase().includes(q) ||
-          (it.nguyen_nhan || '').toLowerCase().includes(q)
-        );
-      }
-      return true;
-    });
-  }, [dxrLuQuetList, dxrLuQuetProvince, dxrLuQuetSearch]);
+    return dxrLuQuetList
+      .filter((it) => {
+        if (dxrLuQuetProvince && !it.tinh?.toLowerCase().includes(dxrLuQuetProvince.toLowerCase())) {
+          return false;
+        }
+        if (dxrLuQuetSearch.trim()) {
+          const q = dxrLuQuetSearch.trim().toLowerCase();
+          return (
+            (it.xa || '').toLowerCase().includes(q) ||
+            (it.huyen || '').toLowerCase().includes(q) ||
+            (it.tinh || '').toLowerCase().includes(q) ||
+            (it.thon || '').toLowerCase().includes(q) ||
+            (it.nguyen_nhan || '').toLowerCase().includes(q) ||
+            (it.song_suoi || '').toLowerCase().includes(q) ||
+            (it.thiet_hai || '').toLowerCase().includes(q)
+          );
+        }
+        return true;
+      })
+      .sort((a, b) => compareTableValues(a, b, dxrLuQuetSortField, dxrLuQuetSortDir));
+  }, [dxrLuQuetList, dxrLuQuetProvince, dxrLuQuetSearch, dxrLuQuetSortField, dxrLuQuetSortDir]);
 
   const paginatedDxrLuQuet = useMemo(() => {
     const start = (dxrLuQuetPage - 1) * dxrLuQuetPageSize;
@@ -1190,23 +1333,25 @@ export default function ToolLuquetSatlo() {
 
   // Trọng điểm sạt lở lũ quét
   const filteredTrongDiem = useMemo(() => {
-    return trongDiemList.filter((it) => {
-      if (trongDiemProvince && !it.ten_tinh?.toLowerCase().includes(trongDiemProvince.toLowerCase())) {
-        return false;
-      }
-      if (trongDiemSearch.trim()) {
-        const q = trongDiemSearch.trim().toLowerCase();
-        return (
-          (it.ten || '').toLowerCase().includes(q) ||
-          (it.diadiem || '').toLowerCase().includes(q) ||
-          (it.ten_tinh || '').toLowerCase().includes(q) ||
-          (it.ten_xa || '').toLowerCase().includes(q) ||
-          (it.ghichu || '').toLowerCase().includes(q)
-        );
-      }
-      return true;
-    });
-  }, [trongDiemList, trongDiemProvince, trongDiemSearch]);
+    return trongDiemList
+      .filter((it) => {
+        if (trongDiemProvince && !it.ten_tinh?.toLowerCase().includes(trongDiemProvince.toLowerCase())) {
+          return false;
+        }
+        if (trongDiemSearch.trim()) {
+          const q = trongDiemSearch.trim().toLowerCase();
+          return (
+            (it.ten || '').toLowerCase().includes(q) ||
+            (it.diadiem || '').toLowerCase().includes(q) ||
+            (it.ten_tinh || '').toLowerCase().includes(q) ||
+            (it.ten_xa || '').toLowerCase().includes(q) ||
+            (it.ghichu || '').toLowerCase().includes(q)
+          );
+        }
+        return true;
+      })
+      .sort((a, b) => compareTableValues(a, b, trongDiemSortField, trongDiemSortDir));
+  }, [trongDiemList, trongDiemProvince, trongDiemSearch, trongDiemSortField, trongDiemSortDir]);
 
   const paginatedTrongDiem = useMemo(() => {
     const start = (trongDiemPage - 1) * trongDiemPageSize;
@@ -1216,39 +1361,32 @@ export default function ToolLuquetSatlo() {
 
   // Cảnh báo xã/huyện
   const filteredCbList = useMemo(() => {
-    return cbList.filter((item) => {
-      if (cbProvinceFilter && !item.province_name?.toLowerCase().includes(cbProvinceFilter.toLowerCase())) {
-        return false;
-      }
-      if (cbRiskFilter !== 'all') {
-        const sl = (item.nguyco_satlo || '').toLowerCase();
-        const lq = (item.nguyco_luquet || '').toLowerCase();
-        if (cbRiskFilter === 'rat-cao' && !sl.includes('rất cao') && !lq.includes('rất cao')) return false;
-        if (cbRiskFilter === 'cao' && !sl.includes('cao') && !lq.includes('cao')) return false;
-        if (cbRiskFilter === 'trung-binh' && !sl.includes('trung bình') && !lq.includes('trung bình')) return false;
-      }
-      if (cbMinRain > 0 && (item.luongmua_tong || 0) < cbMinRain) {
-        return false;
-      }
-      if (cbSearch.trim()) {
-        const q = cbSearch.trim().toLowerCase();
-        return (
-          (item.commune_name || '').toLowerCase().includes(q) ||
-          (item.district_name || '').toLowerCase().includes(q) ||
-          (item.province_name || '').toLowerCase().includes(q)
-        );
-      }
-      return true;
-    }).sort((a, b) => {
-      let valA = a[cbSortField];
-      let valB = b[cbSortField];
-      if (typeof valA === 'number' && typeof valB === 'number') {
-        return cbSortDir === 'asc' ? valA - valB : valB - valA;
-      }
-      valA = String(valA || '');
-      valB = String(valB || '');
-      return cbSortDir === 'asc' ? valA.localeCompare(valB, 'vi') : valB.localeCompare(valA, 'vi');
-    });
+    return cbList
+      .filter((item) => {
+        if (cbProvinceFilter && !item.province_name?.toLowerCase().includes(cbProvinceFilter.toLowerCase())) {
+          return false;
+        }
+        if (cbRiskFilter !== 'all') {
+          const sl = (item.nguyco_satlo || '').toLowerCase();
+          const lq = (item.nguyco_luquet || '').toLowerCase();
+          if (cbRiskFilter === 'rat-cao' && !sl.includes('rất cao') && !lq.includes('rất cao')) return false;
+          if (cbRiskFilter === 'cao' && !sl.includes('cao') && !lq.includes('cao')) return false;
+          if (cbRiskFilter === 'trung-binh' && !sl.includes('trung bình') && !lq.includes('trung bình')) return false;
+        }
+        if (cbMinRain > 0 && (item.luongmua_tong || 0) < cbMinRain) {
+          return false;
+        }
+        if (cbSearch.trim()) {
+          const q = cbSearch.trim().toLowerCase();
+          return (
+            (item.commune_name || '').toLowerCase().includes(q) ||
+            (item.district_name || '').toLowerCase().includes(q) ||
+            (item.province_name || '').toLowerCase().includes(q)
+          );
+        }
+        return true;
+      })
+      .sort((a, b) => compareTableValues(a, b, cbSortField, cbSortDir));
   }, [cbList, cbProvinceFilter, cbRiskFilter, cbMinRain, cbSearch, cbSortField, cbSortDir]);
 
   const paginatedCbList = useMemo(() => {
@@ -1256,6 +1394,59 @@ export default function ToolLuquetSatlo() {
     return filteredCbList.slice(start, start + cbPageSize);
   }, [filteredCbList, cbPage, cbPageSize]);
   const totalCbPages = Math.ceil(filteredCbList.length / cbPageSize) || 1;
+
+  // Trạm đo mưa
+  const filteredTramMuaList = useMemo(() => {
+    return tramMuaList
+      .filter((item) => {
+        if (tmOnlyRain && !(Number(item.luongmua_1h) > 0 || Number(item.luongmua_3h) > 0 || Number(item.luongmua_6h) > 0 || Number(item.luongmua_12h) > 0)) {
+          return false;
+        }
+        if (tmProvinceFilter && !item.province_name?.toLowerCase().includes(tmProvinceFilter.toLowerCase()) && !item.ten?.toLowerCase().includes(tmProvinceFilter.toLowerCase())) {
+          return false;
+        }
+        if (tmSearch.trim()) {
+          const q = tmSearch.trim().toLowerCase();
+          return (
+            (item.ten || '').toLowerCase().includes(q) ||
+            (item.station_no || '').toLowerCase().includes(q) ||
+            (item.station_id || '').toLowerCase().includes(q) ||
+            (item.province_name || '').toLowerCase().includes(q)
+          );
+        }
+        return true;
+      })
+      .sort((a, b) => compareTableValues(a, b, tmSortField, tmSortDir));
+  }, [tramMuaList, tmOnlyRain, tmProvinceFilter, tmSearch, tmSortField, tmSortDir]);
+
+  const paginatedTramMuaList = useMemo(() => {
+    const start = (tmPage - 1) * tmPageSize;
+    return filteredTramMuaList.slice(start, start + tmPageSize);
+  }, [filteredTramMuaList, tmPage, tmPageSize]);
+  const totalTmPages = Math.ceil(filteredTramMuaList.length / tmPageSize) || 1;
+
+  // Độ ẩm đất
+  const filteredDoAmDatList = useMemo(() => {
+    return doAmDatList
+      .filter((item) => {
+        if (dadSearch.trim()) {
+          const q = dadSearch.trim().toLowerCase();
+          return (
+            (item.province_name || item.tinh || '').toLowerCase().includes(q) ||
+            (item.district_name || item.huyen || '').toLowerCase().includes(q) ||
+            (item.commune_name || item.xa || '').toLowerCase().includes(q)
+          );
+        }
+        return true;
+      })
+      .sort((a, b) => compareTableValues(a, b, dadSortField, dadSortDir));
+  }, [doAmDatList, dadSearch, dadSortField, dadSortDir]);
+
+  const paginatedDoAmDatList = useMemo(() => {
+    const start = (dadPage - 1) * dadPageSize;
+    return filteredDoAmDatList.slice(start, start + dadPageSize);
+  }, [filteredDoAmDatList, dadPage, dadPageSize]);
+  const totalDadPages = Math.ceil(filteredDoAmDatList.length / dadPageSize) || 1;
 
   // ----------------------------------------------------
   // EXPORT UTILITIES
@@ -2119,13 +2310,56 @@ export default function ToolLuquetSatlo() {
                     <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase tracking-wider font-semibold">
                       <tr>
                         <th className="p-3 w-12 text-center">STT</th>
-                        <th className="p-3">Mã vị trí (Site ID)</th>
-                        <th className="p-3">Tỉnh / Thành</th>
-                        <th className="p-3">Huyện</th>
-                        <th className="p-3">Xã / Thôn</th>
-                        <th className="p-3 text-center">Tọa độ (X, Y)</th>
-                        <th className="p-3">Nguyên nhân</th>
-                        <th className="p-3">Thiệt hại</th>
+                        <SortTh
+                          field="site_id"
+                          label="Mã vị trí (Site ID)"
+                          currentField={dxrSatLoSortField}
+                          currentDir={dxrSatLoSortDir}
+                          onSort={(f) => handleSortToggle(f, dxrSatLoSortField, setDxrSatLoSortField, dxrSatLoSortDir, setDxrSatLoSortDir)}
+                        />
+                        <SortTh
+                          field="tinh"
+                          label="Tỉnh / Thành"
+                          currentField={dxrSatLoSortField}
+                          currentDir={dxrSatLoSortDir}
+                          onSort={(f) => handleSortToggle(f, dxrSatLoSortField, setDxrSatLoSortField, dxrSatLoSortDir, setDxrSatLoSortDir)}
+                        />
+                        <SortTh
+                          field="huyen"
+                          label="Huyện"
+                          currentField={dxrSatLoSortField}
+                          currentDir={dxrSatLoSortDir}
+                          onSort={(f) => handleSortToggle(f, dxrSatLoSortField, setDxrSatLoSortField, dxrSatLoSortDir, setDxrSatLoSortDir)}
+                        />
+                        <SortTh
+                          field="xa"
+                          label="Xã / Thôn"
+                          currentField={dxrSatLoSortField}
+                          currentDir={dxrSatLoSortDir}
+                          onSort={(f) => handleSortToggle(f, dxrSatLoSortField, setDxrSatLoSortField, dxrSatLoSortDir, setDxrSatLoSortDir)}
+                        />
+                        <SortTh
+                          field="lat"
+                          label="Tọa độ (X, Y)"
+                          align="center"
+                          currentField={dxrSatLoSortField}
+                          currentDir={dxrSatLoSortDir}
+                          onSort={(f) => handleSortToggle(f, dxrSatLoSortField, setDxrSatLoSortField, dxrSatLoSortDir, setDxrSatLoSortDir)}
+                        />
+                        <SortTh
+                          field="nguyen_nhan"
+                          label="Nguyên nhân"
+                          currentField={dxrSatLoSortField}
+                          currentDir={dxrSatLoSortDir}
+                          onSort={(f) => handleSortToggle(f, dxrSatLoSortField, setDxrSatLoSortField, dxrSatLoSortDir, setDxrSatLoSortDir)}
+                        />
+                        <SortTh
+                          field="thiet_hai"
+                          label="Thiệt hại"
+                          currentField={dxrSatLoSortField}
+                          currentDir={dxrSatLoSortDir}
+                          onSort={(f) => handleSortToggle(f, dxrSatLoSortField, setDxrSatLoSortField, dxrSatLoSortDir, setDxrSatLoSortDir)}
+                        />
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -2310,14 +2544,64 @@ export default function ToolLuquetSatlo() {
                     <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase tracking-wider font-semibold">
                       <tr>
                         <th className="p-3 w-12 text-center">STT</th>
-                        <th className="p-3">Tỉnh / Thành</th>
-                        <th className="p-3">Huyện</th>
-                        <th className="p-3">Xã / Thôn</th>
-                        <th className="p-3 text-center">Tọa độ (X, Y)</th>
-                        <th className="p-3 text-center">Thời gian xảy ra</th>
-                        <th className="p-3">Nguyên nhân</th>
-                        <th className="p-3">Sông / Suối</th>
-                        <th className="p-3">Thiệt hại</th>
+                        <SortTh
+                          field="tinh"
+                          label="Tỉnh / Thành"
+                          currentField={dxrLuQuetSortField}
+                          currentDir={dxrLuQuetSortDir}
+                          onSort={(f) => handleSortToggle(f, dxrLuQuetSortField, setDxrLuQuetSortField, dxrLuQuetSortDir, setDxrLuQuetSortDir)}
+                        />
+                        <SortTh
+                          field="huyen"
+                          label="Huyện"
+                          currentField={dxrLuQuetSortField}
+                          currentDir={dxrLuQuetSortDir}
+                          onSort={(f) => handleSortToggle(f, dxrLuQuetSortField, setDxrLuQuetSortField, dxrLuQuetSortDir, setDxrLuQuetSortDir)}
+                        />
+                        <SortTh
+                          field="xa"
+                          label="Xã / Thôn"
+                          currentField={dxrLuQuetSortField}
+                          currentDir={dxrLuQuetSortDir}
+                          onSort={(f) => handleSortToggle(f, dxrLuQuetSortField, setDxrLuQuetSortField, dxrLuQuetSortDir, setDxrLuQuetSortDir)}
+                        />
+                        <SortTh
+                          field="lat"
+                          label="Tọa độ (X, Y)"
+                          align="center"
+                          currentField={dxrLuQuetSortField}
+                          currentDir={dxrLuQuetSortDir}
+                          onSort={(f) => handleSortToggle(f, dxrLuQuetSortField, setDxrLuQuetSortField, dxrLuQuetSortDir, setDxrLuQuetSortDir)}
+                        />
+                        <SortTh
+                          field="ngay_bat_dau"
+                          label="Thời gian xảy ra"
+                          align="center"
+                          currentField={dxrLuQuetSortField}
+                          currentDir={dxrLuQuetSortDir}
+                          onSort={(f) => handleSortToggle(f, dxrLuQuetSortField, setDxrLuQuetSortField, dxrLuQuetSortDir, setDxrLuQuetSortDir)}
+                        />
+                        <SortTh
+                          field="nguyen_nhan"
+                          label="Nguyên nhân"
+                          currentField={dxrLuQuetSortField}
+                          currentDir={dxrLuQuetSortDir}
+                          onSort={(f) => handleSortToggle(f, dxrLuQuetSortField, setDxrLuQuetSortField, dxrLuQuetSortDir, setDxrLuQuetSortDir)}
+                        />
+                        <SortTh
+                          field="song_suoi"
+                          label="Sông / Suối"
+                          currentField={dxrLuQuetSortField}
+                          currentDir={dxrLuQuetSortDir}
+                          onSort={(f) => handleSortToggle(f, dxrLuQuetSortField, setDxrLuQuetSortField, dxrLuQuetSortDir, setDxrLuQuetSortDir)}
+                        />
+                        <SortTh
+                          field="thiet_hai"
+                          label="Thiệt hại"
+                          currentField={dxrLuQuetSortField}
+                          currentDir={dxrLuQuetSortDir}
+                          onSort={(f) => handleSortToggle(f, dxrLuQuetSortField, setDxrLuQuetSortField, dxrLuQuetSortDir, setDxrLuQuetSortDir)}
+                        />
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -2503,14 +2787,66 @@ export default function ToolLuquetSatlo() {
                     <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase tracking-wider font-semibold">
                       <tr>
                         <th className="p-3 w-12 text-center">STT</th>
-                        <th className="p-3">Tên trọng điểm (Thôn/Bản)</th>
-                        <th className="p-3">Địa điểm</th>
-                        <th className="p-3">Xã</th>
-                        <th className="p-3">Tỉnh</th>
-                        <th className="p-3 text-center">Tọa độ (X, Y)</th>
-                        <th className="p-3 text-right">Số hộ sạt lở</th>
-                        <th className="p-3 text-right">Số hộ lũ quét</th>
-                        <th className="p-3 text-center">Nguy cơ</th>
+                        <SortTh
+                          field="ten"
+                          label="Tên trọng điểm (Thôn/Bản)"
+                          currentField={trongDiemSortField}
+                          currentDir={trongDiemSortDir}
+                          onSort={(f) => handleSortToggle(f, trongDiemSortField, setTrongDiemSortField, trongDiemSortDir, setTrongDiemSortDir)}
+                        />
+                        <SortTh
+                          field="diadiem"
+                          label="Địa điểm"
+                          currentField={trongDiemSortField}
+                          currentDir={trongDiemSortDir}
+                          onSort={(f) => handleSortToggle(f, trongDiemSortField, setTrongDiemSortField, trongDiemSortDir, setTrongDiemSortDir)}
+                        />
+                        <SortTh
+                          field="ten_xa"
+                          label="Xã"
+                          currentField={trongDiemSortField}
+                          currentDir={trongDiemSortDir}
+                          onSort={(f) => handleSortToggle(f, trongDiemSortField, setTrongDiemSortField, trongDiemSortDir, setTrongDiemSortDir)}
+                        />
+                        <SortTh
+                          field="ten_tinh"
+                          label="Tỉnh"
+                          currentField={trongDiemSortField}
+                          currentDir={trongDiemSortDir}
+                          onSort={(f) => handleSortToggle(f, trongDiemSortField, setTrongDiemSortField, trongDiemSortDir, setTrongDiemSortDir)}
+                        />
+                        <SortTh
+                          field="lat"
+                          label="Tọa độ (X, Y)"
+                          align="center"
+                          currentField={trongDiemSortField}
+                          currentDir={trongDiemSortDir}
+                          onSort={(f) => handleSortToggle(f, trongDiemSortField, setTrongDiemSortField, trongDiemSortDir, setTrongDiemSortDir)}
+                        />
+                        <SortTh
+                          field="soho_satlodat"
+                          label="Số hộ sạt lở"
+                          align="right"
+                          currentField={trongDiemSortField}
+                          currentDir={trongDiemSortDir}
+                          onSort={(f) => handleSortToggle(f, trongDiemSortField, setTrongDiemSortField, trongDiemSortDir, setTrongDiemSortDir)}
+                        />
+                        <SortTh
+                          field="soho_luquet"
+                          label="Số hộ lũ quét"
+                          align="right"
+                          currentField={trongDiemSortField}
+                          currentDir={trongDiemSortDir}
+                          onSort={(f) => handleSortToggle(f, trongDiemSortField, setTrongDiemSortField, trongDiemSortDir, setTrongDiemSortDir)}
+                        />
+                        <SortTh
+                          field="nguy_co"
+                          label="Nguy cơ"
+                          align="center"
+                          currentField={trongDiemSortField}
+                          currentDir={trongDiemSortDir}
+                          onSort={(f) => handleSortToggle(f, trongDiemSortField, setTrongDiemSortField, trongDiemSortDir, setTrongDiemSortDir)}
+                        />
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -2802,14 +3138,67 @@ export default function ToolLuquetSatlo() {
                 <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase tracking-wider font-semibold">
                   <tr>
                     <th className="p-3 w-12 text-center">STT</th>
-                    <th className="p-3">Xã / Phường</th>
-                    <th className="p-3">Huyện / Quận</th>
-                    <th className="p-3">Tỉnh / TP</th>
-                    <th className="p-3 text-center">Nguy cơ Sạt lở</th>
-                    <th className="p-3 text-center">Nguy cơ Lũ quét</th>
-                    <th className="p-3 text-right">Mưa thực đo</th>
-                    <th className="p-3 text-right">Tổng mưa</th>
-                    <th className="p-3 text-center">Tọa độ</th>
+                    <SortTh
+                      field="commune_name"
+                      label="Xã / Phường"
+                      currentField={cbSortField}
+                      currentDir={cbSortDir}
+                      onSort={(f) => handleSortToggle(f, cbSortField, setCbSortField, cbSortDir, setCbSortDir)}
+                    />
+                    <SortTh
+                      field="district_name"
+                      label="Huyện / Quận"
+                      currentField={cbSortField}
+                      currentDir={cbSortDir}
+                      onSort={(f) => handleSortToggle(f, cbSortField, setCbSortField, cbSortDir, setCbSortDir)}
+                    />
+                    <SortTh
+                      field="province_name"
+                      label="Tỉnh / TP"
+                      currentField={cbSortField}
+                      currentDir={cbSortDir}
+                      onSort={(f) => handleSortToggle(f, cbSortField, setCbSortField, cbSortDir, setCbSortDir)}
+                    />
+                    <SortTh
+                      field="nguyco_satlo"
+                      label="Nguy cơ Sạt lở"
+                      align="center"
+                      currentField={cbSortField}
+                      currentDir={cbSortDir}
+                      onSort={(f) => handleSortToggle(f, cbSortField, setCbSortField, cbSortDir, setCbSortDir)}
+                    />
+                    <SortTh
+                      field="nguyco_luquet"
+                      label="Nguy cơ Lũ quét"
+                      align="center"
+                      currentField={cbSortField}
+                      currentDir={cbSortDir}
+                      onSort={(f) => handleSortToggle(f, cbSortField, setCbSortField, cbSortDir, setCbSortDir)}
+                    />
+                    <SortTh
+                      field="luongmua_thucdo"
+                      label="Mưa thực đo"
+                      align="right"
+                      currentField={cbSortField}
+                      currentDir={cbSortDir}
+                      onSort={(f) => handleSortToggle(f, cbSortField, setCbSortField, cbSortDir, setCbSortDir)}
+                    />
+                    <SortTh
+                      field="luongmua_tong"
+                      label="Tổng mưa"
+                      align="right"
+                      currentField={cbSortField}
+                      currentDir={cbSortDir}
+                      onSort={(f) => handleSortToggle(f, cbSortField, setCbSortField, cbSortDir, setCbSortDir)}
+                    />
+                    <SortTh
+                      field="lat"
+                      label="Tọa độ"
+                      align="center"
+                      currentField={cbSortField}
+                      currentDir={cbSortDir}
+                      onSort={(f) => handleSortToggle(f, cbSortField, setCbSortField, cbSortDir, setCbSortDir)}
+                    />
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -2943,56 +3332,161 @@ export default function ToolLuquetSatlo() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border overflow-hidden">
-            <div className="p-4 border-b text-sm font-bold flex items-center justify-between">
-              <span>Mạng lưới 8.400+ trạm đo mưa tự động</span>
-              <span className="text-xs text-slate-500">Hiển thị: {tramMuaList.length} trạm</span>
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+            <div className="p-4 border-b border-slate-100 dark:border-slate-800 text-sm font-bold flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span>Mạng lưới 8.400+ trạm đo mưa tự động</span>
+                <span className="text-xs text-blue-600 dark:text-blue-400 font-bold bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-full">
+                  Hiển thị: {filteredTramMuaList.length} trạm
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-xs font-normal text-slate-500">
+                <span>Dòng/trang:</span>
+                <select
+                  value={tmPageSize}
+                  onChange={(e) => {
+                    setTmPageSize(Number(e.target.value));
+                    setTmPage(1);
+                  }}
+                  className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded px-2 py-1"
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+              </div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase font-semibold">
+                <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase tracking-wider font-semibold">
                   <tr>
                     <th className="p-3 w-12 text-center">STT</th>
-                    <th className="p-3">Mã trạm</th>
-                    <th className="p-3">Tên trạm đo</th>
-                    <th className="p-3 text-right">Mưa 1h</th>
-                    <th className="p-3 text-right">Mưa 3h</th>
-                    <th className="p-3 text-right">Mưa 6h</th>
-                    <th className="p-3 text-right">Mưa 12h</th>
-                    <th className="p-3 text-center">Tọa độ</th>
+                    <SortTh
+                      field="station_no"
+                      label="Mã trạm"
+                      currentField={tmSortField}
+                      currentDir={tmSortDir}
+                      onSort={(f) => handleSortToggle(f, tmSortField, setTmSortField, tmSortDir, setTmSortDir)}
+                    />
+                    <SortTh
+                      field="ten"
+                      label="Tên trạm đo"
+                      currentField={tmSortField}
+                      currentDir={tmSortDir}
+                      onSort={(f) => handleSortToggle(f, tmSortField, setTmSortField, tmSortDir, setTmSortDir)}
+                    />
+                    <SortTh
+                      field="luongmua_1h"
+                      label="Mưa 1h"
+                      align="right"
+                      currentField={tmSortField}
+                      currentDir={tmSortDir}
+                      onSort={(f) => handleSortToggle(f, tmSortField, setTmSortField, tmSortDir, setTmSortDir)}
+                    />
+                    <SortTh
+                      field="luongmua_3h"
+                      label="Mưa 3h"
+                      align="right"
+                      currentField={tmSortField}
+                      currentDir={tmSortDir}
+                      onSort={(f) => handleSortToggle(f, tmSortField, setTmSortField, tmSortDir, setTmSortDir)}
+                    />
+                    <SortTh
+                      field="luongmua_6h"
+                      label="Mưa 6h"
+                      align="right"
+                      currentField={tmSortField}
+                      currentDir={tmSortDir}
+                      onSort={(f) => handleSortToggle(f, tmSortField, setTmSortField, tmSortDir, setTmSortDir)}
+                    />
+                    <SortTh
+                      field="luongmua_12h"
+                      label="Mưa 12h"
+                      align="right"
+                      currentField={tmSortField}
+                      currentDir={tmSortDir}
+                      onSort={(f) => handleSortToggle(f, tmSortField, setTmSortField, tmSortDir, setTmSortDir)}
+                    />
+                    <SortTh
+                      field="lat"
+                      label="Tọa độ"
+                      align="center"
+                      currentField={tmSortField}
+                      currentDir={tmSortDir}
+                      onSort={(f) => handleSortToggle(f, tmSortField, setTmSortField, tmSortDir, setTmSortDir)}
+                    />
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {tramMuaList.slice((tmPage - 1) * tmPageSize, tmPage * tmPageSize).map((item, idx) => (
-                    <tr key={item.station_id || idx} className="hover:bg-slate-50/80">
-                      <td className="p-3 text-center text-slate-400 font-mono">
-                        {(tmPage - 1) * tmPageSize + idx + 1}
-                      </td>
-                      <td className="p-3 font-mono text-slate-500">{item.station_no || item.station_id}</td>
-                      <td className="p-3 font-semibold text-slate-800 dark:text-slate-100">{item.ten}</td>
-                      <td className="p-3 text-right font-mono">{item.luongmua_1h} mm</td>
-                      <td className="p-3 text-right font-mono">{item.luongmua_3h} mm</td>
-                      <td className="p-3 text-right font-mono">{item.luongmua_6h} mm</td>
-                      <td className="p-3 text-right font-mono font-bold text-blue-600">{item.luongmua_12h} mm</td>
-                      <td className="p-3 text-center">
-                        {item.lat && item.lon ? (
-                          <a
-                            href={`https://www.google.com/maps?q=${item.lat},${item.lon}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-cyan-600 hover:underline font-mono"
-                          >
-                            {Number(item.lat).toFixed(4)}, {Number(item.lon).toFixed(4)}
-                          </a>
-                        ) : (
-                          '—'
-                        )}
+                  {loadingTramMua ? (
+                    <tr>
+                      <td colSpan={8} className="p-8 text-center text-slate-400">
+                        Đang tải dữ liệu trạm đo mưa...
                       </td>
                     </tr>
-                  ))}
+                  ) : paginatedTramMuaList.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} className="p-8 text-center text-slate-400">
+                        Không có trạm đo mưa nào phù hợp với bộ lọc.
+                      </td>
+                    </tr>
+                  ) : (
+                    paginatedTramMuaList.map((item, idx) => (
+                      <tr key={item.station_id || idx} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
+                        <td className="p-3 text-center text-slate-400 font-mono">
+                          {(tmPage - 1) * tmPageSize + idx + 1}
+                        </td>
+                        <td className="p-3 font-mono text-slate-500">{item.station_no || item.station_id}</td>
+                        <td className="p-3 font-semibold text-slate-800 dark:text-slate-100">{item.ten}</td>
+                        <td className="p-3 text-right font-mono">{item.luongmua_1h} mm</td>
+                        <td className="p-3 text-right font-mono">{item.luongmua_3h} mm</td>
+                        <td className="p-3 text-right font-mono">{item.luongmua_6h} mm</td>
+                        <td className="p-3 text-right font-mono font-bold text-blue-600 dark:text-blue-400">{item.luongmua_12h} mm</td>
+                        <td className="p-3 text-center">
+                          {item.lat && item.lon ? (
+                            <a
+                              href={`https://www.google.com/maps?q=${item.lat},${item.lon}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-cyan-600 dark:text-cyan-400 hover:underline font-mono text-[11px]"
+                            >
+                              {Number(item.lat).toFixed(4)}, {Number(item.lon).toFixed(4)}
+                            </a>
+                          ) : (
+                            '—'
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
+
+            {totalTmPages > 1 && (
+              <div className="p-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                <span className="text-slate-500">
+                  Trang {tmPage} / {totalTmPages}
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setTmPage((p) => Math.max(1, p - 1))}
+                    disabled={tmPage === 1}
+                    className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 disabled:opacity-40"
+                  >
+                    Trang trước
+                  </button>
+                  <button
+                    onClick={() => setTmPage((p) => Math.min(totalTmPages, p + 1))}
+                    disabled={tmPage === totalTmPages}
+                    className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 disabled:opacity-40"
+                  >
+                    Trang sau
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -3036,43 +3530,133 @@ export default function ToolLuquetSatlo() {
             </button>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border overflow-hidden">
-            <div className="p-4 border-b text-sm font-bold flex items-center justify-between">
-              <span>Cảnh báo độ ẩm đất bão hòa</span>
-              <span className="text-xs text-slate-500">Tổng cộng: {doAmDatList.length} bản ghi</span>
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+            <div className="p-4 border-b border-slate-100 dark:border-slate-800 text-sm font-bold flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span>Cảnh báo độ ẩm đất bão hòa</span>
+                <span className="text-xs text-blue-600 dark:text-blue-400 font-bold bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-full">
+                  Tổng cộng: {filteredDoAmDatList.length} bản ghi
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-xs font-normal text-slate-500">
+                <span>Dòng/trang:</span>
+                <select
+                  value={dadPageSize}
+                  onChange={(e) => {
+                    setDadPageSize(Number(e.target.value));
+                    setDadPage(1);
+                  }}
+                  className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded px-2 py-1"
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+              </div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase font-semibold">
+                <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase tracking-wider font-semibold">
                   <tr>
                     <th className="p-3 w-12 text-center">STT</th>
-                    <th className="p-3">Tỉnh / Thành</th>
-                    <th className="p-3">Huyện / Quận</th>
-                    <th className="p-3">Xã / Phường</th>
-                    <th className="p-3 text-center">Tỷ lệ độ ẩm</th>
-                    <th className="p-3 text-center">Giờ cập nhật</th>
+                    <SortTh
+                      field="province_name"
+                      label="Tỉnh / Thành"
+                      currentField={dadSortField}
+                      currentDir={dadSortDir}
+                      onSort={(f) => handleSortToggle(f, dadSortField, setDadSortField, dadSortDir, setDadSortDir)}
+                    />
+                    <SortTh
+                      field="district_name"
+                      label="Huyện / Quận"
+                      currentField={dadSortField}
+                      currentDir={dadSortDir}
+                      onSort={(f) => handleSortToggle(f, dadSortField, setDadSortField, dadSortDir, setDadSortDir)}
+                    />
+                    <SortTh
+                      field="commune_name"
+                      label="Xã / Phường"
+                      currentField={dadSortField}
+                      currentDir={dadSortDir}
+                      onSort={(f) => handleSortToggle(f, dadSortField, setDadSortField, dadSortDir, setDadSortDir)}
+                    />
+                    <SortTh
+                      field="do_am"
+                      label="Tỷ lệ độ ẩm"
+                      align="center"
+                      currentField={dadSortField}
+                      currentDir={dadSortDir}
+                      onSort={(f) => handleSortToggle(f, dadSortField, setDadSortField, dadSortDir, setDadSortDir)}
+                    />
+                    <SortTh
+                      field="gio_capnhat"
+                      label="Giờ cập nhật"
+                      align="center"
+                      currentField={dadSortField}
+                      currentDir={dadSortDir}
+                      onSort={(f) => handleSortToggle(f, dadSortField, setDadSortField, dadSortDir, setDadSortDir)}
+                    />
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {doAmDatList.slice((dadPage - 1) * dadPageSize, dadPage * dadPageSize).map((item, idx) => (
-                    <tr key={idx} className="hover:bg-slate-50/80">
-                      <td className="p-3 text-center text-slate-400 font-mono">
-                        {(dadPage - 1) * dadPageSize + idx + 1}
+                  {loadingDoAmDat ? (
+                    <tr>
+                      <td colSpan={6} className="p-8 text-center text-slate-400">
+                        Đang tải dữ liệu độ ẩm đất...
                       </td>
-                      <td className="p-3 font-semibold text-slate-800 dark:text-slate-100">{item.province_name || '—'}</td>
-                      <td className="p-3 text-slate-600 dark:text-slate-300">{item.district_name || '—'}</td>
-                      <td className="p-3 text-slate-600 dark:text-slate-300">{item.commune_name || '—'}</td>
-                      <td className="p-3 text-center">
-                        <span className="inline-flex px-2 py-0.5 rounded font-mono font-bold bg-blue-100 text-blue-700 text-xs">
-                          {item.do_am}%
-                        </span>
-                      </td>
-                      <td className="p-3 text-center font-mono text-slate-500">{item.gio_capnhat || '—'}</td>
                     </tr>
-                  ))}
+                  ) : paginatedDoAmDatList.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="p-8 text-center text-slate-400">
+                        Không có dữ liệu phù hợp với bộ lọc.
+                      </td>
+                    </tr>
+                  ) : (
+                    paginatedDoAmDatList.map((item, idx) => (
+                      <tr key={idx} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
+                        <td className="p-3 text-center text-slate-400 font-mono">
+                          {(dadPage - 1) * dadPageSize + idx + 1}
+                        </td>
+                        <td className="p-3 font-semibold text-slate-800 dark:text-slate-100">{item.province_name || item.tinh || '—'}</td>
+                        <td className="p-3 text-slate-600 dark:text-slate-300">{item.district_name || item.huyen || '—'}</td>
+                        <td className="p-3 text-slate-600 dark:text-slate-300">{item.commune_name || item.xa || '—'}</td>
+                        <td className="p-3 text-center">
+                          <span className="inline-flex px-2 py-0.5 rounded font-mono font-bold bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-400 text-xs">
+                            {item.do_am}%
+                          </span>
+                        </td>
+                        <td className="p-3 text-center font-mono text-slate-500">{item.gio_capnhat || '—'}</td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
+
+            {totalDadPages > 1 && (
+              <div className="p-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                <span className="text-slate-500">
+                  Trang {dadPage} / {totalDadPages}
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setDadPage((p) => Math.max(1, p - 1))}
+                    disabled={dadPage === 1}
+                    className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 disabled:opacity-40"
+                  >
+                    Trang trước
+                  </button>
+                  <button
+                    onClick={() => setDadPage((p) => Math.min(totalDadPages, p + 1))}
+                    disabled={dadPage === totalDadPages}
+                    className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 disabled:opacity-40"
+                  >
+                    Trang sau
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -3528,19 +4112,63 @@ export default function ToolLuquetSatlo() {
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase font-semibold">
+                    <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase tracking-wider font-semibold">
                       <tr>
-                        <th className="p-2.5">Thời gian NCHMF</th>
-                        <th className="p-2.5 text-center">Tổng xã</th>
-                        <th className="p-2.5 text-center">Rất cao</th>
-                        <th className="p-2.5 text-center">Cao</th>
-                        <th className="p-2.5 text-center">Lượng mưa max</th>
-                        <th className="p-2.5 text-center">Nguồn quét</th>
+                        <SortTh
+                          field="timestamp"
+                          label="Thời gian NCHMF"
+                          currentField={timelineSortField}
+                          currentDir={timelineSortDir}
+                          onSort={(f) => handleSortToggle(f, timelineSortField, setTimelineSortField, timelineSortDir, setTimelineSortDir)}
+                        />
+                        <SortTh
+                          field="totalCommunes"
+                          label="Tổng xã"
+                          align="center"
+                          currentField={timelineSortField}
+                          currentDir={timelineSortDir}
+                          onSort={(f) => handleSortToggle(f, timelineSortField, setTimelineSortField, timelineSortDir, setTimelineSortDir)}
+                        />
+                        <SortTh
+                          field="ratCao"
+                          label="Rất cao"
+                          align="center"
+                          currentField={timelineSortField}
+                          currentDir={timelineSortDir}
+                          onSort={(f) => handleSortToggle(f, timelineSortField, setTimelineSortField, timelineSortDir, setTimelineSortDir)}
+                        />
+                        <SortTh
+                          field="cao"
+                          label="Cao"
+                          align="center"
+                          currentField={timelineSortField}
+                          currentDir={timelineSortDir}
+                          onSort={(f) => handleSortToggle(f, timelineSortField, setTimelineSortField, timelineSortDir, setTimelineSortDir)}
+                        />
+                        <SortTh
+                          field="maxRain"
+                          label="Lượng mưa max"
+                          align="center"
+                          currentField={timelineSortField}
+                          currentDir={timelineSortDir}
+                          onSort={(f) => handleSortToggle(f, timelineSortField, setTimelineSortField, timelineSortDir, setTimelineSortDir)}
+                        />
+                        <SortTh
+                          field="source"
+                          label="Nguồn quét"
+                          align="center"
+                          currentField={timelineSortField}
+                          currentDir={timelineSortDir}
+                          onSort={(f) => handleSortToggle(f, timelineSortField, setTimelineSortField, timelineSortDir, setTimelineSortDir)}
+                        />
                         <th className="p-2.5 text-right">Thao tác</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                      {[...filteredTimelineData].reverse().slice(0, 20).map((snap) => (
+                      {[...filteredTimelineData]
+                        .sort((a, b) => compareTableValues(a, b, timelineSortField, timelineSortDir))
+                        .slice(0, 50)
+                        .map((snap) => (
                         <tr key={snap.snapshotId} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
                           <td className="p-2.5 font-medium text-slate-800 dark:text-slate-200">
                             <div>{snap.actualDate || snap.displayTime}</div>
@@ -3816,15 +4444,54 @@ export default function ToolLuquetSatlo() {
                 {/* Bảng chi tiết danh sách xã */}
                 <div className="flex-1 overflow-y-auto border border-slate-200 dark:border-slate-800 rounded-2xl">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase font-semibold sticky top-0">
+                    <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase tracking-wider font-semibold sticky top-0 z-10">
                       <tr>
                         <th className="p-2.5 w-12 text-center">STT</th>
-                        <th className="p-2.5">Tỉnh / Thành</th>
-                        <th className="p-2.5">Huyện / Quận</th>
-                        <th className="p-2.5">Xã / Phường</th>
-                        <th className="p-2.5 text-center">Nguy cơ sạt lở</th>
-                        <th className="p-2.5 text-center">Nguy cơ lũ quét</th>
-                        <th className="p-2.5 text-center">Mưa tổng (mm)</th>
+                        <SortTh
+                          field="province_name"
+                          label="Tỉnh / Thành"
+                          currentField={snapshotSortField}
+                          currentDir={snapshotSortDir}
+                          onSort={(f) => handleSortToggle(f, snapshotSortField, setSnapshotSortField, snapshotSortDir, setSnapshotSortDir)}
+                        />
+                        <SortTh
+                          field="district_name"
+                          label="Huyện / Quận"
+                          currentField={snapshotSortField}
+                          currentDir={snapshotSortDir}
+                          onSort={(f) => handleSortToggle(f, snapshotSortField, setSnapshotSortField, snapshotSortDir, setSnapshotSortDir)}
+                        />
+                        <SortTh
+                          field="commune_name"
+                          label="Xã / Phường"
+                          currentField={snapshotSortField}
+                          currentDir={snapshotSortDir}
+                          onSort={(f) => handleSortToggle(f, snapshotSortField, setSnapshotSortField, snapshotSortDir, setSnapshotSortDir)}
+                        />
+                        <SortTh
+                          field="nguyco_satlo"
+                          label="Nguy cơ sạt lở"
+                          align="center"
+                          currentField={snapshotSortField}
+                          currentDir={snapshotSortDir}
+                          onSort={(f) => handleSortToggle(f, snapshotSortField, setSnapshotSortField, snapshotSortDir, setSnapshotSortDir)}
+                        />
+                        <SortTh
+                          field="nguyco_luquet"
+                          label="Nguy cơ lũ quét"
+                          align="center"
+                          currentField={snapshotSortField}
+                          currentDir={snapshotSortDir}
+                          onSort={(f) => handleSortToggle(f, snapshotSortField, setSnapshotSortField, snapshotSortDir, setSnapshotSortDir)}
+                        />
+                        <SortTh
+                          field="luongmua_tong"
+                          label="Mưa tổng (mm)"
+                          align="center"
+                          currentField={snapshotSortField}
+                          currentDir={snapshotSortDir}
+                          onSort={(f) => handleSortToggle(f, snapshotSortField, setSnapshotSortField, snapshotSortDir, setSnapshotSortDir)}
+                        />
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -3838,6 +4505,7 @@ export default function ToolLuquetSatlo() {
                             (it.commune_name || '').toLowerCase().includes(q)
                           );
                         })
+                        .sort((a, b) => compareTableValues(a, b, snapshotSortField, snapshotSortDir))
                         .map((commune, cIdx) => (
                           <tr key={cIdx} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
                             <td className="p-2.5 text-center text-slate-400 font-mono">{cIdx + 1}</td>
