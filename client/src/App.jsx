@@ -1,5 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
-import { LayoutDashboard, Users, Zap, Wrench, Home, Sun, Moon, BookOpen, BarChart3, ScanText, Waves, Loader2, LogOut, Wind, Droplets, Leaf } from 'lucide-react';
+import { LayoutDashboard, Users, Zap, Wrench, Home, Sun, Moon, BookOpen, BarChart3, ScanText, Waves, Loader2, LogOut, Wind, Droplets, Leaf, Database } from 'lucide-react';
 import LoginPage from './components/LoginPage';
 import { getStoredAuthUser, logoutSpotlightUser } from './services/firebase';
 
@@ -11,6 +11,7 @@ const ToolLuquetSatlo = lazy(() => import('./components/ToolLuquetSatlo'));
 const ToolTyphoon = lazy(() => import('./components/ToolTyphoon'));
 const ToolEnvironmentalCrawlers = lazy(() => import('./components/ToolEnvironmentalCrawlers'));
 const ToolEvLcaCalculator = lazy(() => import('./components/ToolEvLcaCalculator'));
+const ToolOpenDevMekong = lazy(() => import('./components/ToolOpenDevMekong'));
 const DashboardHome = lazy(() => import('./components/DashboardHome'));
 const OtherTools = lazy(() => import('./components/OtherTools'));
 const UsageGuide = lazy(() => import('./components/UsageGuide'));
@@ -39,6 +40,7 @@ const NAV_GROUPS = [
       { id: 'tool-environmental', label: 'Thu thập Dữ liệu Môi trường', icon: Droplets, color: 'text-emerald-500', badge: 'Hồ / Sông' },
       { id: 'tool-luquet-satlo', label: 'Lũ quét & Sạt lở (NCHMF)', icon: Waves, color: 'text-cyan-500', badge: 'Map' },
       { id: 'tool-ev-lca', label: 'Tính Phát thải Xe điện (LCA)', icon: Leaf, color: 'text-teal-500', badge: 'LCA' },
+      { id: 'tool-opendev-mekong', label: 'Open Development VN', icon: Database, color: 'text-amber-500', badge: 'CKAN' },
     ]
   },
   {
@@ -195,6 +197,7 @@ function App() {
             {currentPage === 'tool-environmental' && <ToolEnvironmentalCrawlers />}
             {currentPage === 'tool-luquet-satlo' && <ToolLuquetSatlo />}
             {currentPage === 'tool-ev-lca' && <ToolEvLcaCalculator />}
+            {currentPage === 'tool-opendev-mekong' && <ToolOpenDevMekong />}
             {currentPage === 'tool-ocr' && <ToolOCR />}
             {currentPage === 'tool-uvtu' && <ToolUVTU />}
             {currentPage === 'tool-dynamic' && <DynamicScraper />}

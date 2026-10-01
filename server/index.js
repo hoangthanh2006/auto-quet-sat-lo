@@ -26,6 +26,12 @@ import {
   crawlLandslideWarnings,
   getEnvironmentalHubSummary
 } from './environmentalService.js';
+import {
+  syncOpenDevDatasets,
+  getLocalCache,
+  checkLatestStatus
+} from './openDevMekongService.js';
+
 
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -1111,6 +1117,61 @@ app.get('/api/environmental/summary', async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
+
+// ── 5. Open Development Mekong (Vietnam Organization) Crawl API ──────────────
+// Lấy danh sách toàn bộ datasets (tự động kiểm tra và đồng bộ phiên bản mới nếu có)
+app.get('/api/opendev/datasets', async (req, res) => {
+  try {
+    const force = req.query.force === 'true';
+    const result = await syncOpenDevDatasets({ force });
+    res.json(result);
+  } catch (error) {
+    console.error('API /api/opendev/datasets error:', error);
+    const cached = getLocalCache();
+    if (cached) {
+      return res.json({
+        success: true,
+        updated: false,
+        fromCache: true,
+        warning: 'Live sync failed, serving cached data: ' + error.message,
+        data: cached
+      });
+    }
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Kích hoạt quét và làm mới toàn bộ dữ liệu ngay lập tức
+app.post('/api/opendev/rescan', async (req, res) => {
+  try {
+    const result = await syncOpenDevDatasets({ force: true });
+    res.json(result);
+  } catch (error) {
+    console.error('API /api/opendev/rescan error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Kiểm tra trạng thái dữ liệu (cache vs live)
+app.get('/api/opendev/status', async (req, res) => {
+  try {
+    const cached = getLocalCache();
+    const live = await checkLatestStatus().catch(() => null);
+    res.json({
+      success: true,
+      cachedTotal: cached?.totalDatasets || 0,
+      cachedResources: cached?.totalResources || 0,
+      lastScannedAt: cached?.lastScannedAt || null,
+      latestModified: cached?.latestDatasetModified || null,
+      liveTotal: live?.totalCount || null,
+      liveLatestModified: live?.latestModified || null,
+      hasUpdate: live && cached ? (live.totalCount !== cached.totalDatasets || live.latestModified !== cached.latestDatasetModified) : false
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 
 
 

@@ -1,6 +1,14 @@
-import { Users, Zap, Wrench, BarChart3, ScanText, Waves, Wind, Droplets, Leaf, Sparkles } from 'lucide-react';
+import { Users, Zap, Wrench, BarChart3, ScanText, Waves, Wind, Droplets, Leaf, Sparkles, Database } from 'lucide-react';
 
 const tools = [
+  {
+    id: 'tool-opendev-mekong',
+    title: 'Open Development Vietnam (Mekong Datahub)',
+    description: 'Cào & đồng bộ toàn bộ 717+ bộ dữ liệu từ Open Development Mekong: Báo cáo môi trường, lâm nghiệp, bản đồ GIS/GeoJSON/Shapefile, tài nguyên đất đai và tài liệu tri thức bản địa. Xuất CSV/JSON.',
+    icon: Database,
+    color: 'emerald',
+    badge: 'CKAN v3 · 717+ Datasets'
+  },
   {
     id: 'tool-typhoon',
     title: 'Theo Dõi & Phân Tích Bão (JTWC & JMA)',

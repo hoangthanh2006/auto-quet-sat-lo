@@ -775,3 +775,47 @@ export const getTyphoonPresets = async () => {
   }
 };
 
+import { fetchDirectOpenDevDatasets } from './openDevClientService';
+
+// ── Open Development Mekong API ──────────────────────────────────────────────
+export const fetchOpenDevDatasets = async (force = false, onProgress = null) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/opendev/datasets`, {
+      params: { force: force ? 'true' : 'false' },
+      timeout: 8000
+    });
+    if (response.data && response.data.success) {
+      return response.data;
+    }
+  } catch (error) {
+    console.warn('Backend /opendev/datasets unavailable or 404, falling back to direct CKAN scan:', error.message);
+  }
+
+  // Fallback trực tiếp đến Open Development Mekong CKAN API qua trình duyệt
+  return await fetchDirectOpenDevDatasets({ force, onProgress });
+};
+
+export const rescanOpenDevDatasets = async (onProgress = null) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/opendev/rescan`, {}, { timeout: 12000 });
+    if (response.data && response.data.success) {
+      return response.data;
+    }
+  } catch (error) {
+    console.warn('Backend /opendev/rescan unavailable or 404, falling back to direct CKAN rescan:', error.message);
+  }
+
+  return await fetchDirectOpenDevDatasets({ force: true, onProgress });
+};
+
+export const getOpenDevStatus = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/opendev/status`, { timeout: 6000 });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || error.message || 'Không thể kiểm tra trạng thái Open Development Mekong');
+  }
+};
+
+
+
