@@ -1,0 +1,74 @@
+name: Hymetnet 2H Auto Sync & Git Backup
+
+on:
+  schedule:
+    # Chạy tự động định kỳ 2 giờ một lần (vào phút thứ 05 của các giờ chẵn UTC)
+    # Lệch phút 00 để tránh tắc nghẽn hàng đợi cron của GitHub Actions
+    - cron: '5 */2 * * *'
+  workflow_dispatch: # Cho phép kích hoạt thủ công bằng nút "Run workflow" trên GitHub UI
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/hymetnet_auto_sync.yml'
+      - 'server/autoSyncHymetnet.js'
+      - 'server/hymetnetService.js'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hymetnet-2h-sync
+  cancel-in-progress: false
+
+jobs:
+  sync_and_backup:
+    name: Crawl Hymetnet, Sync Firebase & Push Git
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TZ: 'Asia/Ho_Chi_Minh'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node.js 20 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install Server Dependencies
+        run: |
+          echo "📦 Cài đặt thư viện backend..."
+          npm install --prefix server --omit=dev --ignore-scripts
+
+      - name: Run Hymetnet Crawler & Sync to Firebase
+        run: |
+          echo "🚀 Khởi động Hymetnet Auto Sync (2 giờ một lần)..."
+          node server/autoSyncHymetnet.js
+
+      - name: Commit & Push Updated Data to Git
+        run: |
+          echo "🔍 Kiểm tra dữ liệu thay đổi để commit lên Git..."
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Chỉ theo dõi và commit các file tóm tắt và snapshot mới nhất
+          git add server/data/hymetnet/latest.json server/data/hymetnet/summary.json || true
+          
+          if git diff --staged --quiet; then
+            echo "ℹ️ Không có dữ liệu mới cần commit lên Git."
+          else
+            TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
+            echo "📝 Phát hiện dữ liệu mới, tiến hành commit và push..."
+            git commit -m "chore(hymetnet): tự động cập nhật dữ liệu Hymetnet lúc ${TIMESTAMP} [skip ci]"
+            git pull --rebase origin main || true
+            git push origin main
+            echo "✅ Đã push dữ liệu Hymetnet mới lên Git thành công!"
+          fi

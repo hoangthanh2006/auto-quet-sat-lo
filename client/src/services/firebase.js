@@ -647,3 +647,84 @@ export async function logoutSpotlightUser() {
   }
 }
 
+// ============================================================================
+// HYMETNET REALTIME DATABASE HELPERS (http://hymetnet.gov.vn/)
+// ============================================================================
+
+/**
+ * Lấy dữ liệu Hymetnet mới nhất từ Firebase RTDB
+ * @param {string} layer - 'all' | 'dong_set' | 'lightning' | 'rain' | 'radar'
+ */
+export async function getHymetnetLatest(layer = 'all') {
+  try {
+    await ensureAuth();
+    const dbRef = ref(rtdb);
+    const path = layer === 'all' ? 'hymetnet/latest/all' : `hymetnet/latest/${layer}`;
+    const snapshot = await get(child(dbRef, path));
+    if (snapshot.exists()) {
+      return { success: true, data: snapshot.val() };
+    }
+    return { success: false, data: null, message: 'Chưa có dữ liệu Hymetnet trên Firebase' };
+  } catch (err) {
+    console.error(`[Firebase RTDB] getHymetnetLatest error:`, err);
+    return { success: false, error: err.message, data: null };
+  }
+}
+
+/**
+ * Lắng nghe thay đổi dữ liệu Hymetnet theo thời gian thực (WebSocket listener)
+ */
+export function listenToHymetnetLatest(layer = 'all', callback) {
+  const path = layer === 'all' ? 'hymetnet/latest/all' : `hymetnet/latest/${layer}`;
+  const targetRef = ref(rtdb, path);
+
+  return onValue(targetRef, (snapshot) => {
+    if (snapshot.exists()) {
+      callback({ success: true, data: snapshot.val() });
+    } else {
+      callback({ success: false, data: null });
+    }
+  }, (error) => {
+    console.error(`[Firebase RTDB] listenToHymetnetLatest error:`, error);
+    callback({ success: false, error: error.message, data: null });
+  });
+}
+
+/**
+ * Lấy danh sách timeline thống kê lịch sử Hymetnet (mỗi 2 giờ 1 mốc)
+ */
+export async function getHymetnetTimeline(limit = 24) {
+  try {
+    await ensureAuth();
+    const timelineRef = query(ref(rtdb, 'hymetnet/statistics/timeline'), limitToLast(limit));
+    const snapshot = await get(timelineRef);
+    if (snapshot.exists()) {
+      const raw = snapshot.val();
+      const list = Object.values(raw).sort((a, b) => (a.snapshotId || '').localeCompare(b.snapshotId || ''));
+      return { success: true, data: list };
+    }
+    return { success: true, data: [] };
+  } catch (err) {
+    console.error('[Firebase RTDB] getHymetnetTimeline error:', err);
+    return { success: false, error: err.message, data: [] };
+  }
+}
+
+/**
+ * Lấy trạng thái đồng bộ tự động của Hymetnet
+ */
+export async function getHymetnetSyncStatus() {
+  try {
+    await ensureAuth();
+    const snapshot = await get(child(ref(rtdb), 'hymetnet/sync_status'));
+    if (snapshot.exists()) {
+      return { success: true, data: snapshot.val() };
+    }
+    return { success: false, data: null };
+  } catch (err) {
+    console.error('[Firebase RTDB] getHymetnetSyncStatus error:', err);
+    return { success: false, error: err.message, data: null };
+  }
+}
+
+

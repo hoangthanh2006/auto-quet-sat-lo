@@ -31,6 +31,20 @@ import {
   getLocalCache,
   checkLatestStatus
 } from './openDevMekongService.js';
+import {
+  fetchDongSet,
+  fetchLightningData,
+  fetchRainData,
+  fetchRadarAndSatelliteData,
+  crawlHymetnetData,
+  HYMETNET_RADAR_STATIONS
+} from './hymetnetService.js';
+import {
+  runHymetnetAutoSyncOnce,
+  startHymetnetAutoSync,
+  stopHymetnetAutoSync,
+  getHymetnetSchedulerStatus
+} from './autoSyncHymetnet.js';
 
 
 
@@ -921,6 +935,117 @@ app.get('/api/luquet-satlo/sync-status', async (req, res) => {
 });
 
 // ============================================================================
+// HYMETNET CRAWLER & AUTO-SYNC (KHÍ TƯỢNG THỦY VĂN HYMETNET.GOV.VN)
+// ============================================================================
+
+// 1. Cào toàn bộ dữ liệu thời gian thực từ hymetnet.gov.vn
+app.get('/api/hymetnet/all', async (req, res) => {
+  try {
+    const result = await crawlHymetnetData();
+    res.json(result);
+  } catch (error) {
+    console.error('API /api/hymetnet/all error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 2. Lấy cảnh báo dông sét chi tiết theo xã/huyện/tỉnh (/dongset)
+app.get('/api/hymetnet/dongset', async (req, res) => {
+  try {
+    const result = await fetchDongSet();
+    res.json(result);
+  } catch (error) {
+    console.error('API /api/hymetnet/dongset error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 3. Lấy số liệu các cú sét quan trắc thực tế (CG, CC, lat, lng, kA)
+app.get('/api/hymetnet/lightning', async (req, res) => {
+  try {
+    const result = await fetchLightningData();
+    res.json(result);
+  } catch (error) {
+    console.error('API /api/hymetnet/lightning error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 4. Lấy dữ liệu mưa & các điểm mưa lớn trọng điểm
+app.get('/api/hymetnet/rain', async (req, res) => {
+  try {
+    const result = await fetchRainData();
+    res.json(result);
+  } catch (error) {
+    console.error('API /api/hymetnet/rain error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 5. Lấy danh sách ảnh Radar CMAX, Mây vệ tinh IR/VSB & 10 trạm radar
+app.get('/api/hymetnet/radar', async (req, res) => {
+  try {
+    const result = await fetchRadarAndSatelliteData();
+    res.json(result);
+  } catch (error) {
+    console.error('API /api/hymetnet/radar error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 6. Kích hoạt quét & đẩy dữ liệu Hymetnet lên Firebase ngay lập tức
+app.post('/api/hymetnet/sync-now', async (req, res) => {
+  try {
+    const result = await runHymetnetAutoSyncOnce({ forceSave: true, source: 'manual_api_trigger' });
+    res.json(result);
+  } catch (error) {
+    console.error('API /api/hymetnet/sync-now error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 7. Lấy trạng thái scheduler quét 2 giờ định kỳ
+app.get('/api/hymetnet/scheduler-status', (req, res) => {
+  try {
+    const status = getHymetnetSchedulerStatus();
+    res.json({ success: true, ...status });
+  } catch (error) {
+    console.error('API /api/hymetnet/scheduler-status error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 8. Bật / Tắt scheduler quét 2 giờ
+app.post('/api/hymetnet/scheduler-toggle', (req, res) => {
+  try {
+    const { enable, intervalMinutes = 120 } = req.body || {};
+    let status;
+    if (enable) {
+      status = startHymetnetAutoSync(Number(intervalMinutes) || 120);
+    } else {
+      status = stopHymetnetAutoSync();
+    }
+    res.json({ success: true, ...status });
+  } catch (error) {
+    console.error('API /api/hymetnet/scheduler-toggle error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 9. Lấy trạng thái đồng bộ Firebase mới nhất
+app.get('/api/hymetnet/sync-status', async (req, res) => {
+  try {
+    const response = await fetchFirebaseRTDB('/hymetnet/sync_status.json');
+    const data = await response.json();
+    const scheduler = getHymetnetSchedulerStatus();
+    res.json({ success: true, data, scheduler });
+  } catch (error) {
+    console.error('API /api/hymetnet/sync-status error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ============================================================================
 // TYPHOON TRACKING & ANALYSIS (THEO DÕI & PHÂN TÍCH BÃO)
 // ============================================================================
 
@@ -1187,6 +1312,8 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT} (0.0.0.0)`);
   // Khởi động tiến trình tự động sao lưu dữ liệu NCHMF mỗi giờ 1 lần
   startHourlyAutoSync(60);
+  // Khởi động tiến trình tự động sao lưu dữ liệu Hymetnet mỗi 2 giờ 1 lần (120 phút)
+  startHymetnetAutoSync(120);
 });
 
 export default app;

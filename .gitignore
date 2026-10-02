@@ -20,6 +20,7 @@ client/dist/
 server/venv/
 server/uploads/
 server/driveConfig.json
+server/data/hymetnet/*_*.json
 *.pdf
 *.png
 

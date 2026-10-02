@@ -1,0 +1,88 @@
+{
+  "snapshotId": "20261002_1200",
+  "exactTimeId": "20261002_1212",
+  "crawledAt": "2026-10-02T05:12:57.818Z",
+  "vnTime": "12:12 02/10/2026",
+  "summary": {
+    "totalAlertCommunes": 64,
+    "totalLightningStrikes": 6872,
+    "totalLightningCG": 5954,
+    "totalLightningCC": 918,
+    "maxLightningAmpKa": 272,
+    "heavyRainPointsCount": 32,
+    "radarFramesCount": 12,
+    "topDongSetProvinces": [
+      {
+        "province": "Tỉnh Vĩnh Long",
+        "communeCount": 12,
+        "totalAlerts": 39,
+        "sampleCommunes": [
+          "Xã Trà Côn",
+          "Xã Hòa Bình",
+          "Xã Tân Long Hội",
+          "Xã Bình Phước",
+          "Xã Trung Thành"
+        ]
+      },
+      {
+        "province": "Tỉnh Cà Mau",
+        "communeCount": 5,
+        "totalAlerts": 10,
+        "sampleCommunes": [
+          "Phường Giá Rai",
+          "Phường Láng Tròn",
+          "Xã Phong Thạnh",
+          "Xã An Trạch",
+          "Phường Tân Thành"
+        ]
+      },
+      {
+        "province": "Tỉnh Sơn La",
+        "communeCount": 3,
+        "totalAlerts": 14,
+        "sampleCommunes": [
+          "Phường Mộc Châu",
+          "Phường Mộc Sơn",
+          "Phường Thảo Nguyên"
+        ]
+      },
+      {
+        "province": "Tỉnh Tây Ninh",
+        "communeCount": 1,
+        "totalAlerts": 1,
+        "sampleCommunes": [
+          "Xã Thạnh Đức"
+        ]
+      }
+    ],
+    "topRainProvinces": [
+      {
+        "province": "TP. Hồ Chí Minh",
+        "count": 10
+      },
+      {
+        "province": "Tuyên Quang",
+        "count": 8
+      },
+      {
+        "province": "Vĩnh Long",
+        "count": 4
+      },
+      {
+        "province": "Phú Thọ",
+        "count": 3
+      },
+      {
+        "province": "Yên Bái",
+        "count": 2
+      }
+    ]
+  },
+  "counts": {
+    "dong_set": 64,
+    "lightning_strikes": 6872,
+    "heavy_rain_points": 32,
+    "radar_frames": 12,
+    "radar_stations": 10
+  }
+}
