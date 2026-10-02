@@ -447,9 +447,24 @@ export default function ToolHymetnet() {
         </div>
 
         {syncMessage && (
-          <div className="mt-3 p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/40 text-xs text-amber-800 dark:text-amber-200 flex items-center gap-2">
-            <Info className="w-4 h-4 text-amber-600 shrink-0" />
-            <span>{syncMessage}</span>
+          <div className={`mt-3 p-2.5 rounded-xl border text-xs flex items-center gap-2 ${
+            syncMessage.startsWith('Lỗi')
+              ? 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800/40 text-rose-800 dark:text-rose-200'
+              : 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/40 text-emerald-800 dark:text-emerald-200'
+          }`}>
+            {syncMessage.startsWith('Lỗi') ? (
+              <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+            ) : (
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            )}
+            <span className="flex-1">{syncMessage}</span>
+            <button
+              type="button"
+              onClick={() => setSyncMessage(null)}
+              className="text-xs opacity-60 hover:opacity-100 px-1.5 py-0.5 rounded hover:bg-black/5 dark:hover:bg-white/10"
+            >
+              ✕
+            </button>
           </div>
         )}
       </div>

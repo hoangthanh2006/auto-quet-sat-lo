@@ -264,13 +264,18 @@ export async function runHymetnetAutoSyncOnce(options = {}) {
   }
 }
 
+export function getSafeSchedulerState() {
+  const { timerId, ...safe } = hymetnetSchedulerState;
+  return safe;
+}
+
 /**
  * Khởi động scheduler quét ngầm định kỳ 2 giờ một lần (120 phút)
  */
 export function startHymetnetAutoSync(intervalMinutes = 120) {
   if (hymetnetSchedulerState.active) {
     console.log(`[Hymetnet Scheduler] Đang hoạt động mỗi ${hymetnetSchedulerState.intervalMinutes} phút.`);
-    return hymetnetSchedulerState;
+    return getSafeSchedulerState();
   }
 
   hymetnetSchedulerState.intervalMinutes = intervalMinutes;
@@ -293,7 +298,7 @@ export function startHymetnetAutoSync(intervalMinutes = 120) {
     hymetnetSchedulerState.nextRunAt = new Date(Date.now() + intervalMs).toISOString();
   }, intervalMs);
 
-  return hymetnetSchedulerState;
+  return getSafeSchedulerState();
 }
 
 /**
@@ -307,11 +312,11 @@ export function stopHymetnetAutoSync() {
   hymetnetSchedulerState.active = false;
   hymetnetSchedulerState.nextRunAt = null;
   console.log('[Hymetnet Scheduler] 🛑 Đã dừng scheduler.');
-  return hymetnetSchedulerState;
+  return getSafeSchedulerState();
 }
 
 export function getHymetnetSchedulerStatus() {
-  return { ...hymetnetSchedulerState };
+  return getSafeSchedulerState();
 }
 
 // Xử lý khi chạy trực tiếp từ Terminal / CLI / GitHub Actions

@@ -1,87 +1,105 @@
 {
-  "snapshotId": "20261002_1200",
-  "exactTimeId": "20261002_1220",
-  "crawledAt": "2026-10-02T05:20:41.254Z",
-  "vnTime": "12:20 02/10/2026",
+  "snapshotId": "20261002_1600",
+  "exactTimeId": "20261002_1609",
+  "crawledAt": "2026-10-02T09:09:03.465Z",
+  "vnTime": "16:09 02/10/2026",
   "summary": {
-    "totalAlertCommunes": 64,
-    "totalLightningStrikes": 6908,
-    "totalLightningCG": 5997,
-    "totalLightningCC": 911,
-    "maxLightningAmpKa": 272,
-    "heavyRainPointsCount": 31,
+    "totalAlertCommunes": 332,
+    "totalLightningStrikes": 56768,
+    "totalLightningCG": 40615,
+    "totalLightningCC": 16153,
+    "maxLightningAmpKa": 316,
+    "heavyRainPointsCount": 230,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Tỉnh Vĩnh Long",
-        "communeCount": 12,
-        "totalAlerts": 39,
+        "province": "Tỉnh Lâm Đồng",
+        "communeCount": 25,
+        "totalAlerts": 71,
         "sampleCommunes": [
-          "Xã Trà Côn",
-          "Xã Hòa Bình",
-          "Xã Tân Long Hội",
-          "Xã Bình Phước",
-          "Xã Trung Thành"
-        ]
-      },
-      {
-        "province": "Tỉnh Cà Mau",
-        "communeCount": 5,
-        "totalAlerts": 10,
-        "sampleCommunes": [
-          "Phường Giá Rai",
-          "Phường Láng Tròn",
-          "Xã Phong Thạnh",
-          "Xã An Trạch",
-          "Phường Tân Thành"
-        ]
-      },
-      {
-        "province": "Tỉnh Sơn La",
-        "communeCount": 3,
-        "totalAlerts": 14,
-        "sampleCommunes": [
-          "Phường Mộc Châu",
-          "Phường Mộc Sơn",
-          "Phường Thảo Nguyên"
+          "Xã Cát Tiên 2",
+          "Xã Quảng Tân",
+          "Xã Tuy Đức",
+          "Xã Nhân Cơ",
+          "Xã Trường Xuân"
         ]
       },
       {
         "province": "Tỉnh Tây Ninh",
-        "communeCount": 1,
-        "totalAlerts": 1,
+        "communeCount": 21,
+        "totalAlerts": 69,
         "sampleCommunes": [
-          "Xã Thạnh Đức"
+          "Xã Vĩnh Châu",
+          "Xã Hậu Thạnh",
+          "Xã Tuyên Thạnh",
+          "Xã Bình Hiệp",
+          "Xã Châu Thành"
+        ]
+      },
+      {
+        "province": "Tỉnh An Giang",
+        "communeCount": 14,
+        "totalAlerts": 50,
+        "sampleCommunes": [
+          "Xã Tây Yên",
+          "Xã An Biên",
+          "Xã Vĩnh Hòa",
+          "Xã Bình An",
+          "Xã Châu Thành"
+        ]
+      },
+      {
+        "province": "Tỉnh Thanh Hóa",
+        "communeCount": 8,
+        "totalAlerts": 33,
+        "sampleCommunes": [
+          "Xã Na Mèo",
+          "Xã Sơn Thủy",
+          "Xã Mường Mìn",
+          "Xã Sơn Điện",
+          "Xã Thiên Phủ"
+        ]
+      },
+      {
+        "province": "Tỉnh Phú Thọ",
+        "communeCount": 6,
+        "totalAlerts": 12,
+        "sampleCommunes": [
+          "Xã Thượng Long",
+          "Xã Yên Lập",
+          "Xã Phú Khê",
+          "Xã Đồng Lương",
+          "Xã Minh Hòa"
         ]
       }
     ],
     "topRainProvinces": [
       {
-        "province": "TP. Hồ Chí Minh",
-        "count": 9
+        "province": "Tiền Giang",
+        "count": 28
       },
       {
-        "province": "Tuyên Quang",
-        "count": 8
+        "province": "Đồng Nai",
+        "count": 27
       },
       {
-        "province": "Vĩnh Long",
-        "count": 5
+        "province": "Tây Ninh",
+        "count": 16
       },
       {
-        "province": "Nghệ An",
-        "count": 2
+        "province": "Long An",
+        "count": 14
       },
       {
-        "province": "Phú Thọ",
-        "count": 2
+        "province": "Yên Bái",
+        "count": 13
       }
     ]
   },
   "counts": {
-    "dong_set": 64,
-    "lightning_strikes": 6908,
-    "heavy_rain_points": 31,
+    "dong_set": 332,
+    "lightning_strikes": 56768,
+    "heavy_rain_points": 230,
     "radar_frames": 12,
     "radar_stations": 10
   }

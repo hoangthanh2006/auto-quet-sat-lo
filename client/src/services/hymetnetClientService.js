@@ -2,7 +2,7 @@
  * Client-Side Service for Hymetnet (http://hymetnet.gov.vn/)
  * Cung cấp API tương tác với dữ liệu Khí tượng Thủy văn:
  * - Ưu tiên đọc từ Firebase Realtime Database (siêu nhanh, có cache và real-time update)
- * - Tự động fallback sang API backend Express (/api/hymetnet/*)
+ * - Tự động fallback sang API backend Express (hỗ trợ Render production & local dev)
  */
 
 import {
@@ -11,8 +11,9 @@ import {
   getHymetnetTimeline,
   getHymetnetSyncStatus
 } from './firebase.js';
+import { getApiBaseUrl, isHtmlResponse, BACKEND_REQUIRED_MSG } from './api.js';
 
-const API_BASE = '/api/hymetnet';
+export const getHymetnetApiBase = () => `${getApiBaseUrl()}/hymetnet`;
 
 export const HYMETNET_RADAR_STATIONS = [
   { id: 'PL', name: 'Phù Liễn', province: 'Hải Phòng', lat: 20.809, lng: 106.64, region: 'Bắc Bộ' },
@@ -26,6 +27,73 @@ export const HYMETNET_RADAR_STATIONS = [
   { id: 'NT', name: 'Nha Trang', province: 'Khánh Hòa', lat: 12.21152, lng: 109.28056, region: 'Nam Trung Bộ' },
   { id: 'NB', name: 'Nhà Bè', province: 'TP. Hồ Chí Minh', lat: 10.65961, lng: 106.72833, region: 'Nam Bộ' }
 ];
+
+/**
+ * Helper gọi API backend an toàn:
+ * - Tự động phát hiện phản hồi HTML (lỗi Firebase Hosting rewrite static)
+ * - Tự động xử lý Render cold start timeout
+ * - Trả về format đồng nhất { success, data, error, message }
+ */
+async function requestHymetnet(endpoint, options = {}) {
+  const base = getHymetnetApiBase();
+  const url = `${base}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+  const timeoutMs = options.timeout || 60000;
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const res = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+      headers: {
+        'Accept': 'application/json',
+        ...(options.headers || {})
+      }
+    });
+    clearTimeout(timer);
+
+    const contentType = res.headers.get('content-type') || '';
+    const text = await res.text();
+
+    if (isHtmlResponse(text) || contentType.includes('text/html')) {
+      return {
+        success: false,
+        error: BACKEND_REQUIRED_MSG,
+        message: BACKEND_REQUIRED_MSG,
+        isStaticHostingError: true
+      };
+    }
+
+    try {
+      const json = JSON.parse(text);
+      if (!res.ok && !json.error && !json.message) {
+        json.error = `Máy chủ trả về mã lỗi HTTP ${res.status}`;
+      }
+      return json;
+    } catch (_) {
+      return {
+        success: false,
+        error: `Phản hồi không hợp lệ từ máy chủ (${res.status}): ${text.slice(0, 100)}...`,
+        message: `Phản hồi không hợp lệ từ máy chủ (${res.status})`
+      };
+    }
+  } catch (err) {
+    clearTimeout(timer);
+    if (err.name === 'AbortError') {
+      return {
+        success: false,
+        error: 'Quá thời gian chờ (Timeout). Máy chủ Render đang khởi động lại hoặc dữ liệu quá lớn, vui lòng thử lại sau giây lát.',
+        message: 'Quá thời gian chờ (Timeout)'
+      };
+    }
+    return {
+      success: false,
+      error: err.message || 'Không thể kết nối đến máy chủ Backend',
+      message: err.message
+    };
+  }
+}
 
 /**
  * 1. Lấy toàn bộ dữ liệu mới nhất (Tổng hợp tất cả các lớp)
@@ -42,17 +110,16 @@ export async function getHymetnetLatestData() {
   }
 
   // Fallback sang API backend
-  try {
-    const res = await fetch(`${API_BASE}/all`);
-    if (res.ok) {
-      const json = await res.json();
-      return { success: true, data: json.data || json, source: 'backend_api' };
-    }
-  } catch (err) {
-    console.error('[Hymetnet Client] Backend API fetch error:', err);
+  const res = await requestHymetnet('/all', { timeout: 30000 });
+  if (res && res.success) {
+    return { success: true, data: res.data || res, source: 'backend_api' };
   }
 
-  return { success: false, data: null, message: 'Không thể tải dữ liệu Hymetnet' };
+  return {
+    success: false,
+    data: null,
+    message: res?.error || res?.message || 'Không thể tải dữ liệu Hymetnet'
+  };
 }
 
 /**
@@ -66,14 +133,9 @@ export async function getHymetnetDongSet() {
     }
   } catch (_) {}
 
-  try {
-    const res = await fetch(`${API_BASE}/dongset`);
-    if (res.ok) {
-      const json = await res.json();
-      return { success: true, data: json, source: 'backend_api' };
-    }
-  } catch (err) {
-    console.error('[Hymetnet Client] getHymetnetDongSet error:', err);
+  const res = await requestHymetnet('/dongset', { timeout: 20000 });
+  if (res && (res.success || res.status === 'success' || res.records)) {
+    return { success: true, data: res, source: 'backend_api' };
   }
 
   return { success: false, data: null };
@@ -90,14 +152,9 @@ export async function getHymetnetLightning() {
     }
   } catch (_) {}
 
-  try {
-    const res = await fetch(`${API_BASE}/lightning`);
-    if (res.ok) {
-      const json = await res.json();
-      return { success: true, data: json, source: 'backend_api' };
-    }
-  } catch (err) {
-    console.error('[Hymetnet Client] getHymetnetLightning error:', err);
+  const res = await requestHymetnet('/lightning', { timeout: 25000 });
+  if (res && (res.success || res.data || res.items)) {
+    return { success: true, data: res, source: 'backend_api' };
   }
 
   return { success: false, data: null };
@@ -114,14 +171,9 @@ export async function getHymetnetRain() {
     }
   } catch (_) {}
 
-  try {
-    const res = await fetch(`${API_BASE}/rain`);
-    if (res.ok) {
-      const json = await res.json();
-      return { success: true, data: json, source: 'backend_api' };
-    }
-  } catch (err) {
-    console.error('[Hymetnet Client] getHymetnetRain error:', err);
+  const res = await requestHymetnet('/rain', { timeout: 20000 });
+  if (res && (res.success || res.items)) {
+    return { success: true, data: res, source: 'backend_api' };
   }
 
   return { success: false, data: null };
@@ -138,14 +190,9 @@ export async function getHymetnetRadar() {
     }
   } catch (_) {}
 
-  try {
-    const res = await fetch(`${API_BASE}/radar`);
-    if (res.ok) {
-      const json = await res.json();
-      return { success: true, data: json, source: 'backend_api' };
-    }
-  } catch (err) {
-    console.error('[Hymetnet Client] getHymetnetRadar error:', err);
+  const res = await requestHymetnet('/radar', { timeout: 20000 });
+  if (res && (res.success || res.stations || res.timeline)) {
+    return { success: true, data: res, source: 'backend_api' };
   }
 
   return { success: false, data: null };
@@ -169,27 +216,20 @@ export async function getHymetnetHistoryTimeline(limit = 24) {
  * 8. Kích hoạt quét và đồng bộ thủ công ngay lập tức
  */
 export async function triggerHymetnetManualSync() {
-  try {
-    const res = await fetch(`${API_BASE}/sync-now`, { method: 'POST' });
-    if (res.ok) {
-      return await res.json();
-    }
-    return { success: false, message: `HTTP ${res.status}` };
-  } catch (err) {
-    return { success: false, error: err.message };
-  }
+  return await requestHymetnet('/sync-now', {
+    method: 'POST',
+    timeout: 90000 // Cào toàn bộ 56k tia sét + trạm mưa + radar tốn khoảng 25-35 giây
+  });
 }
 
 /**
  * 9. Lấy trạng thái đồng bộ và scheduler
  */
 export async function fetchHymetnetStatus() {
-  try {
-    const res = await fetch(`${API_BASE}/sync-status`);
-    if (res.ok) {
-      return await res.json();
-    }
-  } catch (_) {}
+  const res = await requestHymetnet('/sync-status', { timeout: 15000 });
+  if (res && res.success) {
+    return res;
+  }
 
   return getHymetnetSyncStatus();
 }
