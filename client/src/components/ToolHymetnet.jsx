@@ -19,7 +19,16 @@ import {
   Activity,
   Download,
   Info,
-  Sliders
+  Sliders,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  RotateCcw,
+  SlidersHorizontal,
+  ListFilter,
+  Check,
+  Map,
+  X
 } from 'lucide-react';
 import {
   getHymetnetLatestData,
@@ -28,6 +37,7 @@ import {
   getHymetnetHistoryTimeline
 } from '../services/hymetnetClientService';
 import { HYMETNET_RADAR_STATIONS } from '../services/hymetnetClientService';
+import HymetnetRainMap from './HymetnetRainMap';
 
 export default function ToolHymetnet() {
   const [loading, setLoading] = useState(true);
@@ -47,6 +57,15 @@ export default function ToolHymetnet() {
   const [radarPlaying, setRadarPlaying] = useState(false);
   const [radarLayerType, setRadarLayerType] = useState('cmax'); // 'cmax' | 'sat_ir' | 'sat_vsb'
   const [historyTimeline, setHistoryTimeline] = useState([]);
+
+  // States cho Tab Mưa Lớn Trọng Điểm (/rain/)
+  const [rainSearch, setRainSearch] = useState('');
+  const [rainProvinceFilter, setRainProvinceFilter] = useState('all');
+  const [rainLetterFilter, setRainLetterFilter] = useState('all');
+  const [rainTimeFilter, setRainTimeFilter] = useState('all');
+  const [rainSortColumn, setRainSortColumn] = useState('rank'); // 'rank' | 'district' | 'province' | 'latitude' | 'longitude'
+  const [rainSortOrder, setRainSortOrder] = useState('asc'); // 'asc' | 'desc'
+  const [selectedRainPoint, setSelectedRainPoint] = useState(null);
 
   // Tải dữ liệu ban đầu và đăng ký lắng nghe WebSocket Firebase
   useEffect(() => {
@@ -175,6 +194,172 @@ export default function ToolHymetnet() {
       );
     });
   }, [lightningLayer, lightningFilterType, lightningSearch]);
+
+  // Chuẩn hóa toàn bộ danh sách điểm mưa lớn từ các frame dữ liệu
+  const allRainPoints = useMemo(() => {
+    const frames = rainLayer.stormFrames || [];
+    let list = [];
+    let idx = 1;
+
+    if (frames.length > 0) {
+      frames.forEach((f) => {
+        (f.points || []).forEach((pt) => {
+          list.push({
+            ...pt,
+            id: `rain-${f.frameIndex}-${pt.district}-${pt.province}-${pt.latitude}-${pt.longitude}-${idx}`,
+            globalRank: idx,
+            displayRank: idx,
+            timeVn: f.timeVn || pt.timeVn || 'N/A',
+            timeKey: f.timeKey || pt.timeKey || '',
+            frameIndex: f.frameIndex
+          });
+          idx++;
+        });
+      });
+    } else if (Array.isArray(rainLayer.points)) {
+      rainLayer.points.forEach((pt) => {
+        list.push({
+          ...pt,
+          id: `rain-pt-${pt.district}-${pt.province}-${idx}`,
+          globalRank: idx,
+          displayRank: idx,
+          timeVn: pt.timeVn || 'N/A',
+          timeKey: pt.timeKey || '',
+          frameIndex: 0
+        });
+        idx++;
+      });
+    }
+
+    return list;
+  }, [rainLayer]);
+
+  // Danh sách các tỉnh thành duy nhất có điểm mưa lớn
+  const uniqueRainProvinces = useMemo(() => {
+    const counts = {};
+    allRainPoints.forEach((pt) => {
+      if (pt.province) {
+        counts[pt.province] = (counts[pt.province] || 0) + 1;
+      }
+    });
+    return Object.entries(counts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => a.name.localeCompare(b.name, 'vi'));
+  }, [allRainPoints]);
+
+  // Danh sách các chữ cái đầu tiên có trong dữ liệu (Quận/Huyện hoặc Tỉnh)
+  const uniqueRainLetters = useMemo(() => {
+    const letters = new Set();
+    allRainPoints.forEach((pt) => {
+      if (pt.district) {
+        const char = pt.district.trim().charAt(0).toUpperCase();
+        if (char) letters.add(char);
+      }
+      if (pt.province) {
+        const char = pt.province.trim().charAt(0).toUpperCase();
+        if (char) letters.add(char);
+      }
+    });
+    return Array.from(letters).sort((a, b) => a.localeCompare(b, 'vi'));
+  }, [allRainPoints]);
+
+  // Bộ lọc và sắp xếp cho bảng điểm mưa lớn
+  const filteredAndSortedRainPoints = useMemo(() => {
+    let list = [...allRainPoints];
+
+    // 1. Lọc theo mốc thời gian
+    if (rainTimeFilter !== 'all') {
+      list = list.filter((pt) => String(pt.frameIndex) === String(rainTimeFilter));
+    }
+
+    // 2. Lọc theo tỉnh / thành phố
+    if (rainProvinceFilter !== 'all') {
+      list = list.filter((pt) => pt.province === rainProvinceFilter);
+    }
+
+    // 3. Lọc theo chữ cái ở đầu tên Quận/Huyện hoặc Tỉnh
+    if (rainLetterFilter !== 'all') {
+      const letter = rainLetterFilter.toUpperCase();
+      list = list.filter((pt) => {
+        const d = (pt.district || '').trim().toUpperCase();
+        const p = (pt.province || '').trim().toUpperCase();
+        return d.startsWith(letter) || p.startsWith(letter);
+      });
+    }
+
+    // 4. Lọc theo chuỗi tìm kiếm
+    if (rainSearch.trim()) {
+      const q = rainSearch.toLowerCase().trim();
+      list = list.filter(
+        (pt) =>
+          (pt.district || '').toLowerCase().includes(q) ||
+          (pt.province || '').toLowerCase().includes(q) ||
+          String(pt.latitude).includes(q) ||
+          String(pt.longitude).includes(q)
+      );
+    }
+
+    // 5. Sắp xếp đa tiêu chí (Thứ hạng, Quận/Huyện A-Z, Tỉnh/TP A-Z, Tọa độ)
+    list.sort((a, b) => {
+      let cmp = 0;
+      if (rainSortColumn === 'rank') {
+        cmp = (a.globalRank || 0) - (b.globalRank || 0);
+      } else if (rainSortColumn === 'district') {
+        cmp = (a.district || '').localeCompare(b.district || '', 'vi', { numeric: true, sensitivity: 'base' });
+      } else if (rainSortColumn === 'province') {
+        cmp = (a.province || '').localeCompare(b.province || '', 'vi', { numeric: true, sensitivity: 'base' });
+      } else if (rainSortColumn === 'latitude') {
+        cmp = (a.latitude || 0) - (b.latitude || 0);
+      } else if (rainSortColumn === 'longitude') {
+        cmp = (a.longitude || 0) - (b.longitude || 0);
+      }
+      return rainSortOrder === 'asc' ? cmp : -cmp;
+    });
+
+    return list;
+  }, [
+    allRainPoints,
+    rainTimeFilter,
+    rainProvinceFilter,
+    rainLetterFilter,
+    rainSearch,
+    rainSortColumn,
+    rainSortOrder
+  ]);
+
+  // Handler sắp xếp cột khi click vào Header
+  const handleSortRainColumn = (col) => {
+    if (rainSortColumn === col) {
+      if (rainSortOrder === 'asc') {
+        setRainSortOrder('desc');
+      } else {
+        setRainSortColumn('rank');
+        setRainSortOrder('asc');
+      }
+    } else {
+      setRainSortColumn(col);
+      setRainSortOrder('asc');
+    }
+  };
+
+  // Handler reset toàn bộ bộ lọc
+  const handleResetRainFilters = () => {
+    setRainSearch('');
+    setRainProvinceFilter('all');
+    setRainLetterFilter('all');
+    setRainTimeFilter('all');
+    setRainSortColumn('rank');
+    setRainSortOrder('asc');
+    setSelectedRainPoint(null);
+  };
+
+  const isRainFilterActive =
+    rainSearch.trim() !== '' ||
+    rainProvinceFilter !== 'all' ||
+    rainLetterFilter !== 'all' ||
+    rainTimeFilter !== 'all' ||
+    rainSortColumn !== 'rank' ||
+    rainSortOrder !== 'asc';
 
   // Xuất file JSON
   const handleExportJSON = () => {
@@ -767,90 +952,330 @@ export default function ToolHymetnet() {
       {activeTab === 'rain' && !loading && (
         <div className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-            {/* Cột trái: Bảng điểm mưa lớn */}
+            {/* Cột trái: Bảng điểm mưa lớn với sắp xếp và lọc đa tiêu chí */}
             <div className="lg:col-span-6 space-y-4">
-              <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
-                  <CloudRain className="w-4 h-4 text-cyan-500" />
-                  Các Điểm Mưa Lớn Trọng Điểm ({counts.heavy_rain_points || 0} điểm)
-                </h3>
+              <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3.5">
+                {/* 1. Header Bảng */}
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                      <CloudRain className="w-4 h-4 text-cyan-500" />
+                      Điểm Mưa Lớn Trọng Điểm
+                    </h3>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                        Hiển thị <strong className="text-cyan-600 dark:text-cyan-400 font-bold">{filteredAndSortedRainPoints.length}</strong> / {allRainPoints.length} điểm
+                      </span>
+                      {selectedRainPoint && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-100 dark:bg-cyan-900/50 text-cyan-700 dark:text-cyan-300 font-medium">
+                          Đã chọn: #{selectedRainPoint.displayRank} {selectedRainPoint.district}
+                        </span>
+                      )}
+                    </div>
+                  </div>
 
-                <div className="overflow-x-auto max-h-[480px] overflow-y-auto">
+                  {isRainFilterActive && (
+                    <button
+                      onClick={handleResetRainFilters}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50 hover:bg-rose-100 transition cursor-pointer"
+                      title="Đặt lại toàn bộ bộ lọc và sắp xếp"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      <span>Xóa bộ lọc</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* 2. Bộ lọc Tìm kiếm, Tỉnh/Thành phố & Mốc thời gian */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+                  {/* Tìm kiếm */}
+                  <div className="relative">
+                    <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="text"
+                      value={rainSearch}
+                      onChange={(e) => setRainSearch(e.target.value)}
+                      placeholder="Tìm quận huyện, tỉnh..."
+                      className="w-full pl-8 pr-7 py-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 text-slate-800 dark:text-slate-100"
+                    />
+                    {rainSearch && (
+                      <button
+                        onClick={() => setRainSearch('')}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Lọc theo Tỉnh/Thành phố */}
+                  <div>
+                    <select
+                      value={rainProvinceFilter}
+                      onChange={(e) => setRainProvinceFilter(e.target.value)}
+                      className="w-full px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 text-slate-800 dark:text-slate-100 cursor-pointer"
+                    >
+                      <option value="all">📍 Tất cả tỉnh thành ({allRainPoints.length})</option>
+                      {uniqueRainProvinces.map((p) => (
+                        <option key={p.name} value={p.name}>
+                          {p.name} ({p.count})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Lọc theo Mốc giờ */}
+                  <div>
+                    <select
+                      value={rainTimeFilter}
+                      onChange={(e) => setRainTimeFilter(e.target.value)}
+                      className="w-full px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 text-slate-800 dark:text-slate-100 cursor-pointer"
+                    >
+                      <option value="all">⏰ Tất cả các mốc giờ</option>
+                      {(rainLayer.stormFrames || []).map((f) => (
+                        <option key={f.frameIndex} value={String(f.frameIndex)}>
+                          Frame #{f.frameIndex + 1} ({f.count} điểm) {f.timeVn ? `· ${f.timeVn}` : ''}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* 3. Thanh Lọc Nhanh Theo Chữ Cái (A - Z) */}
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 text-xs text-slate-500 scrollbar-thin">
+                  <span className="text-[11px] font-bold text-slate-400 uppercase shrink-0 flex items-center gap-1">
+                    <ListFilter className="w-3 h-3 text-cyan-500" />
+                    Chữ cái:
+                  </span>
+                  <button
+                    onClick={() => setRainLetterFilter('all')}
+                    className={`px-2 py-0.5 rounded-lg text-[11px] font-semibold transition cursor-pointer shrink-0 ${
+                      rainLetterFilter === 'all'
+                        ? 'bg-cyan-600 text-white shadow-sm'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                    }`}
+                  >
+                    Tất cả
+                  </button>
+                  {uniqueRainLetters.map((l) => (
+                    <button
+                      key={l}
+                      onClick={() => setRainLetterFilter(l === rainLetterFilter ? 'all' : l)}
+                      className={`px-2 py-0.5 rounded-lg text-[11px] font-semibold transition cursor-pointer shrink-0 ${
+                        rainLetterFilter === l
+                          ? 'bg-cyan-600 text-white shadow-sm scale-105'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                      }`}
+                      title={`Lọc địa danh bắt đầu bằng chữ '${l}'`}
+                    >
+                      {l}
+                    </button>
+                  ))}
+                </div>
+
+                {/* 4. Bảng Dữ Liệu có Header Sắp Xếp */}
+                <div className="overflow-x-auto max-h-[500px] overflow-y-auto rounded-xl border border-slate-200/80 dark:border-slate-800/80">
                   <table className="w-full text-left text-xs border-collapse">
-                    <thead className="bg-slate-50 dark:bg-slate-800/80 sticky top-0 z-10 text-[11px] font-bold text-slate-500 uppercase">
+                    <thead className="bg-slate-50 dark:bg-slate-800/90 sticky top-0 z-10 text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider shadow-sm select-none">
                       <tr>
-                        <th className="p-2.5">Thứ hạng</th>
-                        <th className="p-2.5">Quận / Huyện</th>
-                        <th className="p-2.5">Tỉnh / Thành phố</th>
-                        <th className="p-2.5">Vĩ độ</th>
-                        <th className="p-2.5">Kinh độ</th>
+                        {/* Header Thứ Hạng */}
+                        <th className="p-2.5">
+                          <button
+                            onClick={() => handleSortRainColumn('rank')}
+                            className="flex items-center gap-1 group font-bold hover:text-cyan-600 dark:hover:text-cyan-400 transition cursor-pointer"
+                            title="Nhấn để sắp xếp theo Thứ hạng mưa"
+                          >
+                            <span>Thứ hạng</span>
+                            {rainSortColumn === 'rank' ? (
+                              rainSortOrder === 'asc' ? (
+                                <ArrowUp className="w-3.5 h-3.5 text-cyan-500" />
+                              ) : (
+                                <ArrowDown className="w-3.5 h-3.5 text-cyan-500" />
+                              )
+                            ) : (
+                              <ArrowUpDown className="w-3.5 h-3.5 text-slate-400 opacity-50 group-hover:opacity-100" />
+                            )}
+                          </button>
+                        </th>
+
+                        {/* Header Quận / Huyện A-Z */}
+                        <th className="p-2.5">
+                          <button
+                            onClick={() => handleSortRainColumn('district')}
+                            className="flex items-center gap-1 group font-bold hover:text-cyan-600 dark:hover:text-cyan-400 transition cursor-pointer"
+                            title="Nhấn để sắp xếp theo chữ cái Quận / Huyện (A-Z)"
+                          >
+                            <span>Quận / Huyện</span>
+                            {rainSortColumn === 'district' ? (
+                              rainSortOrder === 'asc' ? (
+                                <ArrowUp className="w-3.5 h-3.5 text-cyan-500" />
+                              ) : (
+                                <ArrowDown className="w-3.5 h-3.5 text-cyan-500" />
+                              )
+                            ) : (
+                              <ArrowUpDown className="w-3.5 h-3.5 text-slate-400 opacity-50 group-hover:opacity-100" />
+                            )}
+                          </button>
+                        </th>
+
+                        {/* Header Tỉnh / Thành Phố A-Z */}
+                        <th className="p-2.5">
+                          <button
+                            onClick={() => handleSortRainColumn('province')}
+                            className="flex items-center gap-1 group font-bold hover:text-cyan-600 dark:hover:text-cyan-400 transition cursor-pointer"
+                            title="Nhấn để sắp xếp theo chữ cái Tỉnh / Thành phố (A-Z)"
+                          >
+                            <span>Tỉnh / TP</span>
+                            {rainSortColumn === 'province' ? (
+                              rainSortOrder === 'asc' ? (
+                                <ArrowUp className="w-3.5 h-3.5 text-cyan-500" />
+                              ) : (
+                                <ArrowDown className="w-3.5 h-3.5 text-cyan-500" />
+                              )
+                            ) : (
+                              <ArrowUpDown className="w-3.5 h-3.5 text-slate-400 opacity-50 group-hover:opacity-100" />
+                            )}
+                          </button>
+                        </th>
+
+                        {/* Header Vĩ độ */}
+                        <th className="p-2.5">
+                          <button
+                            onClick={() => handleSortRainColumn('latitude')}
+                            className="flex items-center gap-1 group font-bold hover:text-cyan-600 dark:hover:text-cyan-400 transition cursor-pointer"
+                            title="Sắp xếp theo Vĩ độ"
+                          >
+                            <span>Vĩ độ</span>
+                            {rainSortColumn === 'latitude' ? (
+                              rainSortOrder === 'asc' ? (
+                                <ArrowUp className="w-3.5 h-3.5 text-cyan-500" />
+                              ) : (
+                                <ArrowDown className="w-3.5 h-3.5 text-cyan-500" />
+                              )
+                            ) : (
+                              <ArrowUpDown className="w-3.5 h-3.5 text-slate-400 opacity-40 group-hover:opacity-100" />
+                            )}
+                          </button>
+                        </th>
+
+                        {/* Header Kinh độ */}
+                        <th className="p-2.5">
+                          <button
+                            onClick={() => handleSortRainColumn('longitude')}
+                            className="flex items-center gap-1 group font-bold hover:text-cyan-600 dark:hover:text-cyan-400 transition cursor-pointer"
+                            title="Sắp xếp theo Kinh độ"
+                          >
+                            <span>Kinh độ</span>
+                            {rainSortColumn === 'longitude' ? (
+                              rainSortOrder === 'asc' ? (
+                                <ArrowUp className="w-3.5 h-3.5 text-cyan-500" />
+                              ) : (
+                                <ArrowDown className="w-3.5 h-3.5 text-cyan-500" />
+                              )
+                            ) : (
+                              <ArrowUpDown className="w-3.5 h-3.5 text-slate-400 opacity-40 group-hover:opacity-100" />
+                            )}
+                          </button>
+                        </th>
+
+                        {/* Header Maps */}
                         <th className="p-2.5 text-right">Maps</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                      {(rainLayer.stormFrames || [])
-                        .flatMap((f) => f.points || [])
-                        .map((pt, idx) => (
-                          <tr key={`${pt.district}-${pt.province}-${idx}`} className="hover:bg-cyan-50/40 dark:hover:bg-slate-800/50 transition">
-                            <td className="p-2.5 font-bold text-cyan-600 dark:text-cyan-400">#{idx + 1}</td>
-                            <td className="p-2.5 font-semibold text-slate-900 dark:text-slate-100">{pt.district || 'N/A'}</td>
-                            <td className="p-2.5 text-slate-700 dark:text-slate-300">{pt.province || 'N/A'}</td>
-                            <td className="p-2.5 font-mono text-slate-500">{pt.latitude?.toFixed(4)}</td>
-                            <td className="p-2.5 font-mono text-slate-500">{pt.longitude?.toFixed(4)}</td>
-                            <td className="p-2.5 text-right">
-                              <a
-                                href={`https://www.google.com/maps?q=${pt.latitude},${pt.longitude}`}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-[11px] text-cyan-600 hover:text-cyan-700 dark:text-cyan-400 font-medium inline-flex items-center gap-0.5"
-                              >
-                                Xem
-                                <ExternalLink className="w-3 h-3" />
-                              </a>
+                      {filteredAndSortedRainPoints.map((pt) => {
+                        const isSelected = selectedRainPoint && selectedRainPoint.id === pt.id;
+                        const rank = pt.displayRank || pt.globalRank || pt.rank + 1;
+
+                        let rankStyle = 'text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/50 border-cyan-200 dark:border-cyan-800/60';
+                        if (rank === 1) {
+                          rankStyle = 'text-white bg-gradient-to-tr from-rose-600 to-red-500 border-rose-300 font-extrabold shadow-sm';
+                        } else if (rank <= 3) {
+                          rankStyle = 'text-white bg-gradient-to-tr from-amber-500 to-orange-500 border-amber-300 font-bold shadow-sm';
+                        }
+
+                        return (
+                          <tr
+                            key={pt.id}
+                            onClick={() => setSelectedRainPoint(pt)}
+                            className={`transition cursor-pointer ${
+                              isSelected
+                                ? 'bg-cyan-100/60 dark:bg-cyan-950/60 ring-1 ring-cyan-500'
+                                : 'hover:bg-cyan-50/40 dark:hover:bg-slate-800/50'
+                            }`}
+                          >
+                            <td className="p-2.5">
+                              <span className={`inline-flex items-center justify-center min-w-[28px] px-1.5 py-0.5 rounded-full text-[11px] border ${rankStyle}`}>
+                                #{rank}
+                              </span>
+                            </td>
+                            <td className="p-2.5 font-bold text-slate-900 dark:text-slate-100">
+                              {pt.district || 'N/A'}
+                            </td>
+                            <td className="p-2.5 text-slate-700 dark:text-slate-300">
+                              {pt.province || 'N/A'}
+                            </td>
+                            <td className="p-2.5 font-mono text-[11px] text-slate-500">
+                              {pt.latitude?.toFixed(4)}
+                            </td>
+                            <td className="p-2.5 font-mono text-[11px] text-slate-500">
+                              {pt.longitude?.toFixed(4)}
+                            </td>
+                            <td className="p-2.5 text-right" onClick={(e) => e.stopPropagation()}>
+                              <div className="flex items-center justify-end gap-1.5">
+                                <button
+                                  onClick={() => setSelectedRainPoint(pt)}
+                                  className="text-[11px] px-2 py-0.5 rounded bg-cyan-50 dark:bg-cyan-950/50 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-100 dark:hover:bg-cyan-900 transition flex items-center gap-1 font-medium cursor-pointer"
+                                  title="Ghim và phóng to điểm này trên bản đồ"
+                                >
+                                  <MapPin className="w-3 h-3" />
+                                  <span>Ghim</span>
+                                </button>
+                                <a
+                                  href={`https://www.google.com/maps?q=${pt.latitude},${pt.longitude}`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-[11px] text-slate-500 hover:text-cyan-600 dark:hover:text-cyan-400 inline-flex items-center p-1"
+                                  title="Mở Google Maps vệ tinh"
+                                >
+                                  <ExternalLink className="w-3.5 h-3.5" />
+                                </a>
+                              </div>
                             </td>
                           </tr>
-                        ))}
+                        );
+                      })}
+
+                      {filteredAndSortedRainPoints.length === 0 && (
+                        <tr>
+                          <td colSpan={6} className="p-8 text-center text-slate-400 text-xs">
+                            <div className="space-y-2">
+                              <p>Không tìm thấy điểm mưa nào phù hợp với bộ lọc hiện tại.</p>
+                              <button
+                                onClick={handleResetRainFilters}
+                                className="px-3 py-1 rounded-lg text-xs font-semibold bg-cyan-600 text-white hover:bg-cyan-500 transition cursor-pointer"
+                              >
+                                Đặt lại bộ lọc
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>
               </div>
             </div>
 
-            {/* Cột phải: Xem ảnh Radar mưa QPE */}
+            {/* Cột phải: Bản đồ MapLibre trực quan điểm mưa lớn & Radar QPE */}
             <div className="lg:col-span-6 space-y-4">
-              <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                    <Radio className="w-4 h-4 text-cyan-500" />
-                    Ảnh Radar Mưa Tích Lũy QPE
-                  </h3>
-                  <span className="text-[11px] text-slate-500">
-                    Cập nhật mốc gần nhất: {rainLayer.timeSlots?.[0]?.timeVn || 'N/A'}
-                  </span>
-                </div>
-
-                {rainLayer.radarRainImages && rainLayer.radarRainImages.length > 0 ? (
-                  <div className="space-y-3">
-                    <div className="aspect-[4/3] bg-slate-950 rounded-xl overflow-hidden relative flex items-center justify-center border border-slate-800">
-                      <img
-                        src={rainLayer.radarRainImages[0].imageUrl}
-                        alt="Radar Rain QPE"
-                        className="w-full h-full object-contain"
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                        }}
-                      />
-                    </div>
-                    <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 text-xs text-slate-600 dark:text-slate-300">
-                      Ảnh Radar ước lượng lượng mưa tích lũy (QPE) quét toàn mạng lưới trạm radar Việt Nam.
-                    </div>
-                  </div>
-                ) : (
-                  <div className="p-8 text-center text-slate-400 text-xs">
-                    Chưa có liên kết ảnh radar mưa cho mốc này.
-                  </div>
-                )}
-              </div>
+              <HymetnetRainMap
+                points={filteredAndSortedRainPoints}
+                selectedPoint={selectedRainPoint}
+                onSelectPoint={(pt) => setSelectedRainPoint(pt)}
+                timeVn={rainLayer.timeSlots?.[0]?.timeVn || data?.vnTime || ''}
+                radarRainImages={rainLayer.radarRainImages || []}
+              />
             </div>
           </div>
         </div>
