@@ -1,6 +1,31 @@
 {
   "rules": {
-    ".read": "auth != null",
-    ".write": "auth != null"
+    "luquet_satlo": {
+      ".read": true,
+      ".write": "auth != null && (auth.token.email === 'spotlight.vnexpress@gmail.com' || auth.token.email === 'hoang.thanh0706@gmail.com' || auth.token.email === 'hoangthanh2006@yahoo.com' || (auth.token.email != null && auth.token.email.endsWith('@vnexpress.net')))",
+      "statistics": {
+        "timeline": {
+          ".indexOn": ["savedAt", "timestamp", "hourKey"]
+        }
+      },
+      "history": {
+        "$layer": {
+          ".indexOn": ["savedAt", "timestamp"]
+        }
+      }
+    },
+    "hymetnet": {
+      ".read": true,
+      ".write": "auth != null && (auth.token.email === 'spotlight.vnexpress@gmail.com' || auth.token.email === 'hoang.thanh0706@gmail.com' || auth.token.email === 'hoangthanh2006@yahoo.com' || (auth.token.email != null && auth.token.email.endsWith('@vnexpress.net')))",
+      "statistics": {
+        "timeline": {
+          ".indexOn": ["savedAt", "timestamp", "hourKey"]
+        }
+      }
+    },
+    "environmental": {
+      ".read": true,
+      ".write": "auth != null && (auth.token.email === 'spotlight.vnexpress@gmail.com' || auth.token.email === 'hoang.thanh0706@gmail.com' || auth.token.email === 'hoangthanh2006@yahoo.com' || (auth.token.email != null && auth.token.email.endsWith('@vnexpress.net')))"
+    }
   }
 }
