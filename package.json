@@ -4,8 +4,11 @@
   "private": true,
   "description": "Monorepo workspace for Data Crawl (Client + Server)",
   "scripts": {
+    "dev": "npm run dev:client",
+    "dev:all": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "build": "npm run build --prefix client",
     "build:client": "npm run build --prefix client",
+    "deploy": "npm run deploy:firebase",
     "deploy:firebase": "npm run build --prefix client && npx firebase-tools deploy --only hosting --project anh-cao-keu",
     "start:server": "npm start --prefix server",
     "dev:server": "npm run dev --prefix server",
