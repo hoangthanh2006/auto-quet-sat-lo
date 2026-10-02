@@ -33,6 +33,14 @@ const tools = [
     color: 'cyan',
   },
   {
+    id: 'tool-hymetnet',
+    title: 'Dông Sét, Mưa Lớn & Radar (Hymetnet.gov.vn)',
+    description: 'Dữ liệu thời gian thực: Cảnh báo dông sét chi tiết theo xã/phường 6 mốc (+10m đến +60m), 6.800+ cú sét quan trắc thực địa (CG/CC), điểm mưa lớn và chuỗi ảnh Radar Composite CMAX / Vệ tinh.',
+    icon: Zap,
+    color: 'amber',
+    badge: 'Mới · 2h Cron'
+  },
+  {
     id: 'tool-ev-lca',
     title: 'So Sánh Phát Thải Vòng Đời Xe Điện (Vietnam EV LCA)',
     description: 'Mô hình hóa phát thải GHG vòng đời xe theo phương pháp luận thích ứng lưới điện Việt Nam (EV vs Hybrid vs Xăng). Biểu đồ 4 giai đoạn phát thải và tính điểm hòa vốn (Break-even).',

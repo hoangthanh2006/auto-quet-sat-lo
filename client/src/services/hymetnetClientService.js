@@ -14,6 +14,19 @@ import {
 
 const API_BASE = '/api/hymetnet';
 
+export const HYMETNET_RADAR_STATIONS = [
+  { id: 'PL', name: 'Phù Liễn', province: 'Hải Phòng', lat: 20.809, lng: 106.64, region: 'Bắc Bộ' },
+  { id: 'PD', name: 'Pha Đin', province: 'Điện Biên', lat: 21.57139, lng: 103.51694, region: 'Tây Bắc Bộ' },
+  { id: 'VT', name: 'Việt Trì', province: 'Phú Thọ', lat: 21.41944, lng: 105.30472, region: 'Bắc Bộ' },
+  { id: 'VI', name: 'Vinh', province: 'Nghệ An', lat: 18.656, lng: 105.71083, region: 'Bắc Trung Bộ' },
+  { id: 'DH', name: 'Đông Hà', province: 'Quảng Trị', lat: 16.804722, lng: 107.09194, region: 'Bắc Trung Bộ' },
+  { id: 'TK', name: 'Tam Kỳ', province: 'Quảng Nam', lat: 15.56752, lng: 108.4624, region: 'Trung Trung Bộ' },
+  { id: 'PK', name: 'PleiKu', province: 'Gia Lai', lat: 14.03465, lng: 107.98406, region: 'Tây Nguyên' },
+  { id: 'QN', name: 'Quy Nhơn', province: 'Bình Định', lat: 13.74859, lng: 109.19213, region: 'Nam Trung Bộ' },
+  { id: 'NT', name: 'Nha Trang', province: 'Khánh Hòa', lat: 12.21152, lng: 109.28056, region: 'Nam Trung Bộ' },
+  { id: 'NB', name: 'Nhà Bè', province: 'TP. Hồ Chí Minh', lat: 10.65961, lng: 106.72833, region: 'Nam Bộ' }
+];
+
 /**
  * 1. Lấy toàn bộ dữ liệu mới nhất (Tổng hợp tất cả các lớp)
  */

@@ -12,6 +12,7 @@ const ToolTyphoon = lazy(() => import('./components/ToolTyphoon'));
 const ToolEnvironmentalCrawlers = lazy(() => import('./components/ToolEnvironmentalCrawlers'));
 const ToolEvLcaCalculator = lazy(() => import('./components/ToolEvLcaCalculator'));
 const ToolOpenDevMekong = lazy(() => import('./components/ToolOpenDevMekong'));
+const ToolHymetnet = lazy(() => import('./components/ToolHymetnet'));
 const DashboardHome = lazy(() => import('./components/DashboardHome'));
 const OtherTools = lazy(() => import('./components/OtherTools'));
 const UsageGuide = lazy(() => import('./components/UsageGuide'));
@@ -39,6 +40,7 @@ const NAV_GROUPS = [
       { id: 'tool-typhoon', label: 'Theo dõi & Phân tích bão', icon: Wind, color: 'text-rose-500', badge: 'JTWC' },
       { id: 'tool-environmental', label: 'Thu thập Dữ liệu Môi trường', icon: Droplets, color: 'text-emerald-500', badge: 'Hồ / Sông' },
       { id: 'tool-luquet-satlo', label: 'Lũ quét & Sạt lở (NCHMF)', icon: Waves, color: 'text-cyan-500', badge: 'Map' },
+      { id: 'tool-hymetnet', label: 'Dông sét & Radar (Hymetnet)', icon: Zap, color: 'text-amber-500', badge: 'Hymetnet' },
       { id: 'tool-ev-lca', label: 'Tính Phát thải Xe điện (LCA)', icon: Leaf, color: 'text-teal-500', badge: 'LCA' },
       { id: 'tool-opendev-mekong', label: 'Open Development VN', icon: Database, color: 'text-amber-500', badge: 'CKAN' },
     ]
@@ -196,6 +198,7 @@ function App() {
             {currentPage === 'tool-typhoon' && <ToolTyphoon />}
             {currentPage === 'tool-environmental' && <ToolEnvironmentalCrawlers />}
             {currentPage === 'tool-luquet-satlo' && <ToolLuquetSatlo />}
+            {currentPage === 'tool-hymetnet' && <ToolHymetnet />}
             {currentPage === 'tool-ev-lca' && <ToolEvLcaCalculator />}
             {currentPage === 'tool-opendev-mekong' && <ToolOpenDevMekong />}
             {currentPage === 'tool-ocr' && <ToolOCR />}
