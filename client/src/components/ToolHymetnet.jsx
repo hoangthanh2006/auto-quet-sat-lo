@@ -530,10 +530,13 @@ export default function ToolHymetnet() {
                 </span>
               )}
               {data?.vnTime && (
-                <span className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                <span className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1" title="Mốc thời gian dữ liệu theo trang hymetnet.gov.vn/rain/">
                   <Clock className="w-3.5 h-3.5" />
-                  Bản tin: <strong className="text-slate-700 dark:text-slate-300">{data.vnTime}</strong>
+                  Mốc dữ liệu Hymetnet: <strong className="text-slate-700 dark:text-slate-300">{data.vnTime}</strong>
                 </span>
+              )}
+              {data?.crawledVnTime && data.crawledVnTime !== data.vnTime && (
+                <span className="text-[11px] text-slate-400">· Quét lúc: {data.crawledVnTime}</span>
               )}
               {lastUpdated && (
                 <span className="text-[11px] text-slate-400">· Cập nhật UI: {lastUpdated}</span>

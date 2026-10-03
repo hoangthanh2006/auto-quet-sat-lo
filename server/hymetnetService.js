@@ -526,6 +526,36 @@ export async function fetchRadarAndSatelliteData() {
 }
 
 /**
+ * Xác định mốc thời gian DỮ LIỆU thực tế (giờ VN) mà trang /rain/ của Hymetnet đang hiển thị.
+ * Danh sách tentimesettvn gồm các nhãn:
+ *   - Mốc dự báo:  "15:00+06 (VN) 03-10-2026" (có hậu tố +N) -> bỏ qua
+ *   - Mốc quan trắc: "15:00 (VN) 03-10-2026", "14:00 (VN) ..." -> lấy mốc MỚI NHẤT
+ * @returns {{year,month,day,hour,minute,label}|null}
+ */
+export function getHymetnetDataTime(timeSlots = []) {
+  const re = /^\s*(\d{1,2}):(\d{2})\s*\(VN\)\s*(\d{2})-(\d{2})-(\d{4})\s*$/;
+  let best = null;
+  for (const slot of timeSlots) {
+    const m = re.exec(slot?.timeVn || '');
+    if (!m) continue;
+    const [, hh, mi, dd, mo, yyyy] = m;
+    const stamp = `${yyyy}${mo}${dd}${hh.padStart(2, '0')}${mi}`;
+    if (!best || stamp > best.stamp) {
+      best = {
+        stamp,
+        year: yyyy,
+        month: mo,
+        day: dd,
+        hour: hh.padStart(2, '0'),
+        minute: mi,
+        label: slot.timeVn
+      };
+    }
+  }
+  return best;
+}
+
+/**
  * 5. Bộ quét toàn diện Hymetnet (Unified Crawler Orchestrator)
  * Cào đồng thời tất cả các lớp: Dông sét, Sét quan trắc, Mưa lớn, Radar & Vệ tinh
  */
@@ -533,22 +563,19 @@ export async function crawlHymetnetData() {
   const crawlStartTime = Date.now();
   const now = new Date();
 
-  // Chuyển sang mốc giờ Việt Nam (UTC+7)
+  // Giờ chạy quét (UTC+7) - chỉ để ghi log / lưu vết, KHÔNG dùng làm mốc dữ liệu
   const vnTimeMs = now.getTime() + (7 * 60 + now.getTimezoneOffset()) * 60 * 1000;
   const vnDate = new Date(vnTimeMs);
 
   const pad = (n) => String(n).padStart(2, '0');
-  const year = vnDate.getFullYear();
-  const month = pad(vnDate.getMonth() + 1);
-  const day = pad(vnDate.getDate());
-  const hour = pad(vnDate.getHours());
-  const minute = pad(vnDate.getMinutes());
+  const crawlYear = vnDate.getFullYear();
+  const crawlMonth = pad(vnDate.getMonth() + 1);
+  const crawlDay = pad(vnDate.getDate());
+  const crawlHour = pad(vnDate.getHours());
+  const crawlMinute = pad(vnDate.getMinutes());
+  const crawledVnTime = `${crawlHour}:${crawlMinute} ${crawlDay}/${crawlMonth}/${crawlYear}`;
 
-  const snapshotId = `${year}${month}${day}_${hour}00`;
-  const exactTimeId = `${year}${month}${day}_${hour}${minute}`;
-  const displayTime = `${hour}:${minute} ${day}/${month}/${year}`;
-
-  console.log(`[Hymetnet Crawler] 🛰️ Bắt đầu cào toàn bộ dữ liệu từ http://hymetnet.gov.vn/ [${displayTime}]...`);
+  console.log(`[Hymetnet Crawler] 🛰️ Bắt đầu cào toàn bộ dữ liệu từ http://hymetnet.gov.vn/ [quét lúc ${crawledVnTime}]...`);
 
   const [dongSetRes, lightningRes, rainRes, radarRes] = await Promise.allSettled([
     fetchDongSet(),
@@ -561,6 +588,27 @@ export async function crawlHymetnetData() {
   const lightning = lightningRes.status === 'fulfilled' && lightningRes.value?.success ? lightningRes.value : null;
   const rain = rainRes.status === 'fulfilled' && rainRes.value?.success ? rainRes.value : null;
   const radar = radarRes.status === 'fulfilled' && radarRes.value?.success ? radarRes.value : null;
+
+  // Mốc thời gian dữ liệu = mốc quan trắc mới nhất trên trang /rain/ (fallback: radar, rồi giờ quét)
+  const dataTime =
+    getHymetnetDataTime(rain?.timeSlots) ||
+    getHymetnetDataTime((radar?.timeline || []).map((f) => ({ timeVn: f.timeVn })));
+
+  const year = dataTime?.year || String(crawlYear);
+  const month = dataTime?.month || crawlMonth;
+  const day = dataTime?.day || crawlDay;
+  const hour = dataTime?.hour || crawlHour;
+  const minute = dataTime?.minute || crawlMinute;
+
+  const snapshotId = `${year}${month}${day}_${hour}00`;
+  const exactTimeId = `${year}${month}${day}_${hour}${minute}`;
+  const displayTime = `${hour}:${minute} ${day}/${month}/${year}`;
+
+  if (dataTime) {
+    console.log(`[Hymetnet Crawler] 🕒 Mốc dữ liệu Hymetnet /rain/: ${dataTime.label} -> snapshot ${snapshotId}`);
+  } else {
+    console.warn(`[Hymetnet Crawler] ⚠️ Không đọc được mốc thời gian từ /rain/, dùng giờ quét ${crawledVnTime}`);
+  }
 
   const totalAlerts = dongSet?.totalAlerts || 0;
   const totalStrikes = lightning?.summary?.totalStrikes || 0;
@@ -577,6 +625,9 @@ export async function crawlHymetnetData() {
     source: 'http://hymetnet.gov.vn/',
     sourceName: 'Trung tâm Kỹ thuật Quan trắc Khí tượng Thủy văn (HYMETNET)',
     crawledAt: now.toISOString(),
+    crawledVnTime,
+    dataTimeSource: dataTime ? 'hymetnet_rain' : 'crawl_time',
+    dataTimeLabel: dataTime?.label || null,
     vnTime: displayTime,
     snapshotId,
     exactTimeId,

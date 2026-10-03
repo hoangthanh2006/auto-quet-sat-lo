@@ -101,6 +101,8 @@ export async function runHymetnetAutoSyncOnce(options = {}) {
       date: payload.date,
       time: payload.hour,
       vnTime: payload.vnTime,
+      crawledVnTime: payload.crawledVnTime,
+      dataTimeLabel: payload.dataTimeLabel,
       summary,
       counts,
       source
