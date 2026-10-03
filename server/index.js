@@ -1045,6 +1045,31 @@ app.get('/api/hymetnet/sync-status', async (req, res) => {
   }
 });
 
+// 10. Lấy dữ liệu chi tiết của 1 snapshot lịch sử theo id
+app.get('/api/hymetnet/snapshot/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    // 1. Thử đọc từ local disk trước (siêu nhanh)
+    const localFile = path.join(__dirname, 'data', 'hymetnet', `${id}.json`);
+    if (fs.existsSync(localFile)) {
+      const content = JSON.parse(fs.readFileSync(localFile, 'utf8'));
+      return res.json({ success: true, data: content, source: 'local_disk' });
+    }
+
+    // 2. Fallback đọc từ Firebase RTDB
+    const response = await fetchFirebaseRTDB(`/hymetnet/snapshots/${id}.json`);
+    const data = await response.json();
+    if (data && !data.error) {
+      return res.json({ success: true, data, source: 'firebase' });
+    }
+
+    res.status(404).json({ success: false, error: `Không tìm thấy snapshot ${id}` });
+  } catch (error) {
+    console.error(`API /api/hymetnet/snapshot/${req.params.id} error:`, error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // ============================================================================
 // TYPHOON TRACKING & ANALYSIS (THEO DÕI & PHÂN TÍCH BÃO)
 // ============================================================================

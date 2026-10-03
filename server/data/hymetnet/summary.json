@@ -1,98 +1,105 @@
 {
-  "snapshotId": "20261003_1200",
-  "exactTimeId": "20261003_1208",
-  "crawledAt": "2026-10-03T05:08:43.267Z",
-  "vnTime": "12:08 03/10/2026",
+  "snapshotId": "20261003_1400",
+  "exactTimeId": "20261003_1409",
+  "crawledAt": "2026-10-03T07:09:56.295Z",
+  "vnTime": "14:09 03/10/2026",
   "summary": {
-    "totalAlertCommunes": 75,
-    "totalLightningStrikes": 1427,
-    "totalLightningCG": 669,
-    "totalLightningCC": 758,
+    "totalAlertCommunes": 254,
+    "totalLightningStrikes": 16146,
+    "totalLightningCG": 9517,
+    "totalLightningCC": 6629,
     "maxLightningAmpKa": 246,
-    "heavyRainPointsCount": 49,
+    "heavyRainPointsCount": 134,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Tỉnh An Giang",
-        "communeCount": 7,
-        "totalAlerts": 23,
+        "province": "Tỉnh Quảng Ngãi",
+        "communeCount": 13,
+        "totalAlerts": 40,
         "sampleCommunes": [
-          "Xã Vĩnh Gia",
-          "Xã Hòn Đất",
-          "Xã Nhơn Hội",
-          "Xã Định Mỹ",
-          "Xã Sơn Kiên"
+          "Xã Xốp",
+          "Xã Tu Mơ Rông",
+          "Xã Đăk Kôi",
+          "Xã Măng Bút",
+          "Xã Kon Plông"
+        ]
+      },
+      {
+        "province": "Tỉnh An Giang",
+        "communeCount": 12,
+        "totalAlerts": 39,
+        "sampleCommunes": [
+          "Xã Mỹ Đức",
+          "Phường Châu Đốc",
+          "Xã Vĩnh Thạnh Trung",
+          "Xã Định Hòa",
+          "Xã Giồng Riềng"
         ]
       },
       {
         "province": "Tỉnh Thanh Hóa",
+        "communeCount": 8,
+        "totalAlerts": 39,
+        "sampleCommunes": [
+          "Xã Na Mèo",
+          "Xã Sơn Thủy",
+          "Xã Mường Mìn",
+          "Xã Tam Lư",
+          "Xã Yên Nhân"
+        ]
+      },
+      {
+        "province": "Tỉnh Lâm Đồng",
+        "communeCount": 7,
+        "totalAlerts": 20,
+        "sampleCommunes": [
+          "Xã Đức An",
+          "Xã Lạc Dương",
+          "Phường Lâm Viên - Đà Lạt",
+          "Phường Xuân Trường - Đà Lạt",
+          "Xã Trường Xuân"
+        ]
+      },
+      {
+        "province": "Tỉnh Nghệ An",
         "communeCount": 5,
-        "totalAlerts": 17,
+        "totalAlerts": 27,
         "sampleCommunes": [
-          "Xã Bát Mọt",
-          "Xã Yên Nhân",
-          "Xã Vạn Xuân",
-          "Xã Lương Sơn",
-          "Xã Thường Xuân"
-        ]
-      },
-      {
-        "province": "Tỉnh Sơn La",
-        "communeCount": 3,
-        "totalAlerts": 6,
-        "sampleCommunes": [
-          "Xã Mường Bú",
-          "Xã Tô Múa",
-          "Xã Vân Hồ"
-        ]
-      },
-      {
-        "province": "Tỉnh Vĩnh Long",
-        "communeCount": 3,
-        "totalAlerts": 6,
-        "sampleCommunes": [
-          "Xã Hưng Mỹ",
-          "Xã Nhị Long",
-          "Xã Vinh Kim"
-        ]
-      },
-      {
-        "province": "Thành phố Cần Thơ",
-        "communeCount": 2,
-        "totalAlerts": 2,
-        "sampleCommunes": [
-          "Xã Thạnh Quới",
-          "Xã Thới Lai"
+          "Xã Tri Lễ",
+          "Xã Quế Phong",
+          "Xã Mường Quàng",
+          "Xã Tiền Phong",
+          "Xã Thông Thụ"
         ]
       }
     ],
     "topRainProvinces": [
       {
-        "province": "TP. Hồ Chí Minh",
-        "count": 12
+        "province": "An Giang",
+        "count": 25
       },
       {
-        "province": "Kiên Giang",
-        "count": 7
+        "province": "Sơn La",
+        "count": 16
       },
       {
-        "province": "Bến Tre",
-        "count": 5
-      },
-      {
-        "province": "Bình Thuận",
-        "count": 5
+        "province": "Kon Tum",
+        "count": 15
       },
       {
         "province": "Nghệ An",
-        "count": 4
+        "count": 11
+      },
+      {
+        "province": "Thanh Hóa",
+        "count": 10
       }
     ]
   },
   "counts": {
-    "dong_set": 75,
-    "lightning_strikes": 1427,
-    "heavy_rain_points": 49,
+    "dong_set": 254,
+    "lightning_strikes": 16146,
+    "heavy_rain_points": 134,
     "radar_frames": 12,
     "radar_stations": 10
   }

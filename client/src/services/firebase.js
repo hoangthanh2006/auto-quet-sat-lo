@@ -727,4 +727,24 @@ export async function getHymetnetSyncStatus() {
   }
 }
 
+/**
+ * Lấy dữ liệu chi tiết của 1 snapshot Hymetnet từ Firebase RTDB
+ * @param {string} snapshotId - Mã snapshot (ví dụ: '20261002_1600')
+ */
+export async function getHymetnetSnapshot(snapshotId) {
+  if (!snapshotId) return { success: false, data: null, message: 'Thiếu mã snapshot' };
+  try {
+    await ensureAuth();
+    const snapshot = await get(child(ref(rtdb), `hymetnet/snapshots/${snapshotId}`));
+    if (snapshot.exists()) {
+      return { success: true, data: snapshot.val() };
+    }
+    return { success: false, data: null, message: `Không tìm thấy snapshot ${snapshotId}` };
+  } catch (err) {
+    console.error(`[Firebase RTDB] getHymetnetSnapshot error:`, err);
+    return { success: false, error: err.message, data: null };
+  }
+}
+
+
 

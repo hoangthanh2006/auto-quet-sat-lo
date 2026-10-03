@@ -9,7 +9,8 @@ import {
   getHymetnetLatest,
   listenToHymetnetLatest,
   getHymetnetTimeline,
-  getHymetnetSyncStatus
+  getHymetnetSyncStatus,
+  getHymetnetSnapshot
 } from './firebase.js';
 import { getApiBaseUrl, isHtmlResponse, BACKEND_REQUIRED_MSG } from './api.js';
 
@@ -233,3 +234,34 @@ export async function fetchHymetnetStatus() {
 
   return getHymetnetSyncStatus();
 }
+
+/**
+ * 10. Lấy dữ liệu chi tiết của 1 snapshot lịch sử theo snapshotId
+ * Ưu tiên đọc từ Firebase RTDB (/hymetnet/snapshots/${snapshotId}), fallback sang backend API
+ */
+export async function getHymetnetSnapshotData(snapshotId) {
+  if (!snapshotId) return { success: false, data: null, message: 'Thiếu mã snapshot' };
+
+  // 1. Thử đọc từ Firebase RTDB trước (nhanh và trực tiếp)
+  try {
+    const fbRes = await getHymetnetSnapshot(snapshotId);
+    if (fbRes.success && fbRes.data) {
+      return { success: true, data: fbRes.data, source: 'firebase' };
+    }
+  } catch (e) {
+    console.warn('[Hymetnet Client] Firebase read snapshot failed:', e);
+  }
+
+  // 2. Fallback sang API backend
+  const res = await requestHymetnet(`/snapshot/${snapshotId}`, { timeout: 35000 });
+  if (res && res.success && res.data) {
+    return { success: true, data: res.data, source: res.source || 'backend_api' };
+  }
+
+  return {
+    success: false,
+    data: null,
+    message: res?.error || res?.message || `Không thể tải dữ liệu snapshot ${snapshotId}`
+  };
+}
+

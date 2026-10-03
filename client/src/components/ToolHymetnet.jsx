@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Zap,
   CloudRain,
@@ -28,13 +28,15 @@ import {
   ListFilter,
   Check,
   Map,
-  X
+  X,
+  Eye
 } from 'lucide-react';
 import {
   getHymetnetLatestData,
   subscribeHymetnetRealtime,
   triggerHymetnetManualSync,
-  getHymetnetHistoryTimeline
+  getHymetnetHistoryTimeline,
+  getHymetnetSnapshotData
 } from '../services/hymetnetClientService';
 import { HYMETNET_RADAR_STATIONS } from '../services/hymetnetClientService';
 import HymetnetRainMap from './HymetnetRainMap';
@@ -47,6 +49,12 @@ export default function ToolHymetnet() {
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
   const [syncMessage, setSyncMessage] = useState(null);
+
+  // States quản lý snapshot lịch sử
+  const [selectedSnapshotId, setSelectedSnapshotId] = useState(null);
+  const [loadingSnapshotId, setLoadingSnapshotId] = useState(null);
+  const selectedSnapshotIdRef = useRef(null);
+  selectedSnapshotIdRef.current = selectedSnapshotId;
 
   // Filter states
   const [dongSetStep, setDongSetStep] = useState('all');
@@ -94,8 +102,11 @@ export default function ToolHymetnet() {
     // Lắng nghe thay đổi real-time từ Firebase RTDB
     const unsubscribe = subscribeHymetnetRealtime('all', (res) => {
       if (res.success && res.data && isMounted) {
-        setData(res.data);
-        setLastUpdated(new Date().toLocaleTimeString('vi-VN'));
+        // Chỉ tự động cập nhật nếu không đang ở chế độ xem snapshot lịch sử
+        if (!selectedSnapshotIdRef.current) {
+          setData(res.data);
+          setLastUpdated(new Date().toLocaleTimeString('vi-VN'));
+        }
       }
     });
 
@@ -137,6 +148,7 @@ export default function ToolHymetnet() {
         const fresh = await getHymetnetLatestData();
         if (fresh.success && fresh.data) {
           setData(fresh.data);
+          setSelectedSnapshotId(null);
           setLastUpdated(new Date().toLocaleTimeString('vi-VN'));
         }
       } else {
@@ -147,6 +159,59 @@ export default function ToolHymetnet() {
     } finally {
       setSyncing(false);
       setTimeout(() => setSyncMessage(null), 5000);
+    }
+  };
+
+  // Chọn và nạp dữ liệu snapshot lịch sử
+  const handleSelectSnapshot = async (item, targetTab = null) => {
+    const snapshotId = typeof item === 'string' ? item : item?.snapshotId;
+    if (!snapshotId) return;
+
+    if (selectedSnapshotId === snapshotId) {
+      if (targetTab) setActiveTab(targetTab);
+      return;
+    }
+
+    setLoadingSnapshotId(snapshotId);
+    setSyncMessage(`Đang nạp dữ liệu snapshot ${snapshotId}...`);
+    try {
+      const res = await getHymetnetSnapshotData(snapshotId);
+      if (res.success && res.data) {
+        setData(res.data);
+        setSelectedSnapshotId(snapshotId);
+        setLastUpdated(res.data.vnTime || item?.vnTime || new Date().toLocaleTimeString('vi-VN'));
+        setSyncMessage(`Đã nạp thành công bản ghi ${snapshotId} (${res.data.vnTime || item?.vnTime || ''}). Các tab Dông sét, Sét quan trắc, Mưa & Radar đã đồng bộ về mốc này.`);
+        if (targetTab) {
+          setActiveTab(targetTab);
+        }
+      } else {
+        setSyncMessage(`Lỗi tải dữ liệu snapshot: ${res.message || 'Không tìm thấy dữ liệu'}`);
+      }
+    } catch (err) {
+      setSyncMessage(`Lỗi khi nạp snapshot: ${err.message}`);
+    } finally {
+      setLoadingSnapshotId(null);
+    }
+  };
+
+  // Quay về dữ liệu trực tiếp mới nhất (Live)
+  const handleReturnToLive = async () => {
+    setLoadingSnapshotId('live');
+    setSyncMessage('Đang lấy dữ liệu trực tiếp mới nhất...');
+    try {
+      const res = await getHymetnetLatestData();
+      if (res.success && res.data) {
+        setData(res.data);
+        setSelectedSnapshotId(null);
+        setLastUpdated(new Date().toLocaleTimeString('vi-VN'));
+        setSyncMessage('Đã quay về chế độ xem dữ liệu trực tiếp mới nhất (Live).');
+      } else {
+        setSyncMessage(`Không thể lấy dữ liệu mới nhất: ${res.message}`);
+      }
+    } catch (err) {
+      setSyncMessage(`Lỗi kết nối: ${err.message}`);
+    } finally {
+      setLoadingSnapshotId(null);
     }
   };
 
@@ -408,10 +473,17 @@ export default function ToolHymetnet() {
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 Cron tự động: 2h/lần
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/40">
-                <CheckCircle2 className="w-3.5 h-3.5 text-amber-500" />
-                Firebase Realtime Database Live
-              </span>
+              {selectedSnapshotId ? (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500 text-white shadow-xs animate-pulse">
+                  <Clock className="w-3.5 h-3.5" />
+                  Đang xem Snapshot: {selectedSnapshotId}
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/40">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-500" />
+                  Firebase Realtime Database Live
+                </span>
+              )}
               {data?.vnTime && (
                 <span className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
                   <Clock className="w-3.5 h-3.5" />
@@ -445,6 +517,39 @@ export default function ToolHymetnet() {
             </button>
           </div>
         </div>
+
+        {selectedSnapshotId && (
+          <div className="mt-3 p-3 rounded-2xl bg-amber-500/10 dark:bg-amber-500/20 border-2 border-amber-500/40 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-amber-950 dark:text-amber-100 animate-fadeIn">
+            <div className="flex items-center gap-2.5">
+              <span className="px-2 py-0.5 rounded-md bg-amber-500 text-white font-black text-[10px] tracking-wide uppercase shadow-xs shrink-0">
+                SNAPSHOT LỊCH SỬ
+              </span>
+              <div>
+                <span className="font-bold">
+                  Đang xem bản ghi: {selectedSnapshotId}
+                </span>
+                <span className="text-slate-600 dark:text-slate-300 ml-1.5">
+                  (Mốc thời gian: <strong className="text-amber-800 dark:text-amber-300">{data?.vnTime || selectedSnapshotId}</strong>)
+                </span>
+                <span className="hidden lg:inline text-slate-500 dark:text-slate-400 ml-2">
+                  — Toàn bộ số liệu các tab Dông sét, Sét quan trắc, Mưa & Radar đang hiển thị mốc này.
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={handleReturnToLive}
+                disabled={loadingSnapshotId === 'live'}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold transition cursor-pointer shadow-xs disabled:opacity-50"
+              >
+                <RotateCcw className={`w-3.5 h-3.5 ${loadingSnapshotId === 'live' ? 'animate-spin' : ''}`} />
+                <span>Quay về Live mới nhất</span>
+              </button>
+            </div>
+          </div>
+        )}
 
         {syncMessage && (
           <div className={`mt-3 p-2.5 rounded-xl border text-xs flex items-center gap-2 ${
@@ -1451,51 +1556,145 @@ export default function ToolHymetnet() {
               <table className="w-full text-left text-xs border-collapse">
                 <thead className="bg-slate-50 dark:bg-slate-800 text-[11px] font-bold text-slate-500 uppercase">
                   <tr>
-                    <th className="p-3">Mã Snapshot</th>
-                    <th className="p-3">Thời gian ghi nhận</th>
-                    <th className="p-3">Cảnh báo dông</th>
-                    <th className="p-3">Sét quan trắc</th>
-                    <th className="p-3">Điểm mưa lớn</th>
-                    <th className="p-3">Khung Radar</th>
-                    <th className="p-3">Nguồn kích hoạt</th>
+                    <th className="p-3">MÃ SNAPSHOT</th>
+                    <th className="p-3">THỜI GIAN GHI NHẬN</th>
+                    <th className="p-3">CẢNH BÁO DÔNG</th>
+                    <th className="p-3">SÉT QUAN TRẮC</th>
+                    <th className="p-3">ĐIỂM MƯA LỚN</th>
+                    <th className="p-3">KHUNG RADAR</th>
+                    <th className="p-3">NGUỒN KÍCH HOẠT</th>
+                    <th className="p-3 text-right">THAO TÁC</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-mono text-xs">
-                  {historyTimeline.map((item, idx) => (
-                    <tr key={item.snapshotId || idx} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                      <td className="p-3 font-bold text-slate-900 dark:text-slate-100">
-                        {item.snapshotId}
-                      </td>
-                      <td className="p-3 font-sans text-slate-600 dark:text-slate-400">
-                        {item.vnTime || item.timestamp}
-                      </td>
-                      <td className="p-3 font-bold text-amber-600">
-                        {item.counts?.dong_set || 0} xã
-                      </td>
-                      <td className="p-3 font-bold text-purple-600">
-                        {(item.counts?.lightning_strikes || 0).toLocaleString()} cú
-                      </td>
-                      <td className="p-3 font-bold text-cyan-600">
-                        {item.counts?.heavy_rain_points || 0} điểm
-                      </td>
-                      <td className="p-3 text-slate-500">
-                        {item.counts?.radar_frames || 12}
-                      </td>
-                      <td className="p-3 font-sans text-[11px] text-slate-400">
-                        {item.source || 'cron_2h'}
-                      </td>
-                    </tr>
-                  ))}
+                  {historyTimeline.map((item, idx) => {
+                    const isSelected = selectedSnapshotId === item.snapshotId;
+                    const isLoadingThis = loadingSnapshotId === item.snapshotId;
+
+                    return (
+                      <tr
+                        key={item.snapshotId || idx}
+                        onClick={() => handleSelectSnapshot(item)}
+                        title="Nhấp để tải và xem dữ liệu snapshot này"
+                        className={`transition cursor-pointer ${
+                          isSelected
+                            ? 'bg-amber-100/70 dark:bg-amber-950/40 border-l-4 border-l-amber-500 font-semibold'
+                            : 'hover:bg-amber-50/50 dark:hover:bg-slate-800/60'
+                        }`}
+                      >
+                        <td className="p-3 font-bold text-slate-900 dark:text-slate-100">
+                          <div className="flex items-center gap-1.5">
+                            <span>{item.snapshotId}</span>
+                            {isSelected && (
+                              <span className="px-1.5 py-0.5 rounded text-[10px] font-sans font-bold bg-amber-500 text-white shadow-xs">
+                                Đang xem
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="p-3 font-sans text-slate-600 dark:text-slate-400">
+                          {item.vnTime || item.timestamp}
+                        </td>
+                        <td className="p-3 font-bold text-amber-600">
+                          {item.counts?.dong_set || 0} xã
+                        </td>
+                        <td className="p-3 font-bold text-purple-600">
+                          {(item.counts?.lightning_strikes || 0).toLocaleString()} cú
+                        </td>
+                        <td className="p-3 font-bold text-cyan-600">
+                          {item.counts?.heavy_rain_points || 0} điểm
+                        </td>
+                        <td className="p-3 text-slate-500">
+                          {item.counts?.radar_frames || 12}
+                        </td>
+                        <td className="p-3 font-sans text-[11px] text-slate-400">
+                          {item.source || 'cron_2h'}
+                        </td>
+                        <td className="p-3 text-right" onClick={(e) => e.stopPropagation()}>
+                          {isLoadingThis ? (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-600 dark:text-amber-400">
+                              <RefreshCw className="w-3 h-3 animate-spin" />
+                              Đang tải...
+                            </span>
+                          ) : isSelected ? (
+                            <button
+                              type="button"
+                              onClick={() => handleReturnToLive()}
+                              className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 transition inline-flex items-center gap-1 cursor-pointer"
+                              title="Trở về chế độ xem dữ liệu trực tiếp mới nhất"
+                            >
+                              <RotateCcw className="w-3 h-3" />
+                              <span>Về Live</span>
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => handleSelectSnapshot(item)}
+                              className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-amber-500 hover:bg-amber-600 text-white shadow-xs transition inline-flex items-center gap-1 cursor-pointer"
+                            >
+                              <Eye className="w-3 h-3" />
+                              <span>Xem dữ liệu</span>
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                   {historyTimeline.length === 0 && (
                     <tr>
-                      <td colSpan={7} className="p-6 text-center text-slate-400 text-xs">
-                        Đang lưu trữ snapshot đầu tiên lên Firebase RTDB.
+                      <td colSpan={8} className="p-6 text-center text-slate-400 text-xs">
+                        Đang nạp dữ liệu snapshot từ Firebase RTDB...
                       </td>
                     </tr>
                   )}
                 </tbody>
               </table>
             </div>
+
+            {selectedSnapshotId && (
+              <div className="mt-4 p-3.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-2 text-amber-900 dark:text-amber-200">
+                  <Info className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span>
+                    Đang hiển thị bản ghi <strong>{selectedSnapshotId}</strong> ({data?.vnTime || ''}). Chuyển nhanh đến:
+                  </span>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('dongset')}
+                    className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-bold inline-flex items-center gap-1 cursor-pointer shadow-xs transition"
+                  >
+                    <Zap className="w-3.5 h-3.5" />
+                    <span>Cảnh Báo Dông Sét</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('lightning')}
+                    className="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-bold inline-flex items-center gap-1 cursor-pointer shadow-xs transition"
+                  >
+                    <Activity className="w-3.5 h-3.5" />
+                    <span>Sét Quan Trắc</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('rain')}
+                    className="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white font-bold inline-flex items-center gap-1 cursor-pointer shadow-xs transition"
+                  >
+                    <CloudRain className="w-3.5 h-3.5" />
+                    <span>Mưa & Radar Mưa</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('radar')}
+                    className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold inline-flex items-center gap-1 cursor-pointer shadow-xs transition"
+                  >
+                    <Radio className="w-3.5 h-3.5" />
+                    <span>Radar & Vệ Tinh</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Hướng dẫn API REST Endpoint */}
