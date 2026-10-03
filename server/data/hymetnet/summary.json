@@ -1,53 +1,98 @@
 {
-  "snapshotId": "20261003_0600",
-  "exactTimeId": "20261003_0643",
-  "crawledAt": "2026-10-02T23:43:14.250Z",
-  "vnTime": "06:43 03/10/2026",
+  "snapshotId": "20261003_1200",
+  "exactTimeId": "20261003_1208",
+  "crawledAt": "2026-10-03T05:08:43.267Z",
+  "vnTime": "12:08 03/10/2026",
   "summary": {
-    "totalAlertCommunes": 2,
-    "totalLightningStrikes": 25541,
-    "totalLightningCG": 22428,
-    "totalLightningCC": 3113,
-    "maxLightningAmpKa": 370,
-    "heavyRainPointsCount": 30,
+    "totalAlertCommunes": 75,
+    "totalLightningStrikes": 1427,
+    "totalLightningCG": 669,
+    "totalLightningCC": 758,
+    "maxLightningAmpKa": 246,
+    "heavyRainPointsCount": 49,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Tỉnh Gia Lai",
-        "communeCount": 1,
+        "province": "Tỉnh An Giang",
+        "communeCount": 7,
+        "totalAlerts": 23,
+        "sampleCommunes": [
+          "Xã Vĩnh Gia",
+          "Xã Hòn Đất",
+          "Xã Nhơn Hội",
+          "Xã Định Mỹ",
+          "Xã Sơn Kiên"
+        ]
+      },
+      {
+        "province": "Tỉnh Thanh Hóa",
+        "communeCount": 5,
+        "totalAlerts": 17,
+        "sampleCommunes": [
+          "Xã Bát Mọt",
+          "Xã Yên Nhân",
+          "Xã Vạn Xuân",
+          "Xã Lương Sơn",
+          "Xã Thường Xuân"
+        ]
+      },
+      {
+        "province": "Tỉnh Sơn La",
+        "communeCount": 3,
+        "totalAlerts": 6,
+        "sampleCommunes": [
+          "Xã Mường Bú",
+          "Xã Tô Múa",
+          "Xã Vân Hồ"
+        ]
+      },
+      {
+        "province": "Tỉnh Vĩnh Long",
+        "communeCount": 3,
+        "totalAlerts": 6,
+        "sampleCommunes": [
+          "Xã Hưng Mỹ",
+          "Xã Nhị Long",
+          "Xã Vinh Kim"
+        ]
+      },
+      {
+        "province": "Thành phố Cần Thơ",
+        "communeCount": 2,
         "totalAlerts": 2,
         "sampleCommunes": [
-          "Xã Ia Dom"
+          "Xã Thạnh Quới",
+          "Xã Thới Lai"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 18
+        "count": 12
       },
       {
-        "province": "Hà Giang",
+        "province": "Kiên Giang",
         "count": 7
       },
       {
-        "province": "Đồng Nai",
-        "count": 2
+        "province": "Bến Tre",
+        "count": 5
       },
       {
-        "province": "Hà Tĩnh",
-        "count": 1
+        "province": "Bình Thuận",
+        "count": 5
       },
       {
-        "province": "TP. Đà Nẵng",
-        "count": 1
+        "province": "Nghệ An",
+        "count": 4
       }
     ]
   },
   "counts": {
-    "dong_set": 2,
-    "lightning_strikes": 25541,
-    "heavy_rain_points": 30,
+    "dong_set": 75,
+    "lightning_strikes": 1427,
+    "heavy_rain_points": 49,
     "radar_frames": 12,
     "radar_stations": 10
   }
