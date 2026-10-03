@@ -1,105 +1,105 @@
 {
-  "snapshotId": "20261004_0300",
-  "exactTimeId": "20261004_0300",
-  "crawledAt": "2026-10-03T21:07:58.466Z",
-  "vnTime": "03:00 04/10/2026",
+  "snapshotId": "20261004_0400",
+  "exactTimeId": "20261004_0400",
+  "crawledAt": "2026-10-03T21:37:52.806Z",
+  "vnTime": "04:00 04/10/2026",
   "summary": {
-    "totalAlertCommunes": 374,
-    "totalLightningStrikes": 38472,
-    "totalLightningCG": 24099,
-    "totalLightningCC": 14373,
+    "totalAlertCommunes": 345,
+    "totalLightningStrikes": 36855,
+    "totalLightningCG": 22291,
+    "totalLightningCC": 14564,
     "maxLightningAmpKa": 341,
-    "heavyRainPointsCount": 177,
+    "heavyRainPointsCount": 192,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Tuyên Quang",
-        "communeCount": 34,
-        "totalAlerts": 120,
+        "communeCount": 38,
+        "totalAlerts": 123,
         "sampleCommunes": [
-          "Xã Hoàng Su Phì",
-          "Xã Nậm Dịch",
           "Xã Yên Phú",
-          "Xã Bạch Xa",
-          "Xã Hàm Yên"
+          "Xã Minh Tân",
+          "Xã Quản Bạ",
+          "Xã Hàm Yên",
+          "Xã Hùng Đức"
         ]
       },
       {
         "province": "Tỉnh Lâm Đồng",
-        "communeCount": 25,
-        "totalAlerts": 82,
+        "communeCount": 27,
+        "totalAlerts": 79,
         "sampleCommunes": [
           "Xã Trà Tân",
-          "Xã Hoài Đức",
-          "Xã Đức Linh",
-          "Xã Nam Thành",
-          "Xã Suối Kiết"
+          "Xã Suối Kiết",
+          "Xã Đạ Tẻh 2",
+          "Xã Bảo Lâm 5",
+          "Phường 2 Bảo Lộc"
         ]
       },
       {
         "province": "Tỉnh Lào Cai",
-        "communeCount": 21,
-        "totalAlerts": 64,
+        "communeCount": 19,
+        "totalAlerts": 52,
         "sampleCommunes": [
-          "Xã Mường Hum",
-          "Xã Tả Van",
-          "Xã Tân Hợp",
-          "Xã Mậu A",
-          "Xã Phúc Lợi"
+          "Xã Nậm Xé",
+          "Xã Hợp Thành",
+          "Xã Nậm Có",
+          "Xã Khánh Yên",
+          "Xã Hạnh Phúc"
         ]
       },
       {
         "province": "Tỉnh Đồng Nai",
         "communeCount": 9,
-        "totalAlerts": 23,
+        "totalAlerts": 27,
         "sampleCommunes": [
-          "Phường Tân Triều",
+          "Xã Lộc Ninh",
           "Xã Trị An",
           "Xã Thanh Sơn",
-          "Xã Xuân Đông",
-          "Xã Xuân Thành"
+          "Xã Xuân Thành",
+          "Xã Phú Vinh"
         ]
       },
       {
-        "province": "Tỉnh Lai Châu",
+        "province": "Tỉnh Thái Nguyên",
         "communeCount": 7,
-        "totalAlerts": 36,
+        "totalAlerts": 15,
         "sampleCommunes": [
-          "Xã Mường Khoa",
-          "Xã Bình Lư",
-          "Xã Tân Uyên",
-          "Xã Bản Bo",
-          "Xã Pắc Ta"
+          "Xã Ba Bể",
+          "Xã Yên Thịnh",
+          "Xã Nghĩa Tá",
+          "Xã Cao Minh",
+          "Xã Chợ Đồn"
         ]
       }
     ],
     "topRainProvinces": [
       {
-        "province": "Đồng Nai",
-        "count": 23
+        "province": "Bình Thuận",
+        "count": 25
       },
       {
         "province": "Hà Giang",
-        "count": 22
+        "count": 25
+      },
+      {
+        "province": "Đồng Nai",
+        "count": 21
       },
       {
         "province": "Lai Châu",
         "count": 18
       },
       {
-        "province": "Yên Bái",
+        "province": "Lâm Đồng",
         "count": 16
-      },
-      {
-        "province": "Bình Thuận",
-        "count": 15
       }
     ]
   },
   "counts": {
-    "dong_set": 374,
-    "lightning_strikes": 38472,
-    "heavy_rain_points": 177,
+    "dong_set": 345,
+    "lightning_strikes": 36855,
+    "heavy_rain_points": 192,
     "radar_frames": 12,
     "radar_stations": 10
   }
