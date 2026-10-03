@@ -1,105 +1,105 @@
 {
-  "snapshotId": "20261004_0400",
-  "exactTimeId": "20261004_0400",
-  "crawledAt": "2026-10-03T22:07:21.101Z",
-  "vnTime": "04:00 04/10/2026",
+  "snapshotId": "20261004_0500",
+  "exactTimeId": "20261004_0500",
+  "crawledAt": "2026-10-03T22:25:46.190Z",
+  "vnTime": "05:00 04/10/2026",
   "summary": {
-    "totalAlertCommunes": 339,
-    "totalLightningStrikes": 36937,
-    "totalLightningCG": 22958,
-    "totalLightningCC": 13979,
+    "totalAlertCommunes": 307,
+    "totalLightningStrikes": 34517,
+    "totalLightningCG": 21640,
+    "totalLightningCC": 12877,
     "maxLightningAmpKa": 341,
-    "heavyRainPointsCount": 192,
+    "heavyRainPointsCount": 186,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Tỉnh Lâm Đồng",
+        "province": "Tỉnh Tuyên Quang",
         "communeCount": 31,
-        "totalAlerts": 112,
+        "totalAlerts": 85,
         "sampleCommunes": [
-          "Xã Đạ Tẻh 3",
-          "Xã Hoài Đức",
-          "Xã Đạ Tẻh 2",
-          "Xã Tánh Linh",
-          "Phường 2 Bảo Lộc"
+          "Xã Bắc Quang",
+          "Xã Bằng Hành",
+          "Xã Liên Hiệp",
+          "Xã Yên Sơn",
+          "Xã Thắng Mố"
         ]
       },
       {
-        "province": "Tỉnh Tuyên Quang",
-        "communeCount": 28,
-        "totalAlerts": 82,
+        "province": "Tỉnh Lâm Đồng",
+        "communeCount": 24,
+        "totalAlerts": 71,
         "sampleCommunes": [
-          "Xã Cán Tỷ",
-          "Xã Bạch Đích",
-          "Xã Hùng Đức",
-          "Xã Thái Sơn",
-          "Xã Yên Minh"
+          "Xã Đạ Tẻh 3",
+          "Xã Đức Linh",
+          "Xã Đạ Tẻh 2",
+          "Xã Tánh Linh",
+          "Xã Nghị Đức"
+        ]
+      },
+      {
+        "province": "Tỉnh Thái Nguyên",
+        "communeCount": 16,
+        "totalAlerts": 39,
+        "sampleCommunes": [
+          "Xã Yên Thịnh",
+          "Xã Nghĩa Tá",
+          "Xã Chợ Đồn",
+          "Xã Nam Cường",
+          "Xã Bằng Thành"
         ]
       },
       {
         "province": "Tỉnh Đồng Nai",
-        "communeCount": 12,
-        "totalAlerts": 33,
+        "communeCount": 13,
+        "totalAlerts": 42,
         "sampleCommunes": [
           "Xã Trị An",
-          "Xã Thanh Sơn",
-          "Xã Xuân Đông",
-          "Xã Xuân Hòa",
-          "Xã Tân Lợi"
+          "Xã Tân Lợi",
+          "Xã La Ngà",
+          "Xã Định Quán",
+          "Xã Xuân Phú"
         ]
       },
       {
-        "province": "Tỉnh Lào Cai",
-        "communeCount": 11,
-        "totalAlerts": 28,
+        "province": "Thành phố Hải Phòng",
+        "communeCount": 9,
+        "totalAlerts": 16,
         "sampleCommunes": [
-          "Xã Khao Mang",
-          "Xã Thác Bà",
-          "Xã Bản Hồ",
-          "Xã Nậm Xé",
-          "Xã Minh Lương"
-        ]
-      },
-      {
-        "province": "Tỉnh Lai Châu",
-        "communeCount": 6,
-        "totalAlerts": 25,
-        "sampleCommunes": [
-          "Xã Nậm Sỏ",
-          "Xã Tân Uyên",
-          "Xã Mường Khoa",
-          "Xã Pắc Ta",
-          "Xã Mường Than"
+          "Phường Hải An",
+          "Xã Gia Phúc",
+          "Xã Tân Kỳ",
+          "Xã Tứ Kỳ",
+          "Xã Hùng Thắng"
         ]
       }
     ],
     "topRainProvinces": [
       {
-        "province": "Bình Thuận",
-        "count": 25
-      },
-      {
         "province": "Đồng Nai",
         "count": 22
+      },
+      {
+        "province": "Bình Thuận",
+        "count": 21
+      },
+      {
+        "province": "Lâm Đồng",
+        "count": 20
       },
       {
         "province": "Tuyên Quang",
         "count": 20
       },
       {
-        "province": "Yên Bái",
-        "count": 17
-      },
-      {
-        "province": "Lâm Đồng",
+        "province": "Bình Dương",
         "count": 16
       }
     ]
   },
   "counts": {
-    "dong_set": 339,
-    "lightning_strikes": 36937,
-    "heavy_rain_points": 192,
+    "dong_set": 307,
+    "lightning_strikes": 34517,
+    "heavy_rain_points": 186,
     "radar_frames": 12,
     "radar_stations": 10
   }
