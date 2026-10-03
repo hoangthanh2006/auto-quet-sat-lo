@@ -1,105 +1,105 @@
 {
-  "snapshotId": "20261003_1500",
-  "exactTimeId": "20261003_1500",
-  "crawledAt": "2026-10-03T09:01:41.268Z",
-  "vnTime": "15:00 03/10/2026",
+  "snapshotId": "20261003_1700",
+  "exactTimeId": "20261003_1700",
+  "crawledAt": "2026-10-03T10:31:17.616Z",
+  "vnTime": "17:00 03/10/2026",
   "summary": {
-    "totalAlertCommunes": 350,
-    "totalLightningStrikes": 34292,
-    "totalLightningCG": 21725,
-    "totalLightningCC": 12567,
-    "maxLightningAmpKa": 174,
-    "heavyRainPointsCount": 245,
+    "totalAlertCommunes": 364,
+    "totalLightningStrikes": 45116,
+    "totalLightningCG": 27750,
+    "totalLightningCC": 17366,
+    "maxLightningAmpKa": 295,
+    "heavyRainPointsCount": 284,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Tỉnh Lâm Đồng",
-        "communeCount": 18,
-        "totalAlerts": 54,
+        "province": "Tỉnh Vĩnh Long",
+        "communeCount": 26,
+        "totalAlerts": 66,
         "sampleCommunes": [
-          "Xã Quảng Tân",
-          "Xã Nhân Cơ",
-          "Phường Đông Gia Nghĩa",
-          "Xã Quảng Khê",
-          "Xã Hòa Bắc"
+          "Xã An Bình",
+          "Xã Bình Phú",
+          "Xã Nhuận Phú Tân",
+          "Xã Phú Túc",
+          "Xã Tân Thành Bình"
+        ]
+      },
+      {
+        "province": "Tỉnh Lâm Đồng",
+        "communeCount": 20,
+        "totalAlerts": 66,
+        "sampleCommunes": [
+          "Xã Đạ Tẻh 3",
+          "Xã Đạ Huoai 2",
+          "Phường 1 Bảo Lộc",
+          "Xã Bảo Lâm 2",
+          "Xã Đông Giang"
+        ]
+      },
+      {
+        "province": "Tỉnh Đồng Tháp",
+        "communeCount": 18,
+        "totalAlerts": 45,
+        "sampleCommunes": [
+          "Xã Cái Bè",
+          "Xã Bình Phú",
+          "Phường Thanh Hòa",
+          "Xã Vĩnh Kim",
+          "Xã Bình Trưng"
         ]
       },
       {
         "province": "Tỉnh Nghệ An",
-        "communeCount": 12,
-        "totalAlerts": 53,
+        "communeCount": 17,
+        "totalAlerts": 62,
         "sampleCommunes": [
-          "Xã Anh Sơn",
-          "Xã Hạnh Lâm",
-          "Xã Hùng Chân",
-          "Xã Bình Chuẩn",
-          "Xã Mường Ham"
+          "Xã Keng Đu",
+          "Xã Na Loi",
+          "Xã Bắc Lý",
+          "Xã Mỹ Lý",
+          "Xã Huồi Tụ"
         ]
       },
       {
-        "province": "Tỉnh Thanh Hóa",
-        "communeCount": 11,
-        "totalAlerts": 49,
+        "province": "Thành phố Cần Thơ",
+        "communeCount": 13,
+        "totalAlerts": 43,
         "sampleCommunes": [
-          "Xã Tam Thanh",
-          "Xã Mường Mìn",
-          "Xã Sơn Điện",
-          "Xã Quan Sơn",
-          "Xã Tam Lư"
-        ]
-      },
-      {
-        "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 10,
-        "totalAlerts": 25,
-        "sampleCommunes": [
-          "Xã Đăk Pék",
-          "Xã Dục Nông",
-          "Xã Xốp",
-          "Xã Đăk Plô",
-          "Xã Đăk Ui"
-        ]
-      },
-      {
-        "province": "Tỉnh Vĩnh Long",
-        "communeCount": 8,
-        "totalAlerts": 16,
-        "sampleCommunes": [
-          "Xã Hòa Bình",
-          "Xã Hiếu Thành",
-          "Xã Mỏ Cày",
-          "Xã Giao Long",
-          "Xã Đồng Khởi"
+          "Xã Phú Tâm",
+          "Xã Thuận Hòa",
+          "Xã Kế Sách",
+          "Phường Sóc Trăng",
+          "Xã Nhơn Mỹ"
         ]
       }
     ],
     "topRainProvinces": [
       {
-        "province": "Nghệ An",
-        "count": 29
-      },
-      {
         "province": "Tiền Giang",
-        "count": 18
+        "count": 31
       },
       {
-        "province": "Long An",
-        "count": 15
+        "province": "Bến Tre",
+        "count": 26
       },
       {
-        "province": "Kon Tum",
-        "count": 14
+        "province": "Thanh Hóa",
+        "count": 24
       },
       {
-        "province": "Đăk Nông",
-        "count": 14
+        "province": "Nghệ An",
+        "count": 23
+      },
+      {
+        "province": "Lâm Đồng",
+        "count": 22
       }
     ]
   },
   "counts": {
-    "dong_set": 350,
-    "lightning_strikes": 34292,
-    "heavy_rain_points": 245,
+    "dong_set": 364,
+    "lightning_strikes": 45116,
+    "heavy_rain_points": 284,
     "radar_frames": 12,
     "radar_stations": 10
   }
