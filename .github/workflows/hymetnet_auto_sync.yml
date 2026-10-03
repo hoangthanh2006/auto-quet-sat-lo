@@ -1,4 +1,4 @@
-name: Hymetnet 2H Auto Sync & Git Backup
+name: Hymetnet 1H Auto Sync & Git Backup
 
 on:
   schedule:
@@ -20,7 +20,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: hymetnet-2h-sync
+  group: hymetnet-1h-sync
   cancel-in-progress: false
 
 jobs:
@@ -52,7 +52,7 @@ jobs:
 
       - name: Run Hymetnet Crawler & Sync to Firebase
         run: |
-          echo "🚀 Khởi động Hymetnet Auto Sync (2 giờ một lần)..."
+          echo "🚀 Khởi động Hymetnet Auto Sync (1 giờ một lần)..."
           node server/autoSyncHymetnet.js
 
       - name: Commit & Push Updated Data to Git

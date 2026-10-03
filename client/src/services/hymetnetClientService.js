@@ -207,9 +207,9 @@ export function subscribeHymetnetRealtime(layer = 'all', onData) {
 }
 
 /**
- * 7. Lấy chuỗi lịch sử timeline (mỗi 2 giờ 1 mốc)
+ * 7. Lấy chuỗi lịch sử timeline (mỗi giờ 1 mốc)
  */
-export async function getHymetnetHistoryTimeline(limit = 24) {
+export async function getHymetnetHistoryTimeline(limit = 96) {
   return getHymetnetTimeline(limit);
 }
 

@@ -1,12 +1,12 @@
 /**
  * Standalone & Integrated Background Auto-Sync Worker for Hymetnet (http://hymetnet.gov.vn/)
  * Tự động quét dữ liệu khí tượng Hymetnet (Dông sét, Sét quan trắc, Mưa lớn, Radar, Vệ tinh)
- * định kỳ mỗi 2 giờ một lần (2-Hour Backup) và lưu trữ vào Firebase Realtime Database
+ * định kỳ mỗi 1 giờ một lần (Hourly Backup) và lưu trữ vào Firebase Realtime Database
  * đồng thời lưu file backup cục bộ để tự động commit lên Git.
  * 
  * Cách dùng:
  * 1. Chạy 1 lần:        node server/autoSyncHymetnet.js
- * 2. Chạy ngầm định kỳ: node server/autoSyncHymetnet.js --watch --interval 120
+ * 2. Chạy ngầm định kỳ: node server/autoSyncHymetnet.js --watch --interval 60
  */
 
 import fs from 'fs';
@@ -27,7 +27,7 @@ if (!fs.existsSync(DATA_DIR)) {
 // Trạng thái Scheduler chạy ngầm trên Server
 const hymetnetSchedulerState = {
   active: false,
-  intervalMinutes: 120, // 2 giờ một lần
+  intervalMinutes: 60, // 1 giờ một lần
   timerId: null,
   lastRunAt: null,
   nextRunAt: null,
@@ -77,7 +77,7 @@ export async function runHymetnetAutoSyncOnce(options = {}) {
   const now = new Date();
 
   console.log(`\n============================================================`);
-  console.log(`[${now.toLocaleString('vi-VN')}] 🚀 [Hymetnet 2H Sync] Bắt đầu cào & sao lưu dữ liệu Hymetnet lên Firebase...`);
+  console.log(`[${now.toLocaleString('vi-VN')}] 🚀 [Hymetnet 1H Sync] Bắt đầu cào & sao lưu dữ liệu Hymetnet lên Firebase...`);
   console.log(`============================================================`);
 
   try {
@@ -116,14 +116,14 @@ export async function runHymetnetAutoSyncOnce(options = {}) {
     }
 
     const updatePromises = [
-      // 1. Lưu snapshot đầy đủ theo mốc 2 giờ
+      // 1. Lưu snapshot đầy đủ theo mốc dữ liệu (theo giờ)
       fetchFirebaseRTDB(`/hymetnet/snapshots/${snapshotId}.json`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       }),
 
-      // 2. Lưu mốc thống kê timeline theo 2 giờ
+      // 2. Lưu mốc thống kê timeline theo giờ
       fetchFirebaseRTDB(`/hymetnet/statistics/timeline/${snapshotId}.json`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -218,7 +218,7 @@ export async function runHymetnetAutoSyncOnce(options = {}) {
     }
 
     const elapsed = Date.now() - startTime;
-    console.log(`[Hymetnet 2H Sync] 🏁 Hoàn thành sao lưu trong ${elapsed}ms.`);
+    console.log(`[Hymetnet 1H Sync] 🏁 Hoàn thành sao lưu trong ${elapsed}ms.`);
     console.log(`============================================================\n`);
 
     const runResult = {
@@ -238,7 +238,7 @@ export async function runHymetnetAutoSyncOnce(options = {}) {
 
     return runResult;
   } catch (err) {
-    console.error(`[Hymetnet 2H Sync Error]:`, err.message);
+    console.error(`[Hymetnet 1H Sync Error]:`, err.message);
     const elapsed = Date.now() - startTime;
 
     hymetnetSchedulerState.lastRunAt = now.toISOString();
@@ -272,9 +272,9 @@ export function getSafeSchedulerState() {
 }
 
 /**
- * Khởi động scheduler quét ngầm định kỳ 2 giờ một lần (120 phút)
+ * Khởi động scheduler quét ngầm định kỳ 1 giờ một lần (60 phút)
  */
-export function startHymetnetAutoSync(intervalMinutes = 120) {
+export function startHymetnetAutoSync(intervalMinutes = 60) {
   if (hymetnetSchedulerState.active) {
     console.log(`[Hymetnet Scheduler] Đang hoạt động mỗi ${hymetnetSchedulerState.intervalMinutes} phút.`);
     return getSafeSchedulerState();
@@ -284,7 +284,7 @@ export function startHymetnetAutoSync(intervalMinutes = 120) {
   hymetnetSchedulerState.active = true;
   const intervalMs = intervalMinutes * 60 * 1000;
 
-  console.log(`[Hymetnet Scheduler] ⏱️ Bắt đầu lập lịch quét Hymetnet mỗi ${intervalMinutes} phút (2 giờ)...`);
+  console.log(`[Hymetnet Scheduler] ⏱️ Bắt đầu lập lịch quét Hymetnet mỗi ${intervalMinutes} phút...`);
 
   // Chạy lượt đầu tiên ngay
   runHymetnetAutoSyncOnce({ source: 'server_scheduler_startup' });
@@ -331,10 +331,10 @@ if (isDirectCliExecution) {
   const args = process.argv.slice(2);
   const isWatch = args.includes('--watch');
   const intervalIdx = args.indexOf('--interval');
-  const intervalMin = intervalIdx !== -1 && args[intervalIdx + 1] ? parseInt(args[intervalIdx + 1], 10) : 120;
+  const intervalMin = intervalIdx !== -1 && args[intervalIdx + 1] ? parseInt(args[intervalIdx + 1], 10) : 60;
 
   if (isWatch) {
-    console.log(`[Hymetnet CLI] Chế độ giám sát ngầm: Quét mỗi ${intervalMin} phút (2 giờ)...`);
+    console.log(`[Hymetnet CLI] Chế độ giám sát ngầm: Quét mỗi ${intervalMin} phút...`);
     startHymetnetAutoSync(intervalMin);
   } else {
     runHymetnetAutoSyncOnce({ source: 'github_action_cron' })

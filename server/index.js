@@ -1004,7 +1004,7 @@ app.post('/api/hymetnet/sync-now', async (req, res) => {
   }
 });
 
-// 7. Lấy trạng thái scheduler quét 2 giờ định kỳ
+// 7. Lấy trạng thái scheduler quét định kỳ mỗi giờ
 app.get('/api/hymetnet/scheduler-status', (req, res) => {
   try {
     const status = getHymetnetSchedulerStatus();
@@ -1015,13 +1015,13 @@ app.get('/api/hymetnet/scheduler-status', (req, res) => {
   }
 });
 
-// 8. Bật / Tắt scheduler quét 2 giờ
+// 8. Bật / Tắt scheduler quét mỗi giờ
 app.post('/api/hymetnet/scheduler-toggle', (req, res) => {
   try {
-    const { enable, intervalMinutes = 120 } = req.body || {};
+    const { enable, intervalMinutes = 60 } = req.body || {};
     let status;
     if (enable) {
-      status = startHymetnetAutoSync(Number(intervalMinutes) || 120);
+      status = startHymetnetAutoSync(Number(intervalMinutes) || 60);
     } else {
       status = stopHymetnetAutoSync();
     }
@@ -1337,8 +1337,8 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT} (0.0.0.0)`);
   // Khởi động tiến trình tự động sao lưu dữ liệu NCHMF mỗi giờ 1 lần
   startHourlyAutoSync(60);
-  // Khởi động tiến trình tự động sao lưu dữ liệu Hymetnet mỗi 2 giờ 1 lần (120 phút)
-  startHymetnetAutoSync(120);
+  // Khởi động tiến trình tự động sao lưu dữ liệu Hymetnet mỗi 1 giờ 1 lần (60 phút)
+  startHymetnetAutoSync(60);
 });
 
 export default app;

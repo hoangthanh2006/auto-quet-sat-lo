@@ -110,8 +110,8 @@ export default function ToolHymetnet() {
       }
     });
 
-    // Lấy chuỗi lịch sử 2h
-    getHymetnetHistoryTimeline(24).then((res) => {
+    // Lấy chuỗi lịch sử theo giờ
+    getHymetnetHistoryTimeline(96).then((res) => {
       if (res.success && Array.isArray(res.data) && isMounted) {
         setHistoryTimeline(res.data);
       }
@@ -516,7 +516,7 @@ export default function ToolHymetnet() {
             <div className="flex flex-wrap items-center gap-2 mt-3">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/40">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                Cron tự động: 2h/lần
+                Cron tự động: 1h/lần
               </span>
               {selectedSnapshotId ? (
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500 text-white shadow-xs animate-pulse">
@@ -859,7 +859,7 @@ export default function ToolHymetnet() {
           }`}
         >
           <Clock className="w-3.5 h-3.5" />
-          <span>Lịch Sử Quét 2 Giờ & API</span>
+          <span>Lịch Sử Quét Theo Giờ & API</span>
         </button>
       </div>
 
@@ -1891,10 +1891,10 @@ export default function ToolHymetnet() {
               <div>
                 <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                   <Clock className="w-4 h-4 text-amber-500" />
-                  Lịch Sử Đồng Bộ Snapshot Định Kỳ 2 Giờ (Firebase RTDB)
+                  Lịch Sử Đồng Bộ Snapshot Định Kỳ Theo Giờ (Firebase RTDB)
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Hệ thống tự động quét và lưu bản ghi mỗi 2 giờ một lần qua GitHub Actions Cron và tiến trình ngầm server.
+                  Hệ thống tự động quét và lưu bản ghi mỗi giờ một lần qua GitHub Actions Cron và tiến trình ngầm server.
                 </p>
               </div>
 

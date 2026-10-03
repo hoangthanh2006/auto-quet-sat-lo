@@ -691,9 +691,9 @@ export function listenToHymetnetLatest(layer = 'all', callback) {
 }
 
 /**
- * Lấy danh sách timeline thống kê lịch sử Hymetnet (mỗi 2 giờ 1 mốc)
+ * Lấy danh sách timeline thống kê lịch sử Hymetnet (mỗi giờ 1 mốc)
  */
-export async function getHymetnetTimeline(limit = 24) {
+export async function getHymetnetTimeline(limit = 96) {
   try {
     await ensureAuth();
     const timelineRef = query(ref(rtdb, 'hymetnet/statistics/timeline'), limitToLast(limit));
