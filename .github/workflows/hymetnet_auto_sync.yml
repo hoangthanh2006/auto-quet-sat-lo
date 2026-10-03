@@ -2,11 +2,11 @@ name: Hymetnet 1H Auto Sync & Git Backup
 
 on:
   schedule:
-    # GitHub Actions hay BỎ QUA các lượt cron (đặc biệt ở phút 00-05 và khi hàng đợi đông),
-    # thực tế chỉ chạy ~4-7 giờ/lần dù đặt 2 giờ. Nên đặt chạy MỖI GIỜ ở phút 17 (lệch giờ cao điểm)
-    # để dù mất vài lượt vẫn còn lượt bù. Hymetnet cập nhật dữ liệu theo giờ, snapshotId
-    # được đặt theo mốc dữ liệu nên chạy trùng chỉ ghi đè, không sinh bản ghi thừa.
-    - cron: '17 * * * *'
+    # GitHub Actions hay BỎ QUA các lượt cron theo lịch (kể cả workflow NCHMF cũng chỉ chạy ~5-6 giờ/lần),
+    # nên mỗi giờ đặt 2 lượt dự phòng ở phút 17 và 47 (tránh phút 00-05 là giờ cao điểm).
+    # Hymetnet cập nhật dữ liệu theo giờ, snapshotId được đặt theo mốc dữ liệu
+    # nên chạy trùng chỉ ghi đè, không sinh bản ghi thừa.
+    - cron: '17,47 * * * *'
   workflow_dispatch: # Cho phép kích hoạt thủ công bằng nút "Run workflow" trên GitHub UI
   push:
     branches:
