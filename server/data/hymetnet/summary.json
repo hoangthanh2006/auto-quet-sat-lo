@@ -1,75 +1,75 @@
 {
-  "snapshotId": "20261003_2100",
-  "exactTimeId": "20261003_2100",
-  "crawledAt": "2026-10-03T15:07:48.980Z",
-  "vnTime": "21:00 03/10/2026",
+  "snapshotId": "20261003_2200",
+  "exactTimeId": "20261003_2200",
+  "crawledAt": "2026-10-03T15:14:22.785Z",
+  "vnTime": "22:00 03/10/2026",
   "summary": {
-    "totalAlertCommunes": 247,
-    "totalLightningStrikes": 29581,
-    "totalLightningCG": 21796,
-    "totalLightningCC": 7785,
+    "totalAlertCommunes": 284,
+    "totalLightningStrikes": 32251,
+    "totalLightningCG": 22966,
+    "totalLightningCC": 9285,
     "maxLightningAmpKa": 260,
-    "heavyRainPointsCount": 120,
+    "heavyRainPointsCount": 115,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Nghệ An",
-        "communeCount": 17,
-        "totalAlerts": 61,
+        "communeCount": 25,
+        "totalAlerts": 97,
         "sampleCommunes": [
           "Xã Keng Đu",
           "Xã Na Loi",
-          "Xã Bắc Lý",
           "Xã Mỹ Lý",
+          "Xã Huồi Tụ",
           "Xã Mường Lống"
         ]
       },
       {
-        "province": "Tỉnh Tuyên Quang",
-        "communeCount": 16,
-        "totalAlerts": 49,
-        "sampleCommunes": [
-          "Xã Quang Bình",
-          "Xã Thông Nguyên",
-          "Xã Bắc Quang",
-          "Xã Tân Quang",
-          "Xã Tân An"
-        ]
-      },
-      {
         "province": "Tỉnh Lai Châu",
-        "communeCount": 12,
-        "totalAlerts": 58,
+        "communeCount": 13,
+        "totalAlerts": 55,
         "sampleCommunes": [
-          "Xã Bum Tở",
           "Xã Mường Mô",
           "Xã Hua Bum",
           "Xã Nậm Hàng",
-          "Xã Pa Tần"
+          "Xã Pa Tần",
+          "Xã Lê Lợi"
+        ]
+      },
+      {
+        "province": "Tỉnh Tuyên Quang",
+        "communeCount": 12,
+        "totalAlerts": 41,
+        "sampleCommunes": [
+          "Xã Khuôn Lùng",
+          "Xã Quang Bình",
+          "Xã Tiên Nguyên",
+          "Xã Thông Nguyên",
+          "Xã Tân Quang"
         ]
       },
       {
         "province": "Tỉnh Điện Biên",
         "communeCount": 8,
-        "totalAlerts": 24,
+        "totalAlerts": 27,
         "sampleCommunes": [
+          "Xã Nà Hỳ",
           "Xã Mường Toong",
           "Xã Mường Chà",
-          "Xã Mường Tùng",
-          "Phường Mường Lay",
-          "Xã Chà Tở"
+          "Xã Chà Tở",
+          "Phường Mường Lay"
         ]
       },
       {
-        "province": "Tỉnh Lâm Đồng",
-        "communeCount": 6,
-        "totalAlerts": 12,
+        "province": "Tỉnh Gia Lai",
+        "communeCount": 7,
+        "totalAlerts": 22,
         "sampleCommunes": [
-          "Xã Tuy Phong",
-          "Xã La Dạ",
-          "Xã Phan Sơn",
-          "Xã Phúc Thọ Lâm Hà",
-          "Xã Phú Sơn Lâm Hà"
+          "Xã Ia Lâu",
+          "Xã Ia Pia",
+          "Xã Ia Ko",
+          "Xã Chư Pưh",
+          "Xã Ia Hrú"
         ]
       }
     ],
@@ -80,26 +80,26 @@
       },
       {
         "province": "Lai Châu",
-        "count": 23
+        "count": 22
       },
       {
         "province": "Bình Thuận",
-        "count": 12
+        "count": 11
       },
       {
         "province": "Lâm Đồng",
-        "count": 8
+        "count": 7
       },
       {
         "province": "Điện Biên",
-        "count": 6
+        "count": 7
       }
     ]
   },
   "counts": {
-    "dong_set": 247,
-    "lightning_strikes": 29581,
-    "heavy_rain_points": 120,
+    "dong_set": 284,
+    "lightning_strikes": 32251,
+    "heavy_rain_points": 115,
     "radar_frames": 12,
     "radar_stations": 10
   }
