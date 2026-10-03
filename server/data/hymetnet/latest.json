@@ -1,8 +1,8 @@
 {
   "source": "http://hymetnet.gov.vn/",
   "sourceName": "Trung tâm Kỹ thuật Quan trắc Khí tượng Thủy văn (HYMETNET)",
-  "crawledAt": "2026-10-03T18:49:45.824Z",
-  "crawledVnTime": "01:49 04/10/2026",
+  "crawledAt": "2026-10-03T18:52:13.170Z",
+  "crawledVnTime": "01:52 04/10/2026",
   "dataTimeSource": "hymetnet_rain",
   "dataTimeLabel": "01:00 (VN) 04-10-2026",
   "vnTime": "01:00 04/10/2026",
@@ -10,14 +10,14 @@
   "exactTimeId": "20261004_0100",
   "date": "2026-10-04",
   "hour": "01:00",
-  "executionTimeMs": 2537,
+  "executionTimeMs": 2417,
   "summary": {
     "totalAlertCommunes": 294,
     "totalLightningStrikes": 25971,
     "totalLightningCG": 17164,
     "totalLightningCC": 8807,
     "maxLightningAmpKa": 341,
-    "heavyRainPointsCount": 172,
+    "heavyRainPointsCount": 148,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
@@ -84,30 +84,30 @@
     "topRainProvinces": [
       {
         "province": "Lào Cai",
-        "count": 38
+        "count": 34
       },
       {
         "province": "Hà Giang",
-        "count": 27
+        "count": 22
       },
       {
         "province": "Lai Châu",
-        "count": 25
-      },
-      {
-        "province": "Điện Biên",
         "count": 21
       },
       {
+        "province": "Điện Biên",
+        "count": 18
+      },
+      {
         "province": "Sơn La",
-        "count": 14
+        "count": 12
       }
     ]
   },
   "counts": {
     "dong_set": 294,
     "lightning_strikes": 25971,
-    "heavy_rain_points": 172,
+    "heavy_rain_points": 148,
     "radar_frames": 12,
     "radar_stations": 10
   },
@@ -115,8 +115,8 @@
     "dong_set": {
       "success": true,
       "sourceUrl": "http://hymetnet.gov.vn/dongset",
-      "fetchedAt": "2026-10-03T18:49:47.563Z",
-      "executionTimeMs": 1738,
+      "fetchedAt": "2026-10-03T18:52:14.657Z",
+      "executionTimeMs": 1487,
       "totalSteps": 6,
       "totalAlerts": 294,
       "summary": {
@@ -3298,8 +3298,8 @@
     "lightning": {
       "success": true,
       "sourceUrl": "http://hymetnet.gov.vn/lightningmaps/",
-      "fetchedAt": "2026-10-03T18:49:48.360Z",
-      "executionTimeMs": 2524,
+      "fetchedAt": "2026-10-03T18:52:15.586Z",
+      "executionTimeMs": 2403,
       "summary": {
         "totalStrikes": 25971,
         "totalCG": 17164,
@@ -354048,51 +354048,51 @@
     "rain": {
       "success": true,
       "sourceUrl": "http://hymetnet.gov.vn/rain/",
-      "fetchedAt": "2026-10-03T18:49:47.750Z",
-      "executionTimeMs": 1913,
+      "fetchedAt": "2026-10-03T18:52:14.978Z",
+      "executionTimeMs": 1794,
       "summary": {
-        "totalFrames": 7,
-        "totalHeavyRainPoints": 172,
+        "totalFrames": 6,
+        "totalHeavyRainPoints": 148,
         "topProvinces": [
           {
             "province": "Lào Cai",
-            "count": 38
+            "count": 34
           },
           {
             "province": "Hà Giang",
-            "count": 27
+            "count": 22
           },
           {
             "province": "Lai Châu",
-            "count": 25
-          },
-          {
-            "province": "Điện Biên",
             "count": 21
           },
           {
-            "province": "Sơn La",
-            "count": 14
+            "province": "Điện Biên",
+            "count": 18
           },
           {
-            "province": "An Giang",
-            "count": 10
+            "province": "Sơn La",
+            "count": 12
           },
           {
             "province": "Đăk Nông",
-            "count": 9
+            "count": 8
+          },
+          {
+            "province": "An Giang",
+            "count": 8
           },
           {
             "province": "TP. Hồ Chí Minh",
-            "count": 7
-          },
-          {
-            "province": "Đồng Nai",
-            "count": 5
+            "count": 6
           },
           {
             "province": "Yên Bái",
             "count": 5
+          },
+          {
+            "province": "Đồng Nai",
+            "count": 4
           }
         ],
         "latestTimeKey": "202610040000",
@@ -354395,7 +354395,7 @@
           "frameIndex": 1,
           "timeKey": "202610032300",
           "timeVn": "01:00+05 (VN) 04-10-2026",
-          "count": 24,
+          "count": 23,
           "points": [
             {
               "rank": 0,
@@ -354543,15 +354543,6 @@
             },
             {
               "rank": 16,
-              "district": "Xuân Lộc",
-              "province": "Đồng Nai",
-              "latitude": 10.92710998,
-              "longitude": 107.4072558,
-              "rawLat": 107.4072558,
-              "rawLng": 10.92710998
-            },
-            {
-              "rank": 17,
               "district": "Thị xã Long Khánh",
               "province": "Đồng Nai",
               "latitude": 10.93913852,
@@ -354560,7 +354551,7 @@
               "rawLng": 10.93913852
             },
             {
-              "rank": 18,
+              "rank": 17,
               "district": "Mường Chà",
               "province": "Điện Biên",
               "latitude": 21.82779524,
@@ -354569,7 +354560,7 @@
               "rawLng": 21.82779524
             },
             {
-              "rank": 19,
+              "rank": 18,
               "district": "Mường Khương",
               "province": "Lào Cai",
               "latitude": 22.68549017,
@@ -354578,7 +354569,7 @@
               "rawLng": 22.68549017
             },
             {
-              "rank": 20,
+              "rank": 19,
               "district": "Văn Chấn",
               "province": "Yên Bái",
               "latitude": 21.56969186,
@@ -354587,7 +354578,7 @@
               "rawLng": 21.56969186
             },
             {
-              "rank": 21,
+              "rank": 20,
               "district": "Bến Lức",
               "province": "Long An",
               "latitude": 10.69372528,
@@ -354596,7 +354587,7 @@
               "rawLng": 10.69372528
             },
             {
-              "rank": 22,
+              "rank": 21,
               "district": "Si Ma Cai",
               "province": "Lào Cai",
               "latitude": 22.6636336,
@@ -354605,7 +354596,7 @@
               "rawLng": 22.6636336
             },
             {
-              "rank": 23,
+              "rank": 22,
               "district": "Yên Minh",
               "province": "Hà Giang",
               "latitude": 23.07141504,
@@ -354619,7 +354610,7 @@
           "frameIndex": 2,
           "timeKey": "202610032200",
           "timeVn": "01:00+04 (VN) 04-10-2026",
-          "count": 27,
+          "count": 26,
           "points": [
             {
               "rank": 0,
@@ -354740,12 +354731,12 @@
             },
             {
               "rank": 13,
-              "district": "Bình Chánh",
-              "province": "TP. Hồ Chí Minh",
-              "latitude": 10.74858185,
-              "longitude": 106.5792822,
-              "rawLat": 106.5792822,
-              "rawLng": 10.74858185
+              "district": "Thoại Sơn",
+              "province": "An Giang",
+              "latitude": 10.278282,
+              "longitude": 105.2684143,
+              "rawLat": 105.2684143,
+              "rawLng": 10.278282
             },
             {
               "rank": 14,
@@ -354794,15 +354785,6 @@
             },
             {
               "rank": 19,
-              "district": "Hoàng Su Phì",
-              "province": "Hà Giang",
-              "latitude": 22.69274543,
-              "longitude": 104.6702846,
-              "rawLat": 104.6702846,
-              "rawLng": 22.69274543
-            },
-            {
-              "rank": 20,
               "district": "Phù Yên",
               "province": "Sơn La",
               "latitude": 21.2248864,
@@ -354811,7 +354793,7 @@
               "rawLng": 21.2248864
             },
             {
-              "rank": 21,
+              "rank": 20,
               "district": "TP. Lào Cai",
               "province": "Lào Cai",
               "latitude": 22.41860696,
@@ -354820,7 +354802,7 @@
               "rawLng": 22.41860696
             },
             {
-              "rank": 22,
+              "rank": 21,
               "district": "Mường La",
               "province": "Sơn La",
               "latitude": 21.52595542,
@@ -354829,7 +354811,7 @@
               "rawLng": 21.52595542
             },
             {
-              "rank": 23,
+              "rank": 22,
               "district": "Quận 7",
               "province": "TP. Hồ Chí Minh",
               "latitude": 10.73760272,
@@ -354838,7 +354820,7 @@
               "rawLng": 10.73760272
             },
             {
-              "rank": 24,
+              "rank": 23,
               "district": "Văn Bàn",
               "province": "Lào Cai",
               "latitude": 22.06405847,
@@ -354847,7 +354829,7 @@
               "rawLng": 22.06405847
             },
             {
-              "rank": 25,
+              "rank": 24,
               "district": "Tam Đường",
               "province": "Lai Châu",
               "latitude": 22.32985379,
@@ -354856,7 +354838,7 @@
               "rawLng": 22.32985379
             },
             {
-              "rank": 26,
+              "rank": 25,
               "district": "Nậm Nhùn",
               "province": "Lai Châu",
               "latitude": 22.2564685,
@@ -354870,7 +354852,7 @@
           "frameIndex": 3,
           "timeKey": "202610032100",
           "timeVn": "01:00+03 (VN) 04-10-2026",
-          "count": 28,
+          "count": 29,
           "points": [
             {
               "rank": 0,
@@ -354973,6 +354955,15 @@
             },
             {
               "rank": 11,
+              "district": "Thoại Sơn",
+              "province": "An Giang",
+              "latitude": 10.278282,
+              "longitude": 105.2684143,
+              "rawLat": 105.2684143,
+              "rawLng": 10.278282
+            },
+            {
+              "rank": 12,
               "district": "Hoàng Su Phì",
               "province": "Hà Giang",
               "latitude": 22.69274543,
@@ -354981,7 +354972,7 @@
               "rawLng": 22.69274543
             },
             {
-              "rank": 12,
+              "rank": 13,
               "district": "Phù Yên",
               "province": "Sơn La",
               "latitude": 21.2248864,
@@ -354990,7 +354981,7 @@
               "rawLng": 21.2248864
             },
             {
-              "rank": 13,
+              "rank": 14,
               "district": "Bắc Yên",
               "province": "Sơn La",
               "latitude": 21.22227834,
@@ -354999,7 +354990,7 @@
               "rawLng": 21.22227834
             },
             {
-              "rank": 14,
+              "rank": 15,
               "district": "Bình Chánh",
               "province": "TP. Hồ Chí Minh",
               "latitude": 10.74858185,
@@ -355008,7 +354999,7 @@
               "rawLng": 10.74858185
             },
             {
-              "rank": 15,
+              "rank": 16,
               "district": "Trạm Tấu",
               "province": "Yên Bái",
               "latitude": 21.51008176,
@@ -355017,7 +355008,7 @@
               "rawLng": 21.51008176
             },
             {
-              "rank": 16,
+              "rank": 17,
               "district": "Tủa Chùa",
               "province": "Điện Biên",
               "latitude": 21.97052754,
@@ -355026,7 +355017,7 @@
               "rawLng": 21.97052754
             },
             {
-              "rank": 17,
+              "rank": 18,
               "district": "Tam Đường",
               "province": "Lai Châu",
               "latitude": 22.32985379,
@@ -355035,7 +355026,7 @@
               "rawLng": 22.32985379
             },
             {
-              "rank": 18,
+              "rank": 19,
               "district": "Bảo Yên",
               "province": "Lào Cai",
               "latitude": 22.2946614,
@@ -355044,7 +355035,7 @@
               "rawLng": 22.2946614
             },
             {
-              "rank": 19,
+              "rank": 20,
               "district": "Mường La",
               "province": "Sơn La",
               "latitude": 21.52595542,
@@ -355053,7 +355044,7 @@
               "rawLng": 21.52595542
             },
             {
-              "rank": 20,
+              "rank": 21,
               "district": "Mường Khương",
               "province": "Lào Cai",
               "latitude": 22.68549017,
@@ -355062,7 +355053,7 @@
               "rawLng": 22.68549017
             },
             {
-              "rank": 21,
+              "rank": 22,
               "district": "Krông Nô",
               "province": "Đăk Nông",
               "latitude": 12.3693973,
@@ -355071,7 +355062,7 @@
               "rawLng": 12.3693973
             },
             {
-              "rank": 22,
+              "rank": 23,
               "district": "Vĩnh Thạnh",
               "province": "TP. Cần Thơ",
               "latitude": 10.20653735,
@@ -355080,7 +355071,7 @@
               "rawLng": 10.20653735
             },
             {
-              "rank": 23,
+              "rank": 24,
               "district": "Tuần Giáo",
               "province": "Điện Biên",
               "latitude": 21.64522205,
@@ -355089,7 +355080,7 @@
               "rawLng": 21.64522205
             },
             {
-              "rank": 24,
+              "rank": 25,
               "district": "Quận Bình Tân",
               "province": "TP. Hồ Chí Minh",
               "latitude": 10.76925489,
@@ -355098,7 +355089,7 @@
               "rawLng": 10.76925489
             },
             {
-              "rank": 25,
+              "rank": 26,
               "district": "Nậm Nhùn",
               "province": "Lai Châu",
               "latitude": 22.2564685,
@@ -355107,7 +355098,7 @@
               "rawLng": 22.2564685
             },
             {
-              "rank": 26,
+              "rank": 27,
               "district": "Văn Bàn",
               "province": "Lào Cai",
               "latitude": 22.06405847,
@@ -355116,7 +355107,7 @@
               "rawLng": 22.06405847
             },
             {
-              "rank": 27,
+              "rank": 28,
               "district": "Thanh Chương",
               "province": "Nghệ An",
               "latitude": 18.73534958,
@@ -355130,7 +355121,7 @@
           "frameIndex": 4,
           "timeKey": "202610032000",
           "timeVn": "01:00+02 (VN) 04-10-2026",
-          "count": 21,
+          "count": 20,
           "points": [
             {
               "rank": 0,
@@ -355206,15 +355197,6 @@
             },
             {
               "rank": 8,
-              "district": "Thoại Sơn",
-              "province": "An Giang",
-              "latitude": 10.278282,
-              "longitude": 105.2684143,
-              "rawLat": 105.2684143,
-              "rawLng": 10.278282
-            },
-            {
-              "rank": 9,
               "district": "Bắc Hà",
               "province": "Lào Cai",
               "latitude": 22.50184765,
@@ -355223,7 +355205,7 @@
               "rawLng": 22.50184765
             },
             {
-              "rank": 10,
+              "rank": 9,
               "district": "TP. Long Xuyên",
               "province": "An Giang",
               "latitude": 10.37187004,
@@ -355232,7 +355214,7 @@
               "rawLng": 10.37187004
             },
             {
-              "rank": 11,
+              "rank": 10,
               "district": "Nậm Nhùn",
               "province": "Lai Châu",
               "latitude": 22.2564685,
@@ -355241,7 +355223,7 @@
               "rawLng": 22.2564685
             },
             {
-              "rank": 12,
+              "rank": 11,
               "district": "Bảo Yên",
               "province": "Lào Cai",
               "latitude": 22.2946614,
@@ -355250,7 +355232,7 @@
               "rawLng": 22.2946614
             },
             {
-              "rank": 13,
+              "rank": 12,
               "district": "Sìn Hồ",
               "province": "Lai Châu",
               "latitude": 22.25056033,
@@ -355259,7 +355241,7 @@
               "rawLng": 22.25056033
             },
             {
-              "rank": 14,
+              "rank": 13,
               "district": "Quận Bình Tân",
               "province": "TP. Hồ Chí Minh",
               "latitude": 10.76925489,
@@ -355268,7 +355250,7 @@
               "rawLng": 10.76925489
             },
             {
-              "rank": 15,
+              "rank": 14,
               "district": "Phong Thổ",
               "province": "Lai Châu",
               "latitude": 22.61533552,
@@ -355277,7 +355259,7 @@
               "rawLng": 22.61533552
             },
             {
-              "rank": 16,
+              "rank": 15,
               "district": "Bắc Yên",
               "province": "Sơn La",
               "latitude": 21.22227834,
@@ -355286,7 +355268,7 @@
               "rawLng": 21.22227834
             },
             {
-              "rank": 17,
+              "rank": 16,
               "district": "Văn Bàn",
               "province": "Lào Cai",
               "latitude": 22.06405847,
@@ -355295,7 +355277,7 @@
               "rawLng": 22.06405847
             },
             {
-              "rank": 18,
+              "rank": 17,
               "district": "Tủa Chùa",
               "province": "Điện Biên",
               "latitude": 21.97052754,
@@ -355304,7 +355286,7 @@
               "rawLng": 21.97052754
             },
             {
-              "rank": 19,
+              "rank": 18,
               "district": "Trạm Tấu",
               "province": "Yên Bái",
               "latitude": 21.51008176,
@@ -355313,7 +355295,7 @@
               "rawLng": 21.51008176
             },
             {
-              "rank": 20,
+              "rank": 19,
               "district": "Vĩnh Thạnh",
               "province": "TP. Cần Thơ",
               "latitude": 10.20653735,
@@ -355546,212 +355528,6 @@
               "rawLng": 22.06405847
             }
           ]
-        },
-        {
-          "frameIndex": 6,
-          "timeKey": "202610031800",
-          "timeVn": "01:00 (VN) 04-10-2026",
-          "count": 22,
-          "points": [
-            {
-              "rank": 0,
-              "district": "Quang Bình",
-              "province": "Hà Giang",
-              "latitude": 22.3844863,
-              "longitude": 104.6214237,
-              "rawLat": 104.6214237,
-              "rawLng": 22.3844863
-            },
-            {
-              "rank": 1,
-              "district": "Sìn Hồ",
-              "province": "Lai Châu",
-              "latitude": 22.25056033,
-              "longitude": 103.3314237,
-              "rawLat": 103.3314237,
-              "rawLng": 22.25056033
-            },
-            {
-              "rank": 2,
-              "district": "Mường Chà",
-              "province": "Điện Biên",
-              "latitude": 21.82779524,
-              "longitude": 103.1383901,
-              "rawLat": 103.1383901,
-              "rawLng": 21.82779524
-            },
-            {
-              "rank": 3,
-              "district": "Tân Uyên",
-              "province": "Lai Châu",
-              "latitude": 22.12611577,
-              "longitude": 103.7382919,
-              "rawLat": 103.7382919,
-              "rawLng": 22.12611577
-            },
-            {
-              "rank": 4,
-              "district": "Tam Đường",
-              "province": "Lai Châu",
-              "latitude": 22.32985379,
-              "longitude": 103.5992196,
-              "rawLat": 103.5992196,
-              "rawLng": 22.32985379
-            },
-            {
-              "rank": 5,
-              "district": "Bắc Quang",
-              "province": "Hà Giang",
-              "latitude": 22.39409683,
-              "longitude": 104.9204999,
-              "rawLat": 104.9204999,
-              "rawLng": 22.39409683
-            },
-            {
-              "rank": 6,
-              "district": "Bảo Thắng",
-              "province": "Lào Cai",
-              "latitude": 22.37944696,
-              "longitude": 104.1662586,
-              "rawLat": 104.1662586,
-              "rawLng": 22.37944696
-            },
-            {
-              "rank": 7,
-              "district": "Thoại Sơn",
-              "province": "An Giang",
-              "latitude": 10.278282,
-              "longitude": 105.2684143,
-              "rawLat": 105.2684143,
-              "rawLng": 10.278282
-            },
-            {
-              "rank": 8,
-              "district": "Hoàng Su Phì",
-              "province": "Hà Giang",
-              "latitude": 22.69274543,
-              "longitude": 104.6702846,
-              "rawLat": 104.6702846,
-              "rawLng": 22.69274543
-            },
-            {
-              "rank": 9,
-              "district": "Vị Xuyên",
-              "province": "Hà Giang",
-              "latitude": 22.76311191,
-              "longitude": 104.9425304,
-              "rawLat": 104.9425304,
-              "rawLng": 22.76311191
-            },
-            {
-              "rank": 10,
-              "district": "Đắk Glong",
-              "province": "Đăk Nông",
-              "latitude": 12.02972208,
-              "longitude": 107.9166366,
-              "rawLat": 107.9166366,
-              "rawLng": 12.02972208
-            },
-            {
-              "rank": 11,
-              "district": "TP. Long Xuyên",
-              "province": "An Giang",
-              "latitude": 10.37187004,
-              "longitude": 105.4278006,
-              "rawLat": 105.4278006,
-              "rawLng": 10.37187004
-            },
-            {
-              "rank": 12,
-              "district": "Châu Thành",
-              "province": "An Giang",
-              "latitude": 10.42653552,
-              "longitude": 105.2606715,
-              "rawLat": 105.2606715,
-              "rawLng": 10.42653552
-            },
-            {
-              "rank": 13,
-              "district": "Mường Khương",
-              "province": "Lào Cai",
-              "latitude": 22.68549017,
-              "longitude": 104.1417264,
-              "rawLat": 104.1417264,
-              "rawLng": 22.68549017
-            },
-            {
-              "rank": 14,
-              "district": "Thị xã Mường Lay",
-              "province": "Điện Biên",
-              "latitude": 22.02995411,
-              "longitude": 103.1183378,
-              "rawLat": 103.1183378,
-              "rawLng": 22.02995411
-            },
-            {
-              "rank": 15,
-              "district": "Tủa Chùa",
-              "province": "Điện Biên",
-              "latitude": 21.97052754,
-              "longitude": 103.3848275,
-              "rawLat": 103.3848275,
-              "rawLng": 21.97052754
-            },
-            {
-              "rank": 16,
-              "district": "Sa Pa",
-              "province": "Lào Cai",
-              "latitude": 22.31508738,
-              "longitude": 103.9064117,
-              "rawLat": 103.9064117,
-              "rawLng": 22.31508738
-            },
-            {
-              "rank": 17,
-              "district": "Bắc Yên",
-              "province": "Sơn La",
-              "latitude": 21.22227834,
-              "longitude": 104.371061,
-              "rawLat": 104.371061,
-              "rawLng": 21.22227834
-            },
-            {
-              "rank": 18,
-              "district": "Nậm Nhùn",
-              "province": "Lai Châu",
-              "latitude": 22.2564685,
-              "longitude": 102.9682257,
-              "rawLat": 102.9682257,
-              "rawLng": 22.2564685
-            },
-            {
-              "rank": 19,
-              "district": "TP. Lào Cai",
-              "province": "Lào Cai",
-              "latitude": 22.41860696,
-              "longitude": 103.9798157,
-              "rawLat": 103.9798157,
-              "rawLng": 22.41860696
-            },
-            {
-              "rank": 20,
-              "district": "Mường La",
-              "province": "Sơn La",
-              "latitude": 21.52595542,
-              "longitude": 104.0478494,
-              "rawLat": 104.0478494,
-              "rawLng": 21.52595542
-            },
-            {
-              "rank": 21,
-              "district": "Vĩnh Thạnh",
-              "province": "TP. Cần Thơ",
-              "latitude": 10.20653735,
-              "longitude": 105.3622473,
-              "rawLat": 105.3622473,
-              "rawLng": 10.20653735
-            }
-          ]
         }
       ],
       "radarRainImages": [
@@ -355832,8 +355608,8 @@
     "radar": {
       "success": true,
       "sourceUrl": "http://hymetnet.gov.vn/radar/",
-      "fetchedAt": "2026-10-03T18:49:47.765Z",
-      "executionTimeMs": 1927,
+      "fetchedAt": "2026-10-03T18:52:14.968Z",
+      "executionTimeMs": 1784,
       "stations": [
         {
           "id": "PL",
