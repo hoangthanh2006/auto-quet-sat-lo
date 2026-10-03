@@ -1,51 +1,51 @@
 {
   "snapshotId": "20261004_0200",
   "exactTimeId": "20261004_0200",
-  "crawledAt": "2026-10-03T20:01:22.912Z",
+  "crawledAt": "2026-10-03T20:07:50.202Z",
   "vnTime": "02:00 04/10/2026",
   "summary": {
-    "totalAlertCommunes": 326,
-    "totalLightningStrikes": 30562,
-    "totalLightningCG": 21056,
-    "totalLightningCC": 9506,
+    "totalAlertCommunes": 336,
+    "totalLightningStrikes": 31316,
+    "totalLightningCG": 21772,
+    "totalLightningCC": 9544,
     "maxLightningAmpKa": 341,
-    "heavyRainPointsCount": 156,
+    "heavyRainPointsCount": 157,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Tỉnh Tuyên Quang",
-        "communeCount": 28,
-        "totalAlerts": 79,
+        "province": "Tỉnh Lào Cai",
+        "communeCount": 30,
+        "totalAlerts": 110,
         "sampleCommunes": [
-          "Xã Xuân Giang",
-          "Xã Hùng An",
-          "Xã Vĩnh Tuy",
-          "Xã Cao Bồ",
-          "Phường Hà Giang 1"
+          "Xã Mường Hum",
+          "Xã Chế Tạo",
+          "Xã Gia Phú",
+          "Xã Púng Luông",
+          "Xã Mù Cang Chải"
         ]
       },
       {
-        "province": "Tỉnh Lào Cai",
-        "communeCount": 26,
-        "totalAlerts": 94,
+        "province": "Tỉnh Tuyên Quang",
+        "communeCount": 29,
+        "totalAlerts": 86,
         "sampleCommunes": [
-          "Xã Chế Tạo",
-          "Xã Mù Cang Chải",
-          "Xã Púng Luông",
-          "Xã Bảo Hà",
-          "Xã Lâm Giang"
+          "Xã Xín Mần",
+          "Xã Xuân Giang",
+          "Xã Bằng Lang",
+          "Xã Bạch Xa",
+          "Xã Bằng Hành"
         ]
       },
       {
         "province": "Tỉnh Lâm Đồng",
-        "communeCount": 19,
-        "totalAlerts": 74,
+        "communeCount": 25,
+        "totalAlerts": 67,
         "sampleCommunes": [
           "Xã Suối Kiết",
           "Xã Nam Thành",
           "Xã Tánh Linh",
           "Xã Bảo Lâm 5",
-          "Phường Đông Gia Nghĩa"
+          "Xã Trường Xuân"
         ]
       },
       {
@@ -53,10 +53,10 @@
         "communeCount": 10,
         "totalAlerts": 39,
         "sampleCommunes": [
-          "Phường Tân Phong",
           "Xã Sin Suối Hồ",
           "Xã Tả Lèng",
           "Xã Khun Há",
+          "Xã Bản Bo",
           "Xã Mường Khoa"
         ]
       },
@@ -66,9 +66,9 @@
         "totalAlerts": 12,
         "sampleCommunes": [
           "Phường Trảng Dài",
-          "Xã Tân Lợi",
-          "Xã Phước Thái",
           "Xã Xuân Hòa",
+          "Phường Tam Hiệp",
+          "Xã Cẩm Mỹ",
           "Xã Đak Lua"
         ]
       }
@@ -84,7 +84,7 @@
       },
       {
         "province": "Hà Giang",
-        "count": 17
+        "count": 18
       },
       {
         "province": "Đăk Nông",
@@ -97,9 +97,9 @@
     ]
   },
   "counts": {
-    "dong_set": 326,
-    "lightning_strikes": 30562,
-    "heavy_rain_points": 156,
+    "dong_set": 336,
+    "lightning_strikes": 31316,
+    "heavy_rain_points": 157,
     "radar_frames": 12,
     "radar_stations": 10
   }
