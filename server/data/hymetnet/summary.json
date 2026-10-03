@@ -1,75 +1,75 @@
 {
   "snapshotId": "20261004_0200",
   "exactTimeId": "20261004_0200",
-  "crawledAt": "2026-10-03T19:37:50.151Z",
+  "crawledAt": "2026-10-03T20:01:22.912Z",
   "vnTime": "02:00 04/10/2026",
   "summary": {
-    "totalAlertCommunes": 294,
-    "totalLightningStrikes": 26311,
-    "totalLightningCG": 18700,
-    "totalLightningCC": 7611,
+    "totalAlertCommunes": 326,
+    "totalLightningStrikes": 30562,
+    "totalLightningCG": 21056,
+    "totalLightningCC": 9506,
     "maxLightningAmpKa": 341,
-    "heavyRainPointsCount": 151,
+    "heavyRainPointsCount": 156,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Tỉnh Lào Cai",
-        "communeCount": 29,
-        "totalAlerts": 101,
+        "province": "Tỉnh Tuyên Quang",
+        "communeCount": 28,
+        "totalAlerts": 79,
         "sampleCommunes": [
-          "Xã Ngũ Chỉ Sơn",
-          "Xã Bát Xát",
-          "Xã Khao Mang",
-          "Xã Lao Chải",
-          "Xã Chế Tạo"
+          "Xã Xuân Giang",
+          "Xã Hùng An",
+          "Xã Vĩnh Tuy",
+          "Xã Cao Bồ",
+          "Phường Hà Giang 1"
+        ]
+      },
+      {
+        "province": "Tỉnh Lào Cai",
+        "communeCount": 26,
+        "totalAlerts": 94,
+        "sampleCommunes": [
+          "Xã Chế Tạo",
+          "Xã Mù Cang Chải",
+          "Xã Púng Luông",
+          "Xã Bảo Hà",
+          "Xã Lâm Giang"
         ]
       },
       {
         "province": "Tỉnh Lâm Đồng",
-        "communeCount": 18,
-        "totalAlerts": 68,
+        "communeCount": 19,
+        "totalAlerts": 74,
         "sampleCommunes": [
-          "Xã Đạ Tẻh",
-          "Xã Bảo Lâm 5",
+          "Xã Suối Kiết",
           "Xã Nam Thành",
-          "Xã Đắk Song",
-          "Xã Quảng Khê"
-        ]
-      },
-      {
-        "province": "Tỉnh Tuyên Quang",
-        "communeCount": 17,
-        "totalAlerts": 56,
-        "sampleCommunes": [
-          "Xã Tiên Yên",
-          "Xã Đồng Yên",
-          "Xã Vĩnh Tuy",
-          "Xã Bạch Xa",
-          "Xã Bằng Hành"
-        ]
-      },
-      {
-        "province": "Tỉnh Sơn La",
-        "communeCount": 6,
-        "totalAlerts": 21,
-        "sampleCommunes": [
-          "Xã Quỳnh Nhai",
-          "Xã Mường Sại",
-          "Xã Mường Giôn",
-          "Xã Chiềng Lao",
-          "Xã Mường Chiên"
+          "Xã Tánh Linh",
+          "Xã Bảo Lâm 5",
+          "Phường Đông Gia Nghĩa"
         ]
       },
       {
         "province": "Tỉnh Lai Châu",
-        "communeCount": 5,
-        "totalAlerts": 19,
+        "communeCount": 10,
+        "totalAlerts": 39,
         "sampleCommunes": [
-          "Xã Mường Khoa",
-          "Xã Khoen On",
-          "Xã Than Uyên",
-          "Xã Mường Kim",
-          "Xã Tân Uyên"
+          "Phường Tân Phong",
+          "Xã Sin Suối Hồ",
+          "Xã Tả Lèng",
+          "Xã Khun Há",
+          "Xã Mường Khoa"
+        ]
+      },
+      {
+        "province": "Tỉnh Đồng Nai",
+        "communeCount": 5,
+        "totalAlerts": 12,
+        "sampleCommunes": [
+          "Phường Trảng Dài",
+          "Xã Tân Lợi",
+          "Xã Phước Thái",
+          "Xã Xuân Hòa",
+          "Xã Đak Lua"
         ]
       }
     ],
@@ -79,27 +79,27 @@
         "count": 32
       },
       {
-        "province": "Điện Biên",
-        "count": 20
-      },
-      {
-        "province": "Hà Giang",
+        "province": "Đồng Nai",
         "count": 19
       },
       {
-        "province": "Đồng Nai",
-        "count": 16
+        "province": "Hà Giang",
+        "count": 17
       },
       {
-        "province": "Lai Châu",
+        "province": "Đăk Nông",
         "count": 13
+      },
+      {
+        "province": "Yên Bái",
+        "count": 12
       }
     ]
   },
   "counts": {
-    "dong_set": 294,
-    "lightning_strikes": 26311,
-    "heavy_rain_points": 151,
+    "dong_set": 326,
+    "lightning_strikes": 30562,
+    "heavy_rain_points": 156,
     "radar_frames": 12,
     "radar_stations": 10
   }
