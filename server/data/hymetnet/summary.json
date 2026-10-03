@@ -1,105 +1,105 @@
 {
   "snapshotId": "20261003_1800",
   "exactTimeId": "20261003_1800",
-  "crawledAt": "2026-10-03T11:30:52.809Z",
+  "crawledAt": "2026-10-03T11:38:24.742Z",
   "vnTime": "18:00 03/10/2026",
   "summary": {
-    "totalAlertCommunes": 375,
-    "totalLightningStrikes": 44882,
-    "totalLightningCG": 29703,
-    "totalLightningCC": 15179,
+    "totalAlertCommunes": 414,
+    "totalLightningStrikes": 47206,
+    "totalLightningCG": 29963,
+    "totalLightningCC": 17243,
     "maxLightningAmpKa": 295,
-    "heavyRainPointsCount": 283,
+    "heavyRainPointsCount": 327,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Vĩnh Long",
-        "communeCount": 29,
-        "totalAlerts": 69,
+        "communeCount": 26,
+        "totalAlerts": 75,
         "sampleCommunes": [
-          "Xã Nhơn Phú",
-          "Xã Phú Phụng",
           "Xã An Trường",
+          "Xã Chợ Lách",
           "Xã Tân Phú",
-          "Xã Tân An"
+          "Xã Quới An",
+          "Xã Tập Ngãi"
         ]
       },
       {
         "province": "Tỉnh Nghệ An",
-        "communeCount": 21,
-        "totalAlerts": 104,
+        "communeCount": 20,
+        "totalAlerts": 95,
         "sampleCommunes": [
           "Xã Mường Típ",
           "Xã Mường Xén",
-          "Xã Nậm Cắn",
           "Xã Na Ngoi",
-          "Xã Na Loi"
+          "Xã Nậm Cắn",
+          "Xã Keng Đu"
         ]
       },
       {
         "province": "Tỉnh Đồng Tháp",
-        "communeCount": 19,
+        "communeCount": 20,
         "totalAlerts": 66,
         "sampleCommunes": [
           "Xã Hiệp Đức",
+          "Xã Bình Phú",
           "Xã Ngũ Hiệp",
           "Xã Long Tiên",
-          "Phường Cai Lậy",
-          "Xã Tân Phú"
+          "Phường Cai Lậy"
         ]
       },
       {
         "province": "Tỉnh Lâm Đồng",
         "communeCount": 17,
-        "totalAlerts": 65,
+        "totalAlerts": 68,
         "sampleCommunes": [
-          "Xã Cát Tiên",
           "Xã Đạ Tẻh",
-          "Xã Đạ Tẻh 2",
           "Xã Đạ Huoai",
-          "Xã Đạ Huoai 2"
+          "Xã Nam Thành",
+          "Xã Đạ Huoai 2",
+          "Xã Đạ Huoai 3"
         ]
       },
       {
-        "province": "Thành phố Hồ Chí Minh",
-        "communeCount": 5,
-        "totalAlerts": 11,
+        "province": "Tỉnh Đồng Nai",
+        "communeCount": 6,
+        "totalAlerts": 28,
         "sampleCommunes": [
-          "Phường Tây Nam",
-          "Xã Bắc Tân Uyên",
-          "Xã Tân An Hội",
-          "Xã Nhuận Đức",
-          "Xã Củ Chi"
+          "Xã Đak Lua",
+          "Xã Nam Cát Tiên",
+          "Xã Phước Sơn",
+          "Xã Tân Phú",
+          "Xã Phú Lâm"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "Bến Tre",
-        "count": 44
+        "count": 51
       },
       {
         "province": "Tiền Giang",
-        "count": 35
+        "count": 42
       },
       {
         "province": "Lâm Đồng",
-        "count": 27
+        "count": 32
       },
       {
         "province": "Nghệ An",
-        "count": 21
+        "count": 25
       },
       {
-        "province": "Bình Dương",
-        "count": 16
+        "province": "Bình Thuận",
+        "count": 19
       }
     ]
   },
   "counts": {
-    "dong_set": 375,
-    "lightning_strikes": 44882,
-    "heavy_rain_points": 283,
+    "dong_set": 414,
+    "lightning_strikes": 47206,
+    "heavy_rain_points": 327,
     "radar_frames": 12,
     "radar_stations": 10
   }
