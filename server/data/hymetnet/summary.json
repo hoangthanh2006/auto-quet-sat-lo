@@ -1,7 +1,7 @@
 {
   "snapshotId": "20261003_1500",
   "exactTimeId": "20261003_1500",
-  "crawledAt": "2026-10-03T09:00:21.485Z",
+  "crawledAt": "2026-10-03T09:01:41.268Z",
   "vnTime": "15:00 03/10/2026",
   "summary": {
     "totalAlertCommunes": 350,
@@ -9,7 +9,7 @@
     "totalLightningCG": 21725,
     "totalLightningCC": 12567,
     "maxLightningAmpKa": 174,
-    "heavyRainPointsCount": 277,
+    "heavyRainPointsCount": 245,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
@@ -76,30 +76,30 @@
     "topRainProvinces": [
       {
         "province": "Nghệ An",
-        "count": 31
+        "count": 29
       },
       {
         "province": "Tiền Giang",
-        "count": 19
-      },
-      {
-        "province": "Kon Tum",
         "count": 18
       },
       {
-        "province": "Lâm Đồng",
-        "count": 16
+        "province": "Long An",
+        "count": 15
+      },
+      {
+        "province": "Kon Tum",
+        "count": 14
       },
       {
         "province": "Đăk Nông",
-        "count": 15
+        "count": 14
       }
     ]
   },
   "counts": {
     "dong_set": 350,
     "lightning_strikes": 34292,
-    "heavy_rain_points": 277,
+    "heavy_rain_points": 245,
     "radar_frames": 12,
     "radar_stations": 10
   }
