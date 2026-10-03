@@ -1,45 +1,33 @@
 {
   "snapshotId": "20261004_0000",
   "exactTimeId": "20261004_0000",
-  "crawledAt": "2026-10-03T17:37:50.089Z",
+  "crawledAt": "2026-10-03T18:07:47.323Z",
   "vnTime": "00:00 04/10/2026",
   "summary": {
-    "totalAlertCommunes": 309,
-    "totalLightningStrikes": 26207,
-    "totalLightningCG": 15397,
-    "totalLightningCC": 10810,
+    "totalAlertCommunes": 314,
+    "totalLightningStrikes": 26475,
+    "totalLightningCG": 17728,
+    "totalLightningCC": 8747,
     "maxLightningAmpKa": 300,
-    "heavyRainPointsCount": 131,
+    "heavyRainPointsCount": 132,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Lào Cai",
-        "communeCount": 27,
-        "totalAlerts": 89,
+        "communeCount": 36,
+        "totalAlerts": 121,
         "sampleCommunes": [
           "Xã Tả Van",
-          "Xã Tả Phìn",
-          "Phường Lào Cai",
-          "Xã Phong Hải",
-          "Xã Cao Sơn"
-        ]
-      },
-      {
-        "province": "Tỉnh Lai Châu",
-        "communeCount": 20,
-        "totalAlerts": 73,
-        "sampleCommunes": [
-          "Xã Hua Bum",
-          "Xã Nậm Hàng",
-          "Xã Lê Lợi",
-          "Phường Đoàn Kết",
-          "Xã Sin Suối Hồ"
+          "Phường Sa Pa",
+          "Xã Bản Hồ",
+          "Xã Nậm Xé",
+          "Xã Mường Bo"
         ]
       },
       {
         "province": "Tỉnh Tuyên Quang",
-        "communeCount": 16,
-        "totalAlerts": 51,
+        "communeCount": 26,
+        "totalAlerts": 73,
         "sampleCommunes": [
           "Xã Yên Thành",
           "Xã Quảng Nguyên",
@@ -49,57 +37,69 @@
         ]
       },
       {
-        "province": "Tỉnh Điện Biên",
+        "province": "Tỉnh Lâm Đồng",
         "communeCount": 12,
-        "totalAlerts": 41,
+        "totalAlerts": 33,
         "sampleCommunes": [
-          "Xã Na Sang",
-          "Xã Pa Ham",
-          "Xã Mường Tùng",
-          "Phường Mường Lay",
-          "Xã Nậm Nèn"
+          "Phường Bắc Gia Nghĩa",
+          "Xã Quảng Phú",
+          "Xã Tà Đùng",
+          "Xã Hàm Thạnh",
+          "Xã Quảng Khê"
         ]
       },
       {
-        "province": "Tỉnh An Giang",
+        "province": "Tỉnh Điện Biên",
         "communeCount": 11,
-        "totalAlerts": 22,
+        "totalAlerts": 35,
         "sampleCommunes": [
-          "Xã Định Mỹ",
-          "Xã An Châu",
-          "Xã Nhơn Mỹ",
-          "Xã Phú Hòa",
-          "Phường Bình Đức"
+          "Xã Na Sang",
+          "Xã Mường Pồn",
+          "Xã Nà Tấu",
+          "Xã Sính Phình",
+          "Xã Tủa Chùa"
+        ]
+      },
+      {
+        "province": "Tỉnh Lai Châu",
+        "communeCount": 11,
+        "totalAlerts": 38,
+        "sampleCommunes": [
+          "Xã Lê Lợi",
+          "Xã Tủa Sín Chải",
+          "Xã Tân Uyên",
+          "Xã Mường Kim",
+          "Xã Nậm Sỏ"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "Hà Giang",
-        "count": 30
+        "count": 27
       },
       {
         "province": "Lai Châu",
-        "count": 25
-      },
-      {
-        "province": "Điện Biên",
-        "count": 23
+        "count": 24
       },
       {
         "province": "Lào Cai",
-        "count": 16
+        "count": 21
       },
       {
-        "province": "Gia Lai",
-        "count": 11
+        "province": "Điện Biên",
+        "count": 20
+      },
+      {
+        "province": "An Giang",
+        "count": 13
       }
     ]
   },
   "counts": {
-    "dong_set": 309,
-    "lightning_strikes": 26207,
-    "heavy_rain_points": 131,
+    "dong_set": 314,
+    "lightning_strikes": 26475,
+    "heavy_rain_points": 132,
     "radar_frames": 12,
     "radar_stations": 10
   }
