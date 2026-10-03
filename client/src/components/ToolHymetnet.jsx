@@ -53,6 +53,7 @@ export default function ToolHymetnet() {
   // States quản lý snapshot lịch sử
   const [selectedSnapshotId, setSelectedSnapshotId] = useState(null);
   const [loadingSnapshotId, setLoadingSnapshotId] = useState(null);
+  const [historyDateFilter, setHistoryDateFilter] = useState('all');
   const selectedSnapshotIdRef = useRef(null);
   selectedSnapshotIdRef.current = selectedSnapshotId;
 
@@ -214,6 +215,51 @@ export default function ToolHymetnet() {
       setLoadingSnapshotId(null);
     }
   };
+
+  // Danh sách các ngày có bản ghi snapshot lịch sử
+  const historyDates = useMemo(() => {
+    const map = new Map();
+    (historyTimeline || []).forEach((item) => {
+      let dateKey = item.date;
+      if (!dateKey && item.snapshotId && item.snapshotId.length >= 8) {
+        const y = item.snapshotId.slice(0, 4);
+        const m = item.snapshotId.slice(4, 6);
+        const d = item.snapshotId.slice(6, 8);
+        dateKey = `${y}-${m}-${d}`;
+      }
+      if (dateKey) {
+        let display = dateKey;
+        const parts = dateKey.split('-');
+        if (parts.length === 3) {
+          display = `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+        if (!map.has(dateKey)) {
+          map.set(dateKey, { date: dateKey, display, count: 0 });
+        }
+        map.get(dateKey).count++;
+      }
+    });
+
+    return Array.from(map.values()).sort((a, b) => b.date.localeCompare(a.date));
+  }, [historyTimeline]);
+
+  // Danh sách snapshot lịch sử sắp xếp từ mới nhất đến cũ nhất và lọc theo ngày
+  const filteredTimelineSnapshots = useMemo(() => {
+    let list = [...(historyTimeline || [])].sort((a, b) => (b.snapshotId || '').localeCompare(a.snapshotId || ''));
+    if (historyDateFilter !== 'all') {
+      list = list.filter((item) => {
+        let dateKey = item.date;
+        if (!dateKey && item.snapshotId && item.snapshotId.length >= 8) {
+          const y = item.snapshotId.slice(0, 4);
+          const m = item.snapshotId.slice(4, 6);
+          const d = item.snapshotId.slice(6, 8);
+          dateKey = `${y}-${m}-${d}`;
+        }
+        return dateKey === historyDateFilter;
+      });
+    }
+    return list;
+  }, [historyTimeline, historyDateFilter]);
 
   // Trích xuất các lớp dữ liệu
   const summary = data?.summary || {};
@@ -518,6 +564,63 @@ export default function ToolHymetnet() {
           </div>
         </div>
 
+        {/* Bộ chọn Ngày / Giờ Lịch Sử Toàn Cục */}
+        <div className="mt-3.5 pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200">
+            <Calendar className="w-4 h-4 text-amber-500" />
+            <span>Xem lại dữ liệu Ngày/Giờ:</span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 flex-1 justify-start sm:justify-end">
+            {/* Lọc theo ngày */}
+            <select
+              value={historyDateFilter}
+              onChange={(e) => setHistoryDateFilter(e.target.value)}
+              className="px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-800 dark:text-slate-200 cursor-pointer focus:outline-none focus:ring-1 focus:ring-amber-500"
+            >
+              <option value="all">📅 Tất cả ngày ({historyDates.length} ngày)</option>
+              {historyDates.map((d) => (
+                <option key={d.date} value={d.date}>
+                  📅 Ngày {d.display} ({d.count} mốc)
+                </option>
+              ))}
+            </select>
+
+            {/* Lọc theo mốc giờ snapshot */}
+            <select
+              value={selectedSnapshotId || 'live'}
+              onChange={(e) => {
+                if (e.target.value === 'live') {
+                  handleReturnToLive();
+                } else {
+                  handleSelectSnapshot(e.target.value);
+                }
+              }}
+              className="px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-800 dark:text-slate-200 cursor-pointer focus:outline-none focus:ring-1 focus:ring-amber-500 font-mono"
+            >
+              <option value="live">🔴 Trực tiếp (Live mới nhất)</option>
+              {filteredTimelineSnapshots.map((s) => (
+                <option key={s.snapshotId} value={s.snapshotId}>
+                  ⏰ {s.vnTime || s.snapshotId} · {s.counts?.dong_set || 0} dông, {s.counts?.heavy_rain_points || 0} mưa, {(s.counts?.lightning_strikes || 0).toLocaleString()} sét
+                </option>
+              ))}
+            </select>
+
+            {selectedSnapshotId && (
+              <button
+                type="button"
+                onClick={handleReturnToLive}
+                disabled={loadingSnapshotId === 'live'}
+                className="px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold transition flex items-center gap-1 cursor-pointer shadow-xs disabled:opacity-50"
+                title="Quay lại dữ liệu trực tiếp mới nhất"
+              >
+                <RotateCcw className={`w-3 h-3 ${loadingSnapshotId === 'live' ? 'animate-spin' : ''}`} />
+                <span>Về Live</span>
+              </button>
+            )}
+          </div>
+        </div>
+
         {selectedSnapshotId && (
           <div className="mt-3 p-3 rounded-2xl bg-amber-500/10 dark:bg-amber-500/20 border-2 border-amber-500/40 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-amber-950 dark:text-amber-100 animate-fadeIn">
             <div className="flex items-center gap-2.5">
@@ -790,6 +893,85 @@ export default function ToolHymetnet() {
       {/* ========================================================================= */}
       {activeTab === 'dongset' && !loading && (
         <div className="space-y-4">
+          {/* Thanh Lọc Ngày & Giờ Lịch Sử (Xem Lại Bản Ghi) */}
+          <div className="p-2.5 sm:p-3 rounded-2xl bg-gradient-to-r from-amber-50/90 via-slate-50 to-orange-50/80 dark:from-amber-950/40 dark:via-slate-900/60 dark:to-orange-950/40 border border-amber-200/70 dark:border-amber-800/50 flex flex-wrap items-center justify-between gap-2.5">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+              <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                Xem Lại Dữ Liệu Ngày/Giờ:
+              </span>
+              {selectedSnapshotId ? (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black bg-amber-500 text-white shadow-xs">
+                  <Clock className="w-3 h-3" />
+                  LỊCH SỬ: {selectedSnapshotId}
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300/40">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  TRỰC TIẾP (LIVE)
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              {/* 1. Chọn Ngày */}
+              <div className="flex items-center gap-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs shadow-2xs">
+                <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                <select
+                  value={historyDateFilter}
+                  onChange={(e) => setHistoryDateFilter(e.target.value)}
+                  className="bg-transparent text-slate-800 dark:text-slate-100 text-xs font-medium cursor-pointer focus:outline-none"
+                  title="Lọc danh sách snapshot theo ngày"
+                >
+                  <option value="all">📅 Tất cả ngày ({historyDates.length})</option>
+                  {historyDates.map((d) => (
+                    <option key={d.date} value={d.date}>
+                      📅 Ngày {d.display} ({d.count} mốc)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* 2. Chọn Mốc Giờ Snapshot */}
+              <div className="flex items-center gap-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs shadow-2xs">
+                <Clock className="w-3.5 h-3.5 text-slate-400" />
+                <select
+                  value={selectedSnapshotId || 'live'}
+                  onChange={(e) => {
+                    if (e.target.value === 'live') {
+                      handleReturnToLive();
+                    } else {
+                      handleSelectSnapshot(e.target.value);
+                    }
+                  }}
+                  disabled={loadingSnapshotId !== null}
+                  className="bg-transparent text-slate-800 dark:text-slate-100 text-xs font-semibold cursor-pointer focus:outline-none font-mono"
+                  title="Chọn mốc giờ snapshot để xem lại toàn bộ dữ liệu thời điểm đó"
+                >
+                  <option value="live">🔴 Live (Mới nhất)</option>
+                  {filteredTimelineSnapshots.map((s) => (
+                    <option key={s.snapshotId} value={s.snapshotId}>
+                      ⏰ {s.vnTime || s.snapshotId} ({s.counts?.dong_set || 0} xã dông)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* 3. Nút Về Live khi đang xem bản ghi quá khứ */}
+              {selectedSnapshotId && (
+                <button
+                  onClick={handleReturnToLive}
+                  disabled={loadingSnapshotId === 'live'}
+                  className="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white transition flex items-center gap-1 cursor-pointer shadow-xs disabled:opacity-50"
+                  title="Trở về dữ liệu trực tiếp mới nhất"
+                >
+                  <RotateCcw className={`w-3 h-3 ${loadingSnapshotId === 'live' ? 'animate-spin' : ''}`} />
+                  <span>Về Live</span>
+                </button>
+              )}
+            </div>
+          </div>
+
           {/* Top provinces with warnings */}
           {dongSetLayer.provinces && dongSetLayer.provinces.length > 0 && (
             <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800">
@@ -942,6 +1124,85 @@ export default function ToolHymetnet() {
       {/* ========================================================================= */}
       {activeTab === 'lightning' && !loading && (
         <div className="space-y-4">
+          {/* Thanh Lọc Ngày & Giờ Lịch Sử (Xem Lại Bản Ghi) */}
+          <div className="p-2.5 sm:p-3 rounded-2xl bg-gradient-to-r from-purple-50/90 via-slate-50 to-indigo-50/80 dark:from-purple-950/40 dark:via-slate-900/60 dark:to-indigo-950/40 border border-purple-200/70 dark:border-purple-800/50 flex flex-wrap items-center justify-between gap-2.5">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
+              <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                Xem Lại Dữ Liệu Ngày/Giờ:
+              </span>
+              {selectedSnapshotId ? (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black bg-amber-500 text-white shadow-xs">
+                  <Clock className="w-3 h-3" />
+                  LỊCH SỬ: {selectedSnapshotId}
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300/40">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  TRỰC TIẾP (LIVE)
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              {/* 1. Chọn Ngày */}
+              <div className="flex items-center gap-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs shadow-2xs">
+                <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                <select
+                  value={historyDateFilter}
+                  onChange={(e) => setHistoryDateFilter(e.target.value)}
+                  className="bg-transparent text-slate-800 dark:text-slate-100 text-xs font-medium cursor-pointer focus:outline-none"
+                  title="Lọc danh sách snapshot theo ngày"
+                >
+                  <option value="all">📅 Tất cả ngày ({historyDates.length})</option>
+                  {historyDates.map((d) => (
+                    <option key={d.date} value={d.date}>
+                      📅 Ngày {d.display} ({d.count} mốc)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* 2. Chọn Mốc Giờ Snapshot */}
+              <div className="flex items-center gap-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs shadow-2xs">
+                <Clock className="w-3.5 h-3.5 text-slate-400" />
+                <select
+                  value={selectedSnapshotId || 'live'}
+                  onChange={(e) => {
+                    if (e.target.value === 'live') {
+                      handleReturnToLive();
+                    } else {
+                      handleSelectSnapshot(e.target.value);
+                    }
+                  }}
+                  disabled={loadingSnapshotId !== null}
+                  className="bg-transparent text-slate-800 dark:text-slate-100 text-xs font-semibold cursor-pointer focus:outline-none font-mono"
+                  title="Chọn mốc giờ snapshot để xem lại toàn bộ dữ liệu thời điểm đó"
+                >
+                  <option value="live">🔴 Live (Mới nhất)</option>
+                  {filteredTimelineSnapshots.map((s) => (
+                    <option key={s.snapshotId} value={s.snapshotId}>
+                      ⏰ {s.vnTime || s.snapshotId} ({(s.counts?.lightning_strikes || 0).toLocaleString()} cú sét)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* 3. Nút Về Live khi đang xem bản ghi quá khứ */}
+              {selectedSnapshotId && (
+                <button
+                  onClick={handleReturnToLive}
+                  disabled={loadingSnapshotId === 'live'}
+                  className="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white transition flex items-center gap-1 cursor-pointer shadow-xs disabled:opacity-50"
+                  title="Trở về dữ liệu trực tiếp mới nhất"
+                >
+                  <RotateCcw className={`w-3 h-3 ${loadingSnapshotId === 'live' ? 'animate-spin' : ''}`} />
+                  <span>Về Live</span>
+                </button>
+              )}
+            </div>
+          </div>
+
           {/* Controls: Type filter & Search */}
           <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div className="flex items-center gap-2">
@@ -1106,7 +1367,86 @@ export default function ToolHymetnet() {
                   )}
                 </div>
 
-                {/* 2. Bộ lọc Tìm kiếm, Tỉnh/Thành phố & Mốc thời gian */}
+                {/* Thanh Lọc Ngày & Giờ Lịch Sử (Xem Lại Bản Ghi) */}
+                <div className="p-2.5 sm:p-3 rounded-xl bg-gradient-to-r from-cyan-50/90 via-slate-50 to-amber-50/80 dark:from-cyan-950/40 dark:via-slate-900/60 dark:to-amber-950/40 border border-cyan-200/70 dark:border-cyan-800/50 flex flex-wrap items-center justify-between gap-2.5">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-cyan-600 dark:text-cyan-400 shrink-0" />
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                      Xem Lại Dữ Liệu Ngày/Giờ:
+                    </span>
+                    {selectedSnapshotId ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black bg-amber-500 text-white shadow-xs">
+                        <Clock className="w-3 h-3" />
+                        LỊCH SỬ: {selectedSnapshotId}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300/40">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        TRỰC TIẾP (LIVE)
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    {/* 1. Chọn Ngày */}
+                    <div className="flex items-center gap-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs shadow-2xs">
+                      <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                      <select
+                        value={historyDateFilter}
+                        onChange={(e) => setHistoryDateFilter(e.target.value)}
+                        className="bg-transparent text-slate-800 dark:text-slate-100 text-xs font-medium cursor-pointer focus:outline-none"
+                        title="Lọc danh sách snapshot theo ngày"
+                      >
+                        <option value="all">📅 Tất cả ngày ({historyDates.length})</option>
+                        {historyDates.map((d) => (
+                          <option key={d.date} value={d.date}>
+                            📅 Ngày {d.display} ({d.count} mốc)
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* 2. Chọn Mốc Giờ Snapshot */}
+                    <div className="flex items-center gap-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs shadow-2xs">
+                      <Clock className="w-3.5 h-3.5 text-slate-400" />
+                      <select
+                        value={selectedSnapshotId || 'live'}
+                        onChange={(e) => {
+                          if (e.target.value === 'live') {
+                            handleReturnToLive();
+                          } else {
+                            handleSelectSnapshot(e.target.value);
+                          }
+                        }}
+                        disabled={loadingSnapshotId !== null}
+                        className="bg-transparent text-slate-800 dark:text-slate-100 text-xs font-semibold cursor-pointer focus:outline-none font-mono"
+                        title="Chọn mốc giờ snapshot để xem lại toàn bộ dữ liệu thời điểm đó"
+                      >
+                        <option value="live">🔴 Live (Mới nhất)</option>
+                        {filteredTimelineSnapshots.map((s) => (
+                          <option key={s.snapshotId} value={s.snapshotId}>
+                            ⏰ {s.vnTime || s.snapshotId} ({s.counts?.heavy_rain_points || 0} điểm mưa)
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* 3. Nút Về Live khi đang xem bản ghi quá khứ */}
+                    {selectedSnapshotId && (
+                      <button
+                        onClick={handleReturnToLive}
+                        disabled={loadingSnapshotId === 'live'}
+                        className="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white transition flex items-center gap-1 cursor-pointer shadow-xs disabled:opacity-50"
+                        title="Trở về dữ liệu trực tiếp mới nhất"
+                      >
+                        <RotateCcw className={`w-3 h-3 ${loadingSnapshotId === 'live' ? 'animate-spin' : ''}`} />
+                        <span>Về Live</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* 2. Bộ lọc Tìm kiếm, Tỉnh/Thành phố & Khung quét radar */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
                   {/* Tìm kiếm */}
                   <div className="relative">
@@ -1144,14 +1484,15 @@ export default function ToolHymetnet() {
                     </select>
                   </div>
 
-                  {/* Lọc theo Mốc giờ */}
+                  {/* Lọc theo Khung quét radar */}
                   <div>
                     <select
                       value={rainTimeFilter}
                       onChange={(e) => setRainTimeFilter(e.target.value)}
                       className="w-full px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 text-slate-800 dark:text-slate-100 cursor-pointer"
+                      title="Lọc các điểm theo từng khung quét radar của mốc hiện tại"
                     >
-                      <option value="all">⏰ Tất cả các mốc giờ</option>
+                      <option value="all">⏱️ Tất cả khung quét radar (Frame #1 - #{rainLayer.stormFrames?.length || 6})</option>
                       {(rainLayer.stormFrames || []).map((f) => (
                         <option key={f.frameIndex} value={String(f.frameIndex)}>
                           Frame #{f.frameIndex + 1} ({f.count} điểm) {f.timeVn ? `· ${f.timeVn}` : ''}
@@ -1544,13 +1885,37 @@ export default function ToolHymetnet() {
       {activeTab === 'timeline' && !loading && (
         <div className="space-y-4">
           <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
-            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-slate-500" />
-              Lịch Sử Đồng Bộ Snapshot Định Kỳ 2 Giờ (Firebase RTDB)
-            </h3>
-            <p className="text-xs text-slate-500 mb-4">
-              Hệ thống tự động quét và lưu bản ghi mỗi 2 giờ một lần qua GitHub Actions Cron và tiến trình ngầm server.
-            </p>
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-amber-500" />
+                  Lịch Sử Đồng Bộ Snapshot Định Kỳ 2 Giờ (Firebase RTDB)
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Hệ thống tự động quét và lưu bản ghi mỗi 2 giờ một lần qua GitHub Actions Cron và tiến trình ngầm server.
+                </p>
+              </div>
+
+              {/* Lọc danh sách snapshot theo ngày */}
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-slate-500">Lọc ngày:</span>
+                <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs">
+                  <Calendar className="w-3.5 h-3.5 text-amber-500" />
+                  <select
+                    value={historyDateFilter}
+                    onChange={(e) => setHistoryDateFilter(e.target.value)}
+                    className="bg-transparent text-slate-800 dark:text-slate-100 text-xs font-medium cursor-pointer focus:outline-none"
+                  >
+                    <option value="all">📅 Tất cả các ngày ({historyDates.length})</option>
+                    {historyDates.map((d) => (
+                      <option key={d.date} value={d.date}>
+                        📅 Ngày {d.display} ({d.count} mốc)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
@@ -1567,7 +1932,7 @@ export default function ToolHymetnet() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-mono text-xs">
-                  {historyTimeline.map((item, idx) => {
+                  {filteredTimelineSnapshots.map((item, idx) => {
                     const isSelected = selectedSnapshotId === item.snapshotId;
                     const isLoadingThis = loadingSnapshotId === item.snapshotId;
 
