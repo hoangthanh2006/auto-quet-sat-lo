@@ -1,75 +1,75 @@
 {
   "snapshotId": "20261003_1700",
   "exactTimeId": "20261003_1700",
-  "crawledAt": "2026-10-03T10:31:17.616Z",
+  "crawledAt": "2026-10-03T10:33:29.473Z",
   "vnTime": "17:00 03/10/2026",
   "summary": {
-    "totalAlertCommunes": 364,
-    "totalLightningStrikes": 45116,
-    "totalLightningCG": 27750,
-    "totalLightningCC": 17366,
+    "totalAlertCommunes": 380,
+    "totalLightningStrikes": 45185,
+    "totalLightningCG": 27690,
+    "totalLightningCC": 17495,
     "maxLightningAmpKa": 295,
-    "heavyRainPointsCount": 284,
+    "heavyRainPointsCount": 286,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Vĩnh Long",
-        "communeCount": 26,
-        "totalAlerts": 66,
+        "communeCount": 25,
+        "totalAlerts": 64,
         "sampleCommunes": [
-          "Xã An Bình",
-          "Xã Bình Phú",
           "Xã Nhuận Phú Tân",
           "Xã Phú Túc",
-          "Xã Tân Thành Bình"
-        ]
-      },
-      {
-        "province": "Tỉnh Lâm Đồng",
-        "communeCount": 20,
-        "totalAlerts": 66,
-        "sampleCommunes": [
-          "Xã Đạ Tẻh 3",
-          "Xã Đạ Huoai 2",
-          "Phường 1 Bảo Lộc",
-          "Xã Bảo Lâm 2",
-          "Xã Đông Giang"
+          "Xã Hương Mỹ",
+          "Xã Hưng Nhượng",
+          "Xã An Hiệp"
         ]
       },
       {
         "province": "Tỉnh Đồng Tháp",
-        "communeCount": 18,
-        "totalAlerts": 45,
+        "communeCount": 23,
+        "totalAlerts": 66,
         "sampleCommunes": [
           "Xã Cái Bè",
-          "Xã Bình Phú",
-          "Phường Thanh Hòa",
+          "Phường Nhị Quý",
           "Xã Vĩnh Kim",
-          "Xã Bình Trưng"
+          "Xã Bình Trưng",
+          "Xã Tân Phước 3"
+        ]
+      },
+      {
+        "province": "Tỉnh Lâm Đồng",
+        "communeCount": 19,
+        "totalAlerts": 67,
+        "sampleCommunes": [
+          "Xã Đạ Tẻh 3",
+          "Xã Đạ Huoai 2",
+          "Xã Đạ Huoai 3",
+          "Xã Đồng Kho",
+          "Xã Di Linh"
         ]
       },
       {
         "province": "Tỉnh Nghệ An",
-        "communeCount": 17,
-        "totalAlerts": 62,
+        "communeCount": 14,
+        "totalAlerts": 71,
         "sampleCommunes": [
           "Xã Keng Đu",
           "Xã Na Loi",
           "Xã Bắc Lý",
-          "Xã Mỹ Lý",
-          "Xã Huồi Tụ"
+          "Xã Huồi Tụ",
+          "Xã Mỹ Lý"
         ]
       },
       {
         "province": "Thành phố Cần Thơ",
-        "communeCount": 13,
-        "totalAlerts": 43,
+        "communeCount": 9,
+        "totalAlerts": 24,
         "sampleCommunes": [
           "Xã Phú Tâm",
+          "Xã Nhơn Mỹ",
           "Xã Thuận Hòa",
-          "Xã Kế Sách",
-          "Phường Sóc Trăng",
-          "Xã Nhơn Mỹ"
+          "Xã Trường Khánh",
+          "Xã Kế Sách"
         ]
       }
     ],
@@ -97,9 +97,9 @@
     ]
   },
   "counts": {
-    "dong_set": 364,
-    "lightning_strikes": 45116,
-    "heavy_rain_points": 284,
+    "dong_set": 380,
+    "lightning_strikes": 45185,
+    "heavy_rain_points": 286,
     "radar_frames": 12,
     "radar_stations": 10
   }
