@@ -27,7 +27,6 @@ import {
   SlidersHorizontal,
   ListFilter,
   Check,
-  Map,
   X,
   Eye
 } from 'lucide-react';
