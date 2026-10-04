@@ -1,105 +1,105 @@
 {
-  "snapshotId": "20261004_1200",
-  "exactTimeId": "20261004_1200",
-  "crawledAt": "2026-10-04T06:07:48.944Z",
-  "vnTime": "12:00 04/10/2026",
+  "snapshotId": "20261004_1300",
+  "exactTimeId": "20261004_1300",
+  "crawledAt": "2026-10-04T06:29:38.007Z",
+  "vnTime": "13:00 04/10/2026",
   "summary": {
-    "totalAlertCommunes": 357,
-    "totalLightningStrikes": 58019,
-    "totalLightningCG": 37167,
-    "totalLightningCC": 20852,
-    "maxLightningAmpKa": 264,
-    "heavyRainPointsCount": 256,
+    "totalAlertCommunes": 347,
+    "totalLightningStrikes": 66521,
+    "totalLightningCG": 45691,
+    "totalLightningCC": 20830,
+    "maxLightningAmpKa": 332,
+    "heavyRainPointsCount": 333,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Ninh Bình",
-        "communeCount": 28,
-        "totalAlerts": 68,
+        "communeCount": 30,
+        "totalAlerts": 77,
         "sampleCommunes": [
-          "Phường Yên Sơn",
+          "Phường Tam Điệp",
           "Phường Tây Hoa Lư",
-          "Phường Nam Hoa Lư",
+          "Xã Đồng Thái",
           "Xã Tân Minh",
-          "Xã Vũ Dương"
-        ]
-      },
-      {
-        "province": "Tỉnh Sơn La",
-        "communeCount": 22,
-        "totalAlerts": 59,
-        "sampleCommunes": [
-          "Xã Nậm Lầu",
-          "Xã Chiềng Sơ",
-          "Xã Yên Sơn",
-          "Xã Phiêng Khoài",
-          "Xã Tạ Khoa"
-        ]
-      },
-      {
-        "province": "Tỉnh Điện Biên",
-        "communeCount": 20,
-        "totalAlerts": 71,
-        "sampleCommunes": [
-          "Xã Mường Nhé",
-          "Xã Nà Bủng",
-          "Xã Nà Hỳ",
-          "Xã Thanh Yên",
-          "Xã Sam Mứn"
+          "Xã Yên Khánh"
         ]
       },
       {
         "province": "Tỉnh Lào Cai",
-        "communeCount": 15,
-        "totalAlerts": 33,
+        "communeCount": 21,
+        "totalAlerts": 51,
         "sampleCommunes": [
+          "Xã Mù Cang Chải",
+          "Xã Púng Luông",
           "Xã Pha Long",
-          "Xã Lùng Phình",
-          "Xã Phong Dụ Thượng",
-          "Xã Mường Hum",
-          "Xã Ngũ Chỉ Sơn"
+          "Xã Bắc Hà",
+          "Xã Bản Liền"
         ]
       },
       {
-        "province": "Tỉnh Bắc Ninh",
-        "communeCount": 9,
-        "totalAlerts": 17,
+        "province": "Tỉnh Sơn La",
+        "communeCount": 17,
+        "totalAlerts": 50,
         "sampleCommunes": [
-          "Phường Thuận Thành",
-          "Phường Việt Yên",
-          "Phường Trạm Lộ",
-          "Phường Mão Điền",
-          "Xã Tân Yên"
+          "Xã Huổi Một",
+          "Xã Nậm Lầu",
+          "Xã Quỳnh Nhai",
+          "Xã Chiềng Khoong",
+          "Xã Sông Mã"
+        ]
+      },
+      {
+        "province": "Tỉnh Điện Biên",
+        "communeCount": 15,
+        "totalAlerts": 50,
+        "sampleCommunes": [
+          "Xã Sam Mứn",
+          "Xã Núa Ngam",
+          "Xã Thanh An",
+          "Xã Nà Tấu",
+          "Xã Chiềng Sinh"
+        ]
+      },
+      {
+        "province": "Tỉnh Phú Thọ",
+        "communeCount": 7,
+        "totalAlerts": 14,
+        "sampleCommunes": [
+          "Xã Đức Nhàn",
+          "Xã Hợp Kim",
+          "Xã Dũng Tiến",
+          "Xã Yên Trị",
+          "Xã Xuân Đài"
         ]
       }
     ],
     "topRainProvinces": [
       {
+        "province": "Ninh Bình",
+        "count": 33
+      },
+      {
         "province": "Điện Biên",
-        "count": 25
+        "count": 32
       },
       {
         "province": "Sơn La",
-        "count": 22
+        "count": 32
       },
       {
-        "province": "Hưng Yên",
-        "count": 21
+        "province": "Thái Bình",
+        "count": 31
       },
       {
         "province": "Nam Định",
-        "count": 20
-      },
-      {
-        "province": "Ninh Bình",
-        "count": 20
+        "count": 29
       }
     ]
   },
   "counts": {
-    "dong_set": 357,
-    "lightning_strikes": 58019,
-    "heavy_rain_points": 256,
+    "dong_set": 347,
+    "lightning_strikes": 66521,
+    "heavy_rain_points": 333,
     "radar_frames": 12,
     "radar_stations": 10
   }
