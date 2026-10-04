@@ -1,105 +1,105 @@
 {
   "snapshotId": "20261004_0700",
   "exactTimeId": "20261004_0700",
-  "crawledAt": "2026-10-04T00:14:17.379Z",
+  "crawledAt": "2026-10-04T00:32:08.707Z",
   "vnTime": "07:00 04/10/2026",
   "summary": {
-    "totalAlertCommunes": 235,
-    "totalLightningStrikes": 27762,
-    "totalLightningCG": 18904,
-    "totalLightningCC": 8858,
+    "totalAlertCommunes": 225,
+    "totalLightningStrikes": 29131,
+    "totalLightningCG": 19258,
+    "totalLightningCC": 9873,
     "maxLightningAmpKa": 346,
-    "heavyRainPointsCount": 156,
+    "heavyRainPointsCount": 138,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Thái Nguyên",
-        "communeCount": 25,
-        "totalAlerts": 79,
+        "communeCount": 27,
+        "totalAlerts": 94,
         "sampleCommunes": [
+          "Xã Thành Công",
           "Phường Phúc Thuận",
-          "Xã Chợ Mới",
           "Xã Thanh Thịnh",
-          "Xã Văn Lăng",
+          "Xã Chợ Mới",
           "Xã Tân Kỳ"
         ]
       },
       {
-        "province": "Tỉnh Cao Bằng",
-        "communeCount": 19,
-        "totalAlerts": 44,
-        "sampleCommunes": [
-          "Xã Quảng Lâm",
-          "Xã Nam Quang",
-          "Xã Yên Thổ",
-          "Xã Sơn Lộ",
-          "Xã Thông Nông"
-        ]
-      },
-      {
         "province": "Tỉnh Bắc Ninh",
-        "communeCount": 14,
-        "totalAlerts": 22,
+        "communeCount": 23,
+        "totalAlerts": 33,
         "sampleCommunes": [
           "Phường Từ Sơn",
-          "Phường Tự Lạn",
-          "Phường Nếnh",
-          "Xã Tiên Du",
-          "Xã Tam Đa"
+          "Phường Đồng Nguyên",
+          "Xã Phật Tích",
+          "Phường Vân Hà",
+          "Phường Việt Yên"
         ]
       },
       {
         "province": "Tỉnh Lạng Sơn",
         "communeCount": 12,
-        "totalAlerts": 32,
+        "totalAlerts": 40,
         "sampleCommunes": [
           "Xã Thiện Hòa",
           "Xã Thiện Thuật",
-          "Xã Bắc Sơn",
           "Xã Thiện Long",
-          "Xã Bình Gia"
+          "Xã Quý Hòa",
+          "Xã Hồng Phong"
         ]
       },
       {
         "province": "Tỉnh Quảng Ninh",
-        "communeCount": 9,
+        "communeCount": 8,
+        "totalAlerts": 20,
+        "sampleCommunes": [
+          "Phường Vàng Danh",
+          "Phường Đông Mai",
+          "Xã Quảng La",
+          "Phường Hoành Bồ",
+          "Xã Thống Nhất"
+        ]
+      },
+      {
+        "province": "Tỉnh Đồng Nai",
+        "communeCount": 5,
         "totalAlerts": 18,
         "sampleCommunes": [
-          "Phường Uông Bí",
-          "Phường Hiệp Hòa",
-          "Phường Đông Mai",
-          "Phường Vàng Danh",
-          "Xã Quảng La"
+          "Xã Trị An",
+          "Xã Phú Lý",
+          "Xã Thanh Sơn",
+          "Xã Tân Lợi",
+          "Xã Đak Lua"
         ]
       }
     ],
     "topRainProvinces": [
       {
-        "province": "Bắc Kạn",
-        "count": 25
+        "province": "Thái Nguyên",
+        "count": 26
       },
       {
-        "province": "Thái Nguyên",
-        "count": 23
+        "province": "Bắc Kạn",
+        "count": 20
       },
       {
         "province": "Đồng Nai",
-        "count": 16
+        "count": 12
       },
       {
-        "province": "Tuyên Quang",
-        "count": 14
+        "province": "TP. Hải Phòng",
+        "count": 9
       },
       {
         "province": "Bình Thuận",
-        "count": 11
+        "count": 9
       }
     ]
   },
   "counts": {
-    "dong_set": 235,
-    "lightning_strikes": 27762,
-    "heavy_rain_points": 156,
+    "dong_set": 225,
+    "lightning_strikes": 29131,
+    "heavy_rain_points": 138,
     "radar_frames": 12,
     "radar_stations": 10
   }
