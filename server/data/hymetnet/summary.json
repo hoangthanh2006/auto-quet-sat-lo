@@ -1,105 +1,105 @@
 {
-  "snapshotId": "20261004_1600",
-  "exactTimeId": "20261004_1600",
-  "crawledAt": "2026-10-04T10:07:53.117Z",
-  "vnTime": "16:00 04/10/2026",
+  "snapshotId": "20261004_1700",
+  "exactTimeId": "20261004_1700",
+  "crawledAt": "2026-10-04T10:37:54.840Z",
+  "vnTime": "17:00 04/10/2026",
   "summary": {
-    "totalAlertCommunes": 652,
-    "totalLightningStrikes": 173682,
-    "totalLightningCG": 127871,
-    "totalLightningCC": 45811,
+    "totalAlertCommunes": 621,
+    "totalLightningStrikes": 179099,
+    "totalLightningCG": 131047,
+    "totalLightningCC": 48052,
     "maxLightningAmpKa": 347,
-    "heavyRainPointsCount": 449,
+    "heavyRainPointsCount": 442,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Tỉnh Lào Cai",
-        "communeCount": 52,
-        "totalAlerts": 162,
-        "sampleCommunes": [
-          "Xã Mường Hum",
-          "Xã Ngũ Chỉ Sơn",
-          "Xã Bản Xèo",
-          "Xã Bát Xát",
-          "Xã Tả Phìn"
-        ]
-      },
-      {
         "province": "Tỉnh Thanh Hóa",
-        "communeCount": 36,
-        "totalAlerts": 110,
+        "communeCount": 30,
+        "totalAlerts": 84,
         "sampleCommunes": [
-          "Xã Quang Chiểu",
-          "Xã Văn Phú",
-          "Xã Văn Nho",
-          "Xã Yên Nhân",
-          "Xã Xuân Chinh"
+          "Xã Trung Lý",
+          "Xã Trung Thành",
+          "Xã Phú Lệ",
+          "Xã Nam Xuân",
+          "Xã Phú Xuân"
         ]
       },
       {
         "province": "Tỉnh Nghệ An",
-        "communeCount": 23,
-        "totalAlerts": 104,
+        "communeCount": 27,
+        "totalAlerts": 103,
         "sampleCommunes": [
-          "Xã Chiêu Lưu",
-          "Xã Hữu Kiệm",
-          "Xã Tương Dương",
-          "Xã Lượng Minh",
-          "Xã Mường Lống"
+          "Xã Tam Quang",
+          "Xã Yên Na",
+          "Xã Hữu Khuông",
+          "Xã Châu Khê",
+          "Xã Yên Hòa"
         ]
       },
       {
-        "province": "Tỉnh Sơn La",
-        "communeCount": 22,
-        "totalAlerts": 86,
+        "province": "Tỉnh Lào Cai",
+        "communeCount": 20,
+        "totalAlerts": 66,
         "sampleCommunes": [
-          "Xã Mường Bú",
-          "Xã Chiềng Hoa",
-          "Xã Chiềng Sung",
-          "Xã Mai Sơn",
-          "Xã Tà Hộc"
+          "Xã Bản Hồ",
+          "Xã Minh Lương",
+          "Xã Dương Quỳ",
+          "Xã Mù Cang Chải",
+          "Xã Võ Lao"
+        ]
+      },
+      {
+        "province": "Tỉnh Phú Thọ",
+        "communeCount": 19,
+        "totalAlerts": 42,
+        "sampleCommunes": [
+          "Xã Pà Cò",
+          "Xã Vân Sơn",
+          "Xã Mường Bi",
+          "Xã Toàn Thắng",
+          "Xã Vạn Xuân"
         ]
       },
       {
         "province": "Tỉnh Lâm Đồng",
-        "communeCount": 12,
-        "totalAlerts": 24,
+        "communeCount": 18,
+        "totalAlerts": 59,
         "sampleCommunes": [
-          "Xã Bảo Lâm 1",
-          "Xã Đam Rông 4",
-          "Xã Nam Ban Lâm Hà",
-          "Xã Tuy Phong",
-          "Xã Đam Rông 2"
+          "Xã Hòa Ninh",
+          "Xã Di Linh",
+          "Xã Đam Rông 1",
+          "Xã Đam Rông 2",
+          "Xã Đinh Văn Lâm Hà"
         ]
       }
     ],
     "topRainProvinces": [
       {
-        "province": "Sơn La",
-        "count": 48
+        "province": "Thanh Hóa",
+        "count": 47
       },
       {
-        "province": "Thanh Hóa",
+        "province": "Sơn La",
         "count": 44
       },
       {
-        "province": "Lào Cai",
-        "count": 30
+        "province": "Nghệ An",
+        "count": 32
       },
       {
-        "province": "Nghệ An",
-        "count": 27
+        "province": "Lào Cai",
+        "count": 28
       },
       {
         "province": "Yên Bái",
-        "count": 24
+        "count": 25
       }
     ]
   },
   "counts": {
-    "dong_set": 652,
-    "lightning_strikes": 173682,
-    "heavy_rain_points": 449,
+    "dong_set": 621,
+    "lightning_strikes": 179099,
+    "heavy_rain_points": 442,
     "radar_frames": 12,
     "radar_stations": 10
   }
