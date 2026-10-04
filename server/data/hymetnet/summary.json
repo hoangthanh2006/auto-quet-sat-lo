@@ -1,103 +1,105 @@
 {
-  "snapshotId": "20261004_0800",
-  "exactTimeId": "20261004_0800",
-  "crawledAt": "2026-10-04T02:07:50.655Z",
-  "vnTime": "08:00 04/10/2026",
+  "snapshotId": "20261004_0900",
+  "exactTimeId": "20261004_0900",
+  "crawledAt": "2026-10-04T02:37:48.767Z",
+  "vnTime": "09:00 04/10/2026",
   "summary": {
-    "totalAlertCommunes": 204,
-    "totalLightningStrikes": 26884,
-    "totalLightningCG": 20327,
-    "totalLightningCC": 6557,
+    "totalAlertCommunes": 181,
+    "totalLightningStrikes": 24832,
+    "totalLightningCG": 19597,
+    "totalLightningCC": 5235,
     "maxLightningAmpKa": 346,
-    "heavyRainPointsCount": 122,
+    "heavyRainPointsCount": 135,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Tỉnh Lạng Sơn",
-        "communeCount": 26,
+        "province": "Tỉnh Tuyên Quang",
+        "communeCount": 14,
         "totalAlerts": 48,
         "sampleCommunes": [
-          "Xã Tân Tiến",
-          "Xã Đoàn Kết",
-          "Xã Điềm He",
-          "Xã Văn Lãng",
-          "Xã Yên Phúc"
+          "Xã Trung Thịnh",
+          "Xã Pờ Ly Ngài",
+          "Xã Yên Minh",
+          "Xã Mậu Duệ",
+          "Xã Du Già"
+        ]
+      },
+      {
+        "province": "Thành phố Hà Nội",
+        "communeCount": 13,
+        "totalAlerts": 24,
+        "sampleCommunes": [
+          "Xã Ứng Thiên",
+          "Xã Phúc Thịnh",
+          "Xã Nội Bài",
+          "Xã Đại Thanh",
+          "Xã Sóc Sơn"
+        ]
+      },
+      {
+        "province": "Tỉnh Lạng Sơn",
+        "communeCount": 13,
+        "totalAlerts": 21,
+        "sampleCommunes": [
+          "Xã Quý Hòa",
+          "Xã Tân Đoàn",
+          "Xã Nhân Lý",
+          "Xã Đồng Đăng",
+          "Phường Đông Kinh"
         ]
       },
       {
         "province": "Tỉnh Thái Nguyên",
-        "communeCount": 21,
-        "totalAlerts": 64,
+        "communeCount": 11,
+        "totalAlerts": 29,
         "sampleCommunes": [
-          "Phường Phúc Thuận",
-          "Xã Tân Cương",
-          "Phường Quyết Thắng",
-          "Phường Phan Đình Phùng",
-          "Phường Tích Lương"
+          "Phường Bách Quang",
+          "Xã Điềm Thụy",
+          "Xã Tân Khánh",
+          "Xã Phú Bình",
+          "Xã Trại Cau"
         ]
       },
       {
         "province": "Tỉnh Bắc Ninh",
-        "communeCount": 9,
-        "totalAlerts": 32,
-        "sampleCommunes": [
-          "Xã Xuân Lương",
-          "Phường Tân Tiến",
-          "Xã Tân Dĩnh",
-          "Xã Lạng Giang",
-          "Phường Tân An"
-        ]
-      },
-      {
-        "province": "Tỉnh An Giang",
-        "communeCount": 6,
+        "communeCount": 8,
         "totalAlerts": 26,
         "sampleCommunes": [
-          "Phường Vĩnh Thông",
-          "Xã Mỹ Thuận",
-          "Phường Rạch Giá",
-          "Xã Thạnh Lộc",
-          "Xã Bình An"
-        ]
-      },
-      {
-        "province": "Tỉnh Đồng Tháp",
-        "communeCount": 3,
-        "totalAlerts": 16,
-        "sampleCommunes": [
-          "Xã An Phước",
-          "Xã Tân Thành",
-          "Xã Tân Hộ Cơ"
+          "Xã Hợp Thịnh",
+          "Xã Bắc Lũng",
+          "Xã Lục Nam",
+          "Xã Tân Dĩnh",
+          "Xã Bảo Đài"
         ]
       }
     ],
     "topRainProvinces": [
       {
-        "province": "Thái Nguyên",
-        "count": 26
-      },
-      {
         "province": "Bắc Giang",
-        "count": 19
+        "count": 30
       },
       {
-        "province": "Bắc Ninh",
-        "count": 18
+        "province": "Thái Nguyên",
+        "count": 29
       },
       {
         "province": "Lạng Sơn",
-        "count": 11
+        "count": 17
       },
       {
         "province": "Vĩnh Phúc",
-        "count": 10
+        "count": 16
+      },
+      {
+        "province": "Bắc Ninh",
+        "count": 14
       }
     ]
   },
   "counts": {
-    "dong_set": 204,
-    "lightning_strikes": 26884,
-    "heavy_rain_points": 122,
+    "dong_set": 181,
+    "lightning_strikes": 24832,
+    "heavy_rain_points": 135,
     "radar_frames": 12,
     "radar_stations": 10
   }
