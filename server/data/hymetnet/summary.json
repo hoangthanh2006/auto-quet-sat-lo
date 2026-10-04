@@ -1,105 +1,105 @@
 {
-  "snapshotId": "20261004_1100",
-  "exactTimeId": "20261004_1100",
-  "crawledAt": "2026-10-04T05:07:50.058Z",
-  "vnTime": "11:00 04/10/2026",
+  "snapshotId": "20261004_1200",
+  "exactTimeId": "20261004_1200",
+  "crawledAt": "2026-10-04T05:37:51.335Z",
+  "vnTime": "12:00 04/10/2026",
   "summary": {
-    "totalAlertCommunes": 290,
-    "totalLightningStrikes": 37709,
-    "totalLightningCG": 23235,
-    "totalLightningCC": 14474,
+    "totalAlertCommunes": 311,
+    "totalLightningStrikes": 47560,
+    "totalLightningCG": 29793,
+    "totalLightningCC": 17767,
     "maxLightningAmpKa": 291,
-    "heavyRainPointsCount": 207,
+    "heavyRainPointsCount": 229,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Ninh Bình",
-        "communeCount": 22,
-        "totalAlerts": 66,
+        "communeCount": 28,
+        "totalAlerts": 60,
         "sampleCommunes": [
-          "Phường Yên Sơn",
-          "Phường Tam Điệp",
-          "Phường Trung Sơn",
           "Phường Nam Hoa Lư",
-          "Phường Yên Thắng"
+          "Phường Trung Sơn",
+          "Xã Đồng Thái",
+          "Phường Yên Thắng",
+          "Xã Yên Mô"
         ]
       },
       {
         "province": "Tỉnh Sơn La",
-        "communeCount": 19,
-        "totalAlerts": 67,
+        "communeCount": 22,
+        "totalAlerts": 54,
         "sampleCommunes": [
-          "Xã Mường Chanh",
-          "Phường Chiềng Cơi",
-          "Xã Chiềng Mai",
-          "Phường Chiềng Sinh",
-          "Xã Mai Sơn"
+          "Xã Mường Lầm",
+          "Xã Huổi Một",
+          "Xã Nậm Lầu",
+          "Xã Phiêng Pằn",
+          "Xã Chiềng Mung"
+        ]
+      },
+      {
+        "province": "Tỉnh Điện Biên",
+        "communeCount": 18,
+        "totalAlerts": 61,
+        "sampleCommunes": [
+          "Xã Nà Hỳ",
+          "Xã Thanh Yên",
+          "Xã Thanh Nưa",
+          "Xã Mường Pồn",
+          "Xã Si Pa Phìn"
         ]
       },
       {
         "province": "Tỉnh Hưng Yên",
         "communeCount": 15,
-        "totalAlerts": 22,
+        "totalAlerts": 24,
         "sampleCommunes": [
-          "Xã Tân Hưng",
-          "Xã Nguyễn Trãi",
-          "Xã Đoàn Đào",
-          "Xã Tiên Hoa",
-          "Phường Hồng Châu"
+          "Xã Như Quỳnh",
+          "Xã Long Hưng",
+          "Xã Ngự Thiên",
+          "Xã Hưng Hà",
+          "Xã Nam Tiên Hưng"
         ]
       },
       {
-        "province": "Thành phố Hải Phòng",
-        "communeCount": 11,
-        "totalAlerts": 15,
+        "province": "Tỉnh Quảng Ninh",
+        "communeCount": 8,
+        "totalAlerts": 25,
         "sampleCommunes": [
-          "Xã Tân An",
-          "Xã Hải Hưng",
-          "Xã Thanh Miện",
-          "Phường An Phong",
-          "Xã Nguyễn Lương Bằng"
-        ]
-      },
-      {
-        "province": "Tỉnh Điện Biên",
-        "communeCount": 10,
-        "totalAlerts": 40,
-        "sampleCommunes": [
-          "Xã Si Pa Phìn",
-          "Xã Thanh Nưa",
-          "Xã Na Sang",
-          "Phường Điện Biên Phủ",
-          "Xã Nậm Nèn"
+          "Phường Hà An",
+          "Phường Tuần Châu",
+          "Xã Điền Xá",
+          "Xã Bình Liêu",
+          "Xã Hoành Mô"
         ]
       }
     ],
     "topRainProvinces": [
       {
-        "province": "TP. Hà Nội",
-        "count": 24
+        "province": "Hải Dương",
+        "count": 25
       },
       {
-        "province": "Hải Dương",
+        "province": "Điện Biên",
         "count": 22
       },
       {
         "province": "Hà Nam",
+        "count": 19
+      },
+      {
+        "province": "Nam Định",
+        "count": 19
+      },
+      {
+        "province": "Thái Bình",
         "count": 17
-      },
-      {
-        "province": "Đồng Tháp",
-        "count": 15
-      },
-      {
-        "province": "Vĩnh Phúc",
-        "count": 15
       }
     ]
   },
   "counts": {
-    "dong_set": 290,
-    "lightning_strikes": 37709,
-    "heavy_rain_points": 207,
+    "dong_set": 311,
+    "lightning_strikes": 47560,
+    "heavy_rain_points": 229,
     "radar_frames": 12,
     "radar_stations": 10
   }
