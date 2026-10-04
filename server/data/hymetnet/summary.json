@@ -1,105 +1,105 @@
 {
   "snapshotId": "20261004_1300",
   "exactTimeId": "20261004_1300",
-  "crawledAt": "2026-10-04T06:47:13.962Z",
+  "crawledAt": "2026-10-04T07:07:53.316Z",
   "vnTime": "13:00 04/10/2026",
   "summary": {
-    "totalAlertCommunes": 382,
-    "totalLightningStrikes": 76864,
-    "totalLightningCG": 50751,
-    "totalLightningCC": 26113,
+    "totalAlertCommunes": 433,
+    "totalLightningStrikes": 83937,
+    "totalLightningCG": 58391,
+    "totalLightningCC": 25546,
     "maxLightningAmpKa": 332,
-    "heavyRainPointsCount": 307,
+    "heavyRainPointsCount": 321,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Tỉnh Ninh Bình",
-        "communeCount": 33,
-        "totalAlerts": 62,
+        "province": "Tỉnh Sơn La",
+        "communeCount": 21,
+        "totalAlerts": 58,
         "sampleCommunes": [
-          "Xã Nho Quan",
-          "Phường Tam Điệp",
-          "Phường Trung Sơn",
-          "Xã Đồng Thái",
-          "Phường Đông Hoa Lư"
+          "Xã Púng Bánh",
+          "Xã Mường Bám",
+          "Xã Nậm Ty",
+          "Xã Co Mạ",
+          "Xã Nậm Lầu"
         ]
       },
       {
         "province": "Tỉnh Lào Cai",
-        "communeCount": 26,
-        "totalAlerts": 78,
+        "communeCount": 18,
+        "totalAlerts": 47,
         "sampleCommunes": [
+          "Xã Y Tý",
+          "Xã A Mú Sung",
           "Xã Mường Khương",
-          "Xã Minh Lương",
-          "Xã Mù Cang Chải",
-          "Xã Púng Luông",
-          "Xã Si Ma Cai"
+          "Xã Cao Sơn",
+          "Xã Trạm Tấu"
         ]
       },
       {
-        "province": "Tỉnh Sơn La",
-        "communeCount": 17,
-        "totalAlerts": 49,
+        "province": "Tỉnh Thanh Hóa",
+        "communeCount": 16,
+        "totalAlerts": 39,
         "sampleCommunes": [
-          "Xã Púng Bánh",
-          "Xã Nậm Lầu",
-          "Xã Yên Sơn",
-          "Xã Lóng Sập",
-          "Xã Tà Xùa"
-        ]
-      },
-      {
-        "province": "Tỉnh Điện Biên",
-        "communeCount": 15,
-        "totalAlerts": 46,
-        "sampleCommunes": [
-          "Xã Quảng Lâm",
-          "Xã Nà Bủng",
-          "Xã Sam Mứn",
-          "Xã Núa Ngam",
-          "Xã Nà Tấu"
+          "Xã Na Mèo",
+          "Xã Tống Sơn",
+          "Phường Bỉm Sơn",
+          "Xã Hoạt Giang",
+          "Xã Lĩnh Toại"
         ]
       },
       {
         "province": "Tỉnh Phú Thọ",
-        "communeCount": 11,
-        "totalAlerts": 34,
+        "communeCount": 16,
+        "totalAlerts": 43,
         "sampleCommunes": [
+          "Xã Cao Sơn",
+          "Xã Khả Cửu",
           "Xã Mường Thàng",
-          "Xã Tân Lạc",
-          "Xã Dũng Tiến",
-          "Xã Kim Bôi",
-          "Xã Hợp Kim"
+          "Xã Cao Phong",
+          "Xã Mường Động"
+        ]
+      },
+      {
+        "province": "Tỉnh Quảng Ninh",
+        "communeCount": 13,
+        "totalAlerts": 53,
+        "sampleCommunes": [
+          "Xã Kỳ Thượng",
+          "Xã Ba Chẽ",
+          "Xã Đông Ngũ",
+          "Xã Quảng Tân",
+          "Xã Đường Hoa"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "Điện Biên",
-        "count": 34
+        "count": 37
       },
       {
         "province": "Thái Bình",
-        "count": 31
+        "count": 35
+      },
+      {
+        "province": "Ninh Bình",
+        "count": 34
       },
       {
         "province": "Nam Định",
         "count": 31
       },
       {
-        "province": "Sơn La",
-        "count": 29
-      },
-      {
-        "province": "Ninh Bình",
-        "count": 28
+        "province": "Quảng Ninh",
+        "count": 30
       }
     ]
   },
   "counts": {
-    "dong_set": 382,
-    "lightning_strikes": 76864,
-    "heavy_rain_points": 307,
+    "dong_set": 433,
+    "lightning_strikes": 83937,
+    "heavy_rain_points": 321,
     "radar_frames": 12,
     "radar_stations": 10
   }
