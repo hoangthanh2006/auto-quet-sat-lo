@@ -1,105 +1,105 @@
 {
-  "snapshotId": "20261005_0500",
-  "exactTimeId": "20261005_0500",
-  "crawledAt": "2026-10-04T23:07:52.994Z",
-  "vnTime": "05:00 05/10/2026",
+  "snapshotId": "20261005_0600",
+  "exactTimeId": "20261005_0600",
+  "crawledAt": "2026-10-04T23:37:57.221Z",
+  "vnTime": "06:00 05/10/2026",
   "summary": {
-    "totalAlertCommunes": 258,
-    "totalLightningStrikes": 68723,
-    "totalLightningCG": 53426,
-    "totalLightningCC": 15297,
+    "totalAlertCommunes": 268,
+    "totalLightningStrikes": 67906,
+    "totalLightningCG": 53070,
+    "totalLightningCC": 14836,
     "maxLightningAmpKa": 232,
-    "heavyRainPointsCount": 141,
+    "heavyRainPointsCount": 126,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Ninh Bình",
-        "communeCount": 49,
-        "totalAlerts": 118,
+        "communeCount": 45,
+        "totalAlerts": 99,
         "sampleCommunes": [
+          "Xã Phong Doanh",
+          "Xã Tân Minh",
           "Xã Vạn Thắng",
-          "Xã Minh Tân",
-          "Xã Hiển Khánh",
-          "Xã Lai Thành",
-          "Xã Vụ Bản"
+          "Xã Yên Đồng",
+          "Phường Mỹ Lộc"
         ]
       },
       {
         "province": "Tỉnh Nghệ An",
-        "communeCount": 20,
-        "totalAlerts": 71,
+        "communeCount": 21,
+        "totalAlerts": 90,
         "sampleCommunes": [
-          "Xã Giai Lạc",
+          "Phường Tây Hiếu",
+          "Xã Nghĩa Mai",
           "Xã Nghĩa Đàn",
           "Xã Bình Minh",
-          "Xã Nghĩa Lâm",
-          "Xã Quỳnh Tam"
+          "Xã Nghĩa Lâm"
         ]
       },
       {
-        "province": "Tỉnh Phú Thọ",
-        "communeCount": 12,
-        "totalAlerts": 46,
+        "province": "Tỉnh Hưng Yên",
+        "communeCount": 19,
+        "totalAlerts": 26,
         "sampleCommunes": [
-          "Xã Xuân Đài",
-          "Xã Hạ Hòa",
-          "Xã Vĩnh Chân",
-          "Xã Long Cốc",
-          "Xã Tiên Lương"
-        ]
-      },
-      {
-        "province": "Thành phố Hải Phòng",
-        "communeCount": 6,
-        "totalAlerts": 8,
-        "sampleCommunes": [
-          "Xã Nam Thanh Miện",
-          "Xã Bình Giang",
-          "Xã Kẻ Sặt",
-          "Phường Chu Văn An",
-          "Xã Hợp Tiến"
+          "Xã Tân Thuận",
+          "Xã Vũ Thư",
+          "Phường Trần Hưng Đạo",
+          "Xã Thư Vũ",
+          "Xã Tiền Hải"
         ]
       },
       {
         "province": "Tỉnh Bắc Ninh",
-        "communeCount": 5,
-        "totalAlerts": 8,
+        "communeCount": 8,
+        "totalAlerts": 16,
         "sampleCommunes": [
-          "Phường Nếnh",
-          "Xã Chi Lăng",
+          "Phường Nhân Hòa",
           "Phường Việt Yên",
-          "Phường Yên Dũng",
-          "Xã Trung Kênh"
+          "Phường Nếnh",
+          "Phường Đa Mai",
+          "Phường Tự Lạn"
+        ]
+      },
+      {
+        "province": "Tỉnh Phú Thọ",
+        "communeCount": 6,
+        "totalAlerts": 19,
+        "sampleCommunes": [
+          "Xã Sơn Lương",
+          "Xã Tân Sơn",
+          "Xã Xuân Viên",
+          "Xã Tiên Lương",
+          "Xã Long Cốc"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "Nghệ An",
-        "count": 26
-      },
-      {
-        "province": "Thái Bình",
-        "count": 26
-      },
-      {
-        "province": "Hải Dương",
-        "count": 19
+        "count": 25
       },
       {
         "province": "Nam Định",
-        "count": 14
+        "count": 22
       },
       {
-        "province": "Thanh Hóa",
-        "count": 11
+        "province": "Thái Bình",
+        "count": 18
+      },
+      {
+        "province": "Hải Dương",
+        "count": 18
+      },
+      {
+        "province": "Bắc Ninh",
+        "count": 10
       }
     ]
   },
   "counts": {
-    "dong_set": 258,
-    "lightning_strikes": 68723,
-    "heavy_rain_points": 141,
+    "dong_set": 268,
+    "lightning_strikes": 67906,
+    "heavy_rain_points": 126,
     "radar_frames": 12,
     "radar_stations": 10
   }
