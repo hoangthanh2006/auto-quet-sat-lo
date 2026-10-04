@@ -1,105 +1,105 @@
 {
-  "snapshotId": "20261004_0900",
-  "exactTimeId": "20261004_0900",
-  "crawledAt": "2026-10-04T03:07:53.830Z",
-  "vnTime": "09:00 04/10/2026",
+  "snapshotId": "20261004_1000",
+  "exactTimeId": "20261004_1000",
+  "crawledAt": "2026-10-04T03:37:50.139Z",
+  "vnTime": "10:00 04/10/2026",
   "summary": {
-    "totalAlertCommunes": 203,
-    "totalLightningStrikes": 26308,
-    "totalLightningCG": 19717,
-    "totalLightningCC": 6591,
+    "totalAlertCommunes": 232,
+    "totalLightningStrikes": 26666,
+    "totalLightningCG": 18939,
+    "totalLightningCC": 7727,
     "maxLightningAmpKa": 311,
-    "heavyRainPointsCount": 132,
+    "heavyRainPointsCount": 137,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Thành phố Hà Nội",
-        "communeCount": 24,
-        "totalAlerts": 53,
+        "communeCount": 21,
+        "totalAlerts": 42,
         "sampleCommunes": [
-          "Xã Vân Đình",
-          "Xã Thanh Oai",
-          "Xã Dân Hòa",
+          "Xã Tam Hưng",
           "Xã Ứng Hòa",
-          "Xã Đại Thanh"
+          "Xã Thượng Phúc",
+          "Xã Thanh Trì",
+          "Xã Hồng Vân"
+        ]
+      },
+      {
+        "province": "Tỉnh Ninh Bình",
+        "communeCount": 14,
+        "totalAlerts": 27,
+        "sampleCommunes": [
+          "Xã Thanh Liêm",
+          "Xã Phong Doanh",
+          "Xã Tân Minh",
+          "Xã Ý Yên",
+          "Xã Tân Thanh"
         ]
       },
       {
         "province": "Tỉnh Tuyên Quang",
-        "communeCount": 17,
-        "totalAlerts": 52,
+        "communeCount": 12,
+        "totalAlerts": 45,
         "sampleCommunes": [
-          "Phường Hà Giang 1",
-          "Phường Hà Giang 2",
-          "Xã Cán Tỷ",
           "Xã Yên Minh",
-          "Xã Mậu Duệ"
+          "Xã Thắng Mố",
+          "Xã Mậu Duệ",
+          "Xã Du Già",
+          "Xã Minh Sơn"
         ]
       },
       {
-        "province": "Tỉnh Lạng Sơn",
-        "communeCount": 11,
+        "province": "Tỉnh Phú Thọ",
+        "communeCount": 10,
         "totalAlerts": 20,
         "sampleCommunes": [
-          "Xã Chiến Thắng",
-          "Xã Thống Nhất",
-          "Xã Na Dương",
-          "Xã Ba Sơn",
-          "Xã Bằng Mạc"
+          "Xã Tam Sơn",
+          "Xã Hải Lựu",
+          "Xã Lập Thạch",
+          "Phường Thanh Miếu",
+          "Phường Việt Trì"
         ]
       },
       {
         "province": "Tỉnh Đồng Tháp",
-        "communeCount": 8,
-        "totalAlerts": 20,
+        "communeCount": 9,
+        "totalAlerts": 42,
         "sampleCommunes": [
-          "Xã Hòa Long",
+          "Xã Phương Thịnh",
+          "Xã Ba Sao",
+          "Xã Trường Xuân",
           "Xã Mỹ Quí",
-          "Xã Mỹ Thiện",
-          "Xã Tân Khánh Trung",
-          "Xã Tân Dương"
-        ]
-      },
-      {
-        "province": "Thành phố Hải Phòng",
-        "communeCount": 7,
-        "totalAlerts": 8,
-        "sampleCommunes": [
-          "Phường Chu Văn An",
-          "Xã Nghi Dương",
-          "Phường Dương Kinh",
-          "Phường Hải An",
-          "Phường Trần Hưng Đạo"
+          "Xã Tháp Mười"
         ]
       }
     ],
     "topRainProvinces": [
       {
-        "province": "Thái Nguyên",
-        "count": 29
-      },
-      {
-        "province": "Bắc Giang",
-        "count": 26
-      },
-      {
         "province": "Lạng Sơn",
         "count": 26
       },
       {
-        "province": "Vĩnh Phúc",
-        "count": 15
+        "province": "TP. Hà Nội",
+        "count": 23
       },
       {
-        "province": "Kiên Giang",
-        "count": 7
+        "province": "Thái Nguyên",
+        "count": 21
+      },
+      {
+        "province": "Bắc Giang",
+        "count": 14
+      },
+      {
+        "province": "Vĩnh Phúc",
+        "count": 10
       }
     ]
   },
   "counts": {
-    "dong_set": 203,
-    "lightning_strikes": 26308,
-    "heavy_rain_points": 132,
+    "dong_set": 232,
+    "lightning_strikes": 26666,
+    "heavy_rain_points": 137,
     "radar_frames": 12,
     "radar_stations": 10
   }
