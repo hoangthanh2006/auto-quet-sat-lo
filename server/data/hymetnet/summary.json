@@ -1,105 +1,105 @@
 {
   "snapshotId": "20261005_0000",
   "exactTimeId": "20261005_0000",
-  "crawledAt": "2026-10-04T17:37:56.601Z",
+  "crawledAt": "2026-10-04T18:07:59.194Z",
   "vnTime": "00:00 05/10/2026",
   "summary": {
-    "totalAlertCommunes": 362,
-    "totalLightningStrikes": 87544,
-    "totalLightningCG": 53588,
-    "totalLightningCC": 33956,
+    "totalAlertCommunes": 325,
+    "totalLightningStrikes": 83508,
+    "totalLightningCG": 52999,
+    "totalLightningCC": 30509,
     "maxLightningAmpKa": 235,
-    "heavyRainPointsCount": 211,
+    "heavyRainPointsCount": 189,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Phú Thọ",
-        "communeCount": 21,
-        "totalAlerts": 64,
+        "communeCount": 30,
+        "totalAlerts": 86,
         "sampleCommunes": [
           "Xã Xuân Đài",
-          "Xã Lai Đồng",
-          "Xã Tân Sơn",
           "Xã Minh Đài",
-          "Xã Văn Miếu"
+          "Xã Long Cốc",
+          "Xã Tân Sơn",
+          "Xã Minh Hòa"
         ]
       },
       {
         "province": "Tỉnh Điện Biên",
-        "communeCount": 17,
-        "totalAlerts": 70,
+        "communeCount": 16,
+        "totalAlerts": 65,
         "sampleCommunes": [
-          "Xã Sín Thầu",
-          "Xã Mường Nhé",
+          "Xã Nà Bủng",
           "Xã Si Pa Phìn",
           "Xã Thanh Nưa",
-          "Xã Thanh Yên"
+          "Xã Thanh Yên",
+          "Phường Điện Biên Phủ"
         ]
       },
       {
         "province": "Thành phố Hà Nội",
-        "communeCount": 16,
-        "totalAlerts": 36,
+        "communeCount": 13,
+        "totalAlerts": 28,
         "sampleCommunes": [
           "Xã Bất Bạt",
-          "Xã Suối Hai",
-          "Xã Vật Lại",
-          "Xã Quảng Oai",
-          "Xã Yên Bài"
+          "Xã Ba Vì",
+          "Xã Cổ Đô",
+          "Xã Yên Bài",
+          "Phường Tùng Thiện"
         ]
       },
       {
         "province": "Tỉnh Sơn La",
-        "communeCount": 14,
-        "totalAlerts": 40,
+        "communeCount": 10,
+        "totalAlerts": 37,
         "sampleCommunes": [
           "Xã Huổi Một",
+          "Xã Púng Bánh",
+          "Xã Mường Lạn",
           "Xã Chiềng Khoong",
-          "Xã Chiềng Khương",
-          "Xã Tân Phong",
-          "Xã Mường Bang"
+          "Xã Mường Hung"
         ]
       },
       {
-        "province": "Tỉnh Thanh Hóa",
-        "communeCount": 13,
-        "totalAlerts": 38,
+        "province": "Tỉnh Ninh Bình",
+        "communeCount": 10,
+        "totalAlerts": 15,
         "sampleCommunes": [
-          "Xã Na Mèo",
-          "Xã Mường Mìn",
-          "Xã Sơn Điện",
-          "Xã Thiên Phủ",
-          "Xã Văn Phú"
+          "Phường Tam Chúc",
+          "Xã Nghĩa Lâm",
+          "Xã Bình Minh",
+          "Xã Đồng Thịnh",
+          "Xã Liên Minh"
         ]
       }
     ],
     "topRainProvinces": [
       {
-        "province": "Thanh Hóa",
-        "count": 26
+        "province": "Phú Thọ",
+        "count": 30
       },
       {
-        "province": "Phú Thọ",
-        "count": 24
+        "province": "Điện Biên",
+        "count": 27
       },
       {
         "province": "TP. Hà Nội",
         "count": 22
       },
       {
-        "province": "Điện Biên",
+        "province": "Thanh Hóa",
         "count": 22
       },
       {
         "province": "Hòa Bình",
-        "count": 21
+        "count": 15
       }
     ]
   },
   "counts": {
-    "dong_set": 362,
-    "lightning_strikes": 87544,
-    "heavy_rain_points": 211,
+    "dong_set": 325,
+    "lightning_strikes": 83508,
+    "heavy_rain_points": 189,
     "radar_frames": 12,
     "radar_stations": 10
   }
