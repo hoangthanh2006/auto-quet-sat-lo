@@ -1,102 +1,103 @@
 {
   "snapshotId": "20261004_0800",
   "exactTimeId": "20261004_0800",
-  "crawledAt": "2026-10-04T01:59:02.915Z",
+  "crawledAt": "2026-10-04T02:07:50.655Z",
   "vnTime": "08:00 04/10/2026",
   "summary": {
-    "totalAlertCommunes": 197,
-    "totalLightningStrikes": 26784,
-    "totalLightningCG": 20760,
-    "totalLightningCC": 6024,
+    "totalAlertCommunes": 204,
+    "totalLightningStrikes": 26884,
+    "totalLightningCG": 20327,
+    "totalLightningCC": 6557,
     "maxLightningAmpKa": 346,
-    "heavyRainPointsCount": 141,
+    "heavyRainPointsCount": 122,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Tỉnh Thái Nguyên",
-        "communeCount": 20,
-        "totalAlerts": 68,
-        "sampleCommunes": [
-          "Xã Quân Chu",
-          "Phường Phúc Thuận",
-          "Xã Tân Cương",
-          "Xã Đại Phúc",
-          "Phường Quyết Thắng"
-        ]
-      },
-      {
         "province": "Tỉnh Lạng Sơn",
-        "communeCount": 17,
-        "totalAlerts": 39,
+        "communeCount": 26,
+        "totalAlerts": 48,
         "sampleCommunes": [
-          "Xã Tân Văn",
-          "Xã Tri Lễ",
-          "Xã Văn Quan",
+          "Xã Tân Tiến",
+          "Xã Đoàn Kết",
           "Xã Điềm He",
+          "Xã Văn Lãng",
           "Xã Yên Phúc"
         ]
       },
       {
-        "province": "Tỉnh Bắc Ninh",
-        "communeCount": 15,
-        "totalAlerts": 45,
+        "province": "Tỉnh Thái Nguyên",
+        "communeCount": 21,
+        "totalAlerts": 64,
         "sampleCommunes": [
-          "Xã Yên Thế",
-          "Xã Tiên Lục",
-          "Xã Bố Hạ",
-          "Xã Mỹ Thái",
-          "Phường Tân Tiến"
+          "Phường Phúc Thuận",
+          "Xã Tân Cương",
+          "Phường Quyết Thắng",
+          "Phường Phan Đình Phùng",
+          "Phường Tích Lương"
         ]
       },
       {
-        "province": "Tỉnh Đồng Tháp",
-        "communeCount": 4,
-        "totalAlerts": 13,
+        "province": "Tỉnh Bắc Ninh",
+        "communeCount": 9,
+        "totalAlerts": 32,
         "sampleCommunes": [
-          "Xã An Phước",
-          "Xã Tân Thành",
-          "Xã Tân Hồng",
-          "Xã Tân Hộ Cơ"
+          "Xã Xuân Lương",
+          "Phường Tân Tiến",
+          "Xã Tân Dĩnh",
+          "Xã Lạng Giang",
+          "Phường Tân An"
         ]
       },
       {
         "province": "Tỉnh An Giang",
-        "communeCount": 3,
-        "totalAlerts": 14,
+        "communeCount": 6,
+        "totalAlerts": 26,
         "sampleCommunes": [
           "Phường Vĩnh Thông",
+          "Xã Mỹ Thuận",
+          "Phường Rạch Giá",
           "Xã Thạnh Lộc",
-          "Xã Tân Hội"
+          "Xã Bình An"
+        ]
+      },
+      {
+        "province": "Tỉnh Đồng Tháp",
+        "communeCount": 3,
+        "totalAlerts": 16,
+        "sampleCommunes": [
+          "Xã An Phước",
+          "Xã Tân Thành",
+          "Xã Tân Hộ Cơ"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "Thái Nguyên",
-        "count": 29
-      },
-      {
-        "province": "Bắc Ninh",
-        "count": 22
+        "count": 26
       },
       {
         "province": "Bắc Giang",
-        "count": 20
+        "count": 19
+      },
+      {
+        "province": "Bắc Ninh",
+        "count": 18
       },
       {
         "province": "Lạng Sơn",
-        "count": 13
+        "count": 11
       },
       {
         "province": "Vĩnh Phúc",
-        "count": 11
+        "count": 10
       }
     ]
   },
   "counts": {
-    "dong_set": 197,
-    "lightning_strikes": 26784,
-    "heavy_rain_points": 141,
+    "dong_set": 204,
+    "lightning_strikes": 26884,
+    "heavy_rain_points": 122,
     "radar_frames": 12,
     "radar_stations": 10
   }
