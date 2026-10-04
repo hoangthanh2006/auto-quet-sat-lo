@@ -1,94 +1,94 @@
 {
   "snapshotId": "20261005_0300",
   "exactTimeId": "20261005_0300",
-  "crawledAt": "2026-10-04T20:37:55.605Z",
+  "crawledAt": "2026-10-04T21:07:54.139Z",
   "vnTime": "03:00 05/10/2026",
   "summary": {
-    "totalAlertCommunes": 302,
-    "totalLightningStrikes": 75028,
-    "totalLightningCG": 52362,
-    "totalLightningCC": 22666,
+    "totalAlertCommunes": 228,
+    "totalLightningStrikes": 58056,
+    "totalLightningCG": 42004,
+    "totalLightningCC": 16052,
     "maxLightningAmpKa": 275,
-    "heavyRainPointsCount": 179,
+    "heavyRainPointsCount": 170,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Ninh Bình",
-        "communeCount": 32,
-        "totalAlerts": 83,
+        "communeCount": 36,
+        "totalAlerts": 75,
         "sampleCommunes": [
-          "Phường Tam Điệp",
-          "Phường Yên Sơn",
-          "Phường Trung Sơn",
           "Phường Nam Hoa Lư",
-          "Phường Hoa Lư"
+          "Phường Hoa Lư",
+          "Xã Ý Yên",
+          "Xã Yên Mô",
+          "Phường Đông Hoa Lư"
         ]
       },
       {
         "province": "Tỉnh Phú Thọ",
-        "communeCount": 20,
-        "totalAlerts": 52,
+        "communeCount": 14,
+        "totalAlerts": 42,
         "sampleCommunes": [
-          "Xã Dân Chủ",
-          "Xã Tam Nông",
-          "Xã Yên Lãng",
+          "Xã Phù Ninh",
+          "Phường Vân Phú",
+          "Xã Bình Phú",
           "Xã Sông Lô",
-          "Xã Tam Sơn"
-        ]
-      },
-      {
-        "province": "Tỉnh Thanh Hóa",
-        "communeCount": 20,
-        "totalAlerts": 50,
-        "sampleCommunes": [
-          "Xã Định Tân",
-          "Xã Biện Thượng",
-          "Xã Thiệu Quang",
-          "Phường Hải Lĩnh",
-          "Xã Triệu Lộc"
-        ]
-      },
-      {
-        "province": "Tỉnh Điện Biên",
-        "communeCount": 13,
-        "totalAlerts": 52,
-        "sampleCommunes": [
-          "Xã Thanh Nưa",
-          "Xã Sam Mứn",
-          "Xã Mường Pồn",
-          "Phường Điện Biên Phủ",
-          "Xã Mường Nhà"
+          "Phường Nông Trang"
         ]
       },
       {
         "province": "Thành phố Hà Nội",
-        "communeCount": 8,
-        "totalAlerts": 14,
+        "communeCount": 12,
+        "totalAlerts": 26,
         "sampleCommunes": [
+          "Xã Bất Bạt",
           "Xã Cổ Đô",
-          "Xã Quảng Oai",
+          "Xã Sóc Sơn",
           "Xã Trung Giã",
-          "Xã Đông Anh",
-          "Xã Vật Lại"
+          "Xã Phù Đổng"
+        ]
+      },
+      {
+        "province": "Tỉnh Điện Biên",
+        "communeCount": 10,
+        "totalAlerts": 36,
+        "sampleCommunes": [
+          "Xã Thanh Nưa",
+          "Xã Mường Pồn",
+          "Xã Sam Mứn",
+          "Xã Thanh Yên",
+          "Phường Điện Biên Phủ"
+        ]
+      },
+      {
+        "province": "Tỉnh Hưng Yên",
+        "communeCount": 8,
+        "totalAlerts": 13,
+        "sampleCommunes": [
+          "Xã Hưng Phú",
+          "Xã Phạm Ngũ Lão",
+          "Phường Đường Hào",
+          "Xã Lạc Đạo",
+          "Xã Thư Vũ"
         ]
       }
     ],
     "topRainProvinces": [
       {
-        "province": "TP. Hà Nội",
-        "count": 30
-      },
-      {
-        "province": "Vĩnh Phúc",
-        "count": 27
-      },
-      {
         "province": "Nam Định",
-        "count": 20
+        "count": 24
+      },
+      {
+        "province": "TP. Hà Nội",
+        "count": 24
+      },
+      {
+        "province": "Điện Biên",
+        "count": 18
       },
       {
         "province": "Thanh Hóa",
-        "count": 19
+        "count": 17
       },
       {
         "province": "Ninh Bình",
@@ -97,9 +97,9 @@
     ]
   },
   "counts": {
-    "dong_set": 302,
-    "lightning_strikes": 75028,
-    "heavy_rain_points": 179,
+    "dong_set": 228,
+    "lightning_strikes": 58056,
+    "heavy_rain_points": 170,
     "radar_frames": 12,
     "radar_stations": 10
   }
