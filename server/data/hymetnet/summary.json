@@ -1,63 +1,51 @@
 {
   "snapshotId": "20261004_0600",
   "exactTimeId": "20261004_0600",
-  "crawledAt": "2026-10-03T23:37:47.923Z",
+  "crawledAt": "2026-10-04T00:07:49.447Z",
   "vnTime": "06:00 04/10/2026",
   "summary": {
-    "totalAlertCommunes": 293,
-    "totalLightningStrikes": 31719,
-    "totalLightningCG": 20729,
-    "totalLightningCC": 10990,
+    "totalAlertCommunes": 235,
+    "totalLightningStrikes": 26744,
+    "totalLightningCG": 18332,
+    "totalLightningCC": 8412,
     "maxLightningAmpKa": 346,
-    "heavyRainPointsCount": 171,
+    "heavyRainPointsCount": 166,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Thái Nguyên",
-        "communeCount": 40,
-        "totalAlerts": 134,
+        "communeCount": 28,
+        "totalAlerts": 92,
         "sampleCommunes": [
-          "Xã Định Hóa",
-          "Xã Nghĩa Tá",
-          "Xã Kim Phượng",
-          "Xã Trung Hội",
-          "Xã Yên Phong"
-        ]
-      },
-      {
-        "province": "Tỉnh Tuyên Quang",
-        "communeCount": 10,
-        "totalAlerts": 32,
-        "sampleCommunes": [
-          "Xã Linh Hồ",
-          "Xã Bạch Ngọc",
-          "Xã Lâm Bình",
-          "Xã Yên Cường",
-          "Xã Đường Hồng"
+          "Xã Thanh Mai",
+          "Xã Phượng Tiến",
+          "Xã Yên Trạch",
+          "Xã Chợ Mới",
+          "Xã Thanh Thịnh"
         ]
       },
       {
         "province": "Tỉnh Cao Bằng",
-        "communeCount": 9,
-        "totalAlerts": 14,
+        "communeCount": 24,
+        "totalAlerts": 51,
         "sampleCommunes": [
-          "Xã Xuân Trường",
-          "Xã Ca Thành",
-          "Xã Thanh Long",
+          "Xã Quảng Lâm",
+          "Xã Nam Quang",
+          "Xã Sơn Lộ",
           "Xã Cần Yên",
-          "Xã Thông Nông"
+          "Xã Thanh Long"
         ]
       },
       {
-        "province": "Thành phố Hải Phòng",
-        "communeCount": 8,
-        "totalAlerts": 18,
+        "province": "Tỉnh Lạng Sơn",
+        "communeCount": 9,
+        "totalAlerts": 24,
         "sampleCommunes": [
-          "Xã Hùng Thắng",
-          "Đặc khu Cát Hải",
-          "Xã Chấn Hưng",
-          "Xã Kiến Hải",
-          "Phường Nam Đồ Sơn"
+          "Xã Thiện Long",
+          "Xã Quý Hòa",
+          "Xã Thiện Hòa",
+          "Xã Thiện Thuật",
+          "Xã Tràng Định"
         ]
       },
       {
@@ -65,41 +53,53 @@
         "communeCount": 7,
         "totalAlerts": 14,
         "sampleCommunes": [
-          "Phường Liên Hòa",
-          "Phường Quảng Yên",
-          "Phường Hiệp Hòa",
-          "Phường Đông Mai",
-          "Phường Hà An"
+          "Phường Hà An",
+          "Xã Quảng La",
+          "Phường Tuần Châu",
+          "Phường Hoành Bồ",
+          "Phường Bãi Cháy"
+        ]
+      },
+      {
+        "province": "Tỉnh Lâm Đồng",
+        "communeCount": 5,
+        "totalAlerts": 10,
+        "sampleCommunes": [
+          "Xã Bảo Lâm 4",
+          "Xã Hoài Đức",
+          "Xã Đức Linh",
+          "Xã Tân Thành",
+          "Xã Đạ Huoai 2"
         ]
       }
     ],
     "topRainProvinces": [
       {
+        "province": "Bắc Kạn",
+        "count": 25
+      },
+      {
         "province": "Đồng Nai",
-        "count": 21
+        "count": 20
       },
       {
-        "province": "Bình Thuận",
-        "count": 19
-      },
-      {
-        "province": "Lâm Đồng",
+        "province": "Thái Nguyên",
         "count": 19
       },
       {
         "province": "Tuyên Quang",
-        "count": 18
+        "count": 16
       },
       {
-        "province": "Bắc Kạn",
-        "count": 15
+        "province": "TP. Hải Phòng",
+        "count": 11
       }
     ]
   },
   "counts": {
-    "dong_set": 293,
-    "lightning_strikes": 31719,
-    "heavy_rain_points": 171,
+    "dong_set": 235,
+    "lightning_strikes": 26744,
+    "heavy_rain_points": 166,
     "radar_frames": 12,
     "radar_stations": 10
   }
