@@ -1,105 +1,105 @@
 {
-  "snapshotId": "20261004_1400",
-  "exactTimeId": "20261004_1400",
-  "crawledAt": "2026-10-04T08:07:50.671Z",
-  "vnTime": "14:00 04/10/2026",
+  "snapshotId": "20261004_1500",
+  "exactTimeId": "20261004_1500",
+  "crawledAt": "2026-10-04T08:37:51.844Z",
+  "vnTime": "15:00 04/10/2026",
   "summary": {
-    "totalAlertCommunes": 531,
-    "totalLightningStrikes": 116827,
-    "totalLightningCG": 80709,
-    "totalLightningCC": 36118,
+    "totalAlertCommunes": 569,
+    "totalLightningStrikes": 128683,
+    "totalLightningCG": 91103,
+    "totalLightningCC": 37580,
     "maxLightningAmpKa": 332,
-    "heavyRainPointsCount": 367,
+    "heavyRainPointsCount": 399,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Tỉnh Sơn La",
-        "communeCount": 31,
-        "totalAlerts": 108,
+        "province": "Tỉnh Lào Cai",
+        "communeCount": 45,
+        "totalAlerts": 149,
         "sampleCommunes": [
-          "Xã Púng Bánh",
-          "Xã Mường Lèo",
-          "Xã Co Mạ",
-          "Xã Long Hẹ",
-          "Xã Chiềng Sơ"
+          "Xã Y Tý",
+          "Xã Dền Sáng",
+          "Xã A Mú Sung",
+          "Phường Sa Pa",
+          "Xã Chế Tạo"
         ]
       },
       {
-        "province": "Tỉnh Lào Cai",
-        "communeCount": 29,
-        "totalAlerts": 90,
+        "province": "Tỉnh Sơn La",
+        "communeCount": 23,
+        "totalAlerts": 76,
         "sampleCommunes": [
-          "Xã Y Tý",
-          "Xã Trịnh Tường",
-          "Xã Võ Lao",
-          "Xã Cao Sơn",
-          "Xã Sín Chéng"
+          "Xã Mường Lèo",
+          "Xã Púng Bánh",
+          "Xã Sốp Cộp",
+          "Xã Chiềng Sơ",
+          "Xã Huổi Một"
+        ]
+      },
+      {
+        "province": "Tỉnh Thanh Hóa",
+        "communeCount": 21,
+        "totalAlerts": 52,
+        "sampleCommunes": [
+          "Xã Sơn Thủy",
+          "Xã Hiền Kiệt",
+          "Xã Mường Mìn",
+          "Xã Sơn Điện",
+          "Xã Thiên Phủ"
+        ]
+      },
+      {
+        "province": "Tỉnh Nghệ An",
+        "communeCount": 16,
+        "totalAlerts": 54,
+        "sampleCommunes": [
+          "Xã Mường Típ",
+          "Xã Mường Xén",
+          "Xã Na Ngoi",
+          "Xã Hữu Kiệm",
+          "Xã Mỹ Lý"
         ]
       },
       {
         "province": "Tỉnh Phú Thọ",
         "communeCount": 16,
-        "totalAlerts": 48,
-        "sampleCommunes": [
-          "Xã Thu Cúc",
-          "Xã Xuân Đài",
-          "Xã Quy Đức",
-          "Xã Cao Sơn",
-          "Xã Mường Bi"
-        ]
-      },
-      {
-        "province": "Tỉnh Nghệ An",
-        "communeCount": 15,
         "totalAlerts": 34,
         "sampleCommunes": [
-          "Xã Nậm Cắn",
-          "Xã Mường Xén",
-          "Xã Na Loi",
-          "Xã Mường Lống",
-          "Xã Quế Phong"
-        ]
-      },
-      {
-        "province": "Tỉnh Tây Ninh",
-        "communeCount": 14,
-        "totalAlerts": 31,
-        "sampleCommunes": [
-          "Xã Hưng Điền",
-          "Xã Ninh Điền",
-          "Phường Long Hoa",
-          "Xã Thạnh Đức",
-          "Xã Dương Minh Châu"
+          "Xã Lai Đồng",
+          "Xã Cao Sơn",
+          "Xã Khả Cửu",
+          "Xã Đà Bắc",
+          "Xã Ngọc Sơn"
         ]
       }
     ],
     "topRainProvinces": [
       {
+        "province": "Thanh Hóa",
+        "count": 42
+      },
+      {
         "province": "Sơn La",
-        "count": 41
+        "count": 39
       },
       {
         "province": "Quảng Ninh",
-        "count": 27
+        "count": 31
       },
       {
-        "province": "Thanh Hóa",
-        "count": 25
+        "province": "Yên Bái",
+        "count": 21
       },
       {
-        "province": "Nam Định",
-        "count": 25
-      },
-      {
-        "province": "Ninh Bình",
-        "count": 23
+        "province": "Hòa Bình",
+        "count": 20
       }
     ]
   },
   "counts": {
-    "dong_set": 531,
-    "lightning_strikes": 116827,
-    "heavy_rain_points": 367,
+    "dong_set": 569,
+    "lightning_strikes": 128683,
+    "heavy_rain_points": 399,
     "radar_frames": 12,
     "radar_stations": 10
   }
