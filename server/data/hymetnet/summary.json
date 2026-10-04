@@ -1,105 +1,105 @@
 {
   "snapshotId": "20261004_1100",
   "exactTimeId": "20261004_1100",
-  "crawledAt": "2026-10-04T04:37:54.745Z",
+  "crawledAt": "2026-10-04T05:07:50.058Z",
   "vnTime": "11:00 04/10/2026",
   "summary": {
-    "totalAlertCommunes": 237,
-    "totalLightningStrikes": 29008,
-    "totalLightningCG": 17528,
-    "totalLightningCC": 11480,
+    "totalAlertCommunes": 290,
+    "totalLightningStrikes": 37709,
+    "totalLightningCG": 23235,
+    "totalLightningCC": 14474,
     "maxLightningAmpKa": 291,
-    "heavyRainPointsCount": 175,
+    "heavyRainPointsCount": 207,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Ninh Bình",
-        "communeCount": 21,
-        "totalAlerts": 38,
+        "communeCount": 22,
+        "totalAlerts": 66,
         "sampleCommunes": [
           "Phường Yên Sơn",
-          "Phường Duy Hà",
-          "Phường Hà Nam",
-          "Phường Đồng Văn",
-          "Xã Phong Doanh"
-        ]
-      },
-      {
-        "province": "Tỉnh Hưng Yên",
-        "communeCount": 17,
-        "totalAlerts": 33,
-        "sampleCommunes": [
-          "Xã Tân Hưng",
-          "Xã Hoàng Hoa Thám",
-          "Xã Quang Hưng",
-          "Xã Tiên Tiến",
-          "Phường Phố Hiến"
-        ]
-      },
-      {
-        "province": "Thành phố Hải Phòng",
-        "communeCount": 15,
-        "totalAlerts": 23,
-        "sampleCommunes": [
-          "Xã Thanh Miện",
-          "Xã Nam Thanh Miện",
-          "Xã Hồng Châu",
-          "Xã Tân An",
-          "Xã An Thành"
+          "Phường Tam Điệp",
+          "Phường Trung Sơn",
+          "Phường Nam Hoa Lư",
+          "Phường Yên Thắng"
         ]
       },
       {
         "province": "Tỉnh Sơn La",
-        "communeCount": 14,
-        "totalAlerts": 27,
+        "communeCount": 19,
+        "totalAlerts": 67,
         "sampleCommunes": [
-          "Xã Nậm Lầu",
           "Xã Mường Chanh",
+          "Phường Chiềng Cơi",
           "Xã Chiềng Mai",
-          "Xã Chiềng Mung",
-          "Phường Chiềng Sinh"
+          "Phường Chiềng Sinh",
+          "Xã Mai Sơn"
         ]
       },
       {
-        "province": "Thành phố Hà Nội",
-        "communeCount": 10,
-        "totalAlerts": 21,
+        "province": "Tỉnh Hưng Yên",
+        "communeCount": 15,
+        "totalAlerts": 22,
         "sampleCommunes": [
-          "Xã Phù Đổng",
-          "Xã Ứng Hòa",
-          "Xã Thuận An",
-          "Xã Chuyên Mỹ",
-          "Phường Việt Hưng"
+          "Xã Tân Hưng",
+          "Xã Nguyễn Trãi",
+          "Xã Đoàn Đào",
+          "Xã Tiên Hoa",
+          "Phường Hồng Châu"
+        ]
+      },
+      {
+        "province": "Thành phố Hải Phòng",
+        "communeCount": 11,
+        "totalAlerts": 15,
+        "sampleCommunes": [
+          "Xã Tân An",
+          "Xã Hải Hưng",
+          "Xã Thanh Miện",
+          "Phường An Phong",
+          "Xã Nguyễn Lương Bằng"
+        ]
+      },
+      {
+        "province": "Tỉnh Điện Biên",
+        "communeCount": 10,
+        "totalAlerts": 40,
+        "sampleCommunes": [
+          "Xã Si Pa Phìn",
+          "Xã Thanh Nưa",
+          "Xã Na Sang",
+          "Phường Điện Biên Phủ",
+          "Xã Nậm Nèn"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "TP. Hà Nội",
-        "count": 40
-      },
-      {
-        "province": "Đồng Tháp",
-        "count": 17
+        "count": 24
       },
       {
         "province": "Hải Dương",
-        "count": 11
+        "count": 22
       },
       {
-        "province": "Lạng Sơn",
-        "count": 10
+        "province": "Hà Nam",
+        "count": 17
+      },
+      {
+        "province": "Đồng Tháp",
+        "count": 15
       },
       {
         "province": "Vĩnh Phúc",
-        "count": 9
+        "count": 15
       }
     ]
   },
   "counts": {
-    "dong_set": 237,
-    "lightning_strikes": 29008,
-    "heavy_rain_points": 175,
+    "dong_set": 290,
+    "lightning_strikes": 37709,
+    "heavy_rain_points": 207,
     "radar_frames": 12,
     "radar_stations": 10
   }
