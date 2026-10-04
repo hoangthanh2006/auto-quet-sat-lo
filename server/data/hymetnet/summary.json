@@ -1,105 +1,105 @@
 {
   "snapshotId": "20261004_1000",
   "exactTimeId": "20261004_1000",
-  "crawledAt": "2026-10-04T03:37:50.139Z",
+  "crawledAt": "2026-10-04T04:07:51.699Z",
   "vnTime": "10:00 04/10/2026",
   "summary": {
-    "totalAlertCommunes": 232,
-    "totalLightningStrikes": 26666,
-    "totalLightningCG": 18939,
-    "totalLightningCC": 7727,
+    "totalAlertCommunes": 269,
+    "totalLightningStrikes": 30816,
+    "totalLightningCG": 20392,
+    "totalLightningCC": 10424,
     "maxLightningAmpKa": 311,
-    "heavyRainPointsCount": 137,
+    "heavyRainPointsCount": 151,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Thành phố Hà Nội",
-        "communeCount": 21,
-        "totalAlerts": 42,
+        "province": "Tỉnh Ninh Bình",
+        "communeCount": 18,
+        "totalAlerts": 31,
         "sampleCommunes": [
-          "Xã Tam Hưng",
-          "Xã Ứng Hòa",
-          "Xã Thượng Phúc",
-          "Xã Thanh Trì",
-          "Xã Hồng Vân"
+          "Xã Thanh Lâm",
+          "Xã Thanh Liêm",
+          "Xã Tân Minh",
+          "Xã Thanh Bình",
+          "Xã Bình Mỹ"
         ]
       },
       {
-        "province": "Tỉnh Ninh Bình",
-        "communeCount": 14,
-        "totalAlerts": 27,
+        "province": "Tỉnh Phú Thọ",
+        "communeCount": 16,
+        "totalAlerts": 43,
         "sampleCommunes": [
-          "Xã Thanh Liêm",
-          "Xã Phong Doanh",
-          "Xã Tân Minh",
-          "Xã Ý Yên",
-          "Xã Tân Thanh"
+          "Xã Tam Sơn",
+          "Xã Sơn Đông",
+          "Xã Lập Thạch",
+          "Xã Tiên Lữ",
+          "Xã Vĩnh Thành"
         ]
       },
       {
         "province": "Tỉnh Tuyên Quang",
         "communeCount": 12,
-        "totalAlerts": 45,
+        "totalAlerts": 39,
         "sampleCommunes": [
+          "Xã Lùng Tám",
+          "Xã Đường Thượng",
           "Xã Yên Minh",
-          "Xã Thắng Mố",
           "Xã Mậu Duệ",
-          "Xã Du Già",
-          "Xã Minh Sơn"
-        ]
-      },
-      {
-        "province": "Tỉnh Phú Thọ",
-        "communeCount": 10,
-        "totalAlerts": 20,
-        "sampleCommunes": [
-          "Xã Tam Sơn",
-          "Xã Hải Lựu",
-          "Xã Lập Thạch",
-          "Phường Thanh Miếu",
-          "Phường Việt Trì"
+          "Xã Lũng Phìn"
         ]
       },
       {
         "province": "Tỉnh Đồng Tháp",
-        "communeCount": 9,
-        "totalAlerts": 42,
+        "communeCount": 11,
+        "totalAlerts": 41,
         "sampleCommunes": [
+          "Xã Tam Nông",
+          "Xã Tràm Chim",
+          "Xã Phú Cường",
           "Xã Phương Thịnh",
-          "Xã Ba Sao",
-          "Xã Trường Xuân",
-          "Xã Mỹ Quí",
-          "Xã Tháp Mười"
+          "Xã Mỹ Quí"
+        ]
+      },
+      {
+        "province": "Thành phố Hà Nội",
+        "communeCount": 10,
+        "totalAlerts": 23,
+        "sampleCommunes": [
+          "Xã Ứng Hòa",
+          "Xã Chuyên Mỹ",
+          "Xã Hồng Sơn",
+          "Xã Ứng Thiên",
+          "Xã Phù Đổng"
         ]
       }
     ],
     "topRainProvinces": [
       {
-        "province": "Lạng Sơn",
-        "count": 26
-      },
-      {
         "province": "TP. Hà Nội",
-        "count": 23
+        "count": 40
       },
       {
-        "province": "Thái Nguyên",
-        "count": 21
+        "province": "Đồng Tháp",
+        "count": 16
       },
       {
-        "province": "Bắc Giang",
+        "province": "Lạng Sơn",
         "count": 14
       },
       {
-        "province": "Vĩnh Phúc",
-        "count": 10
+        "province": "Ninh Bình",
+        "count": 11
+      },
+      {
+        "province": "Hà Giang",
+        "count": 8
       }
     ]
   },
   "counts": {
-    "dong_set": 232,
-    "lightning_strikes": 26666,
-    "heavy_rain_points": 137,
+    "dong_set": 269,
+    "lightning_strikes": 30816,
+    "heavy_rain_points": 151,
     "radar_frames": 12,
     "radar_stations": 10
   }
