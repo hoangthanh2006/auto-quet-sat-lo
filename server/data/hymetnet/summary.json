@@ -1,75 +1,75 @@
 {
   "snapshotId": "20261004_0700",
   "exactTimeId": "20261004_0700",
-  "crawledAt": "2026-10-04T00:32:08.707Z",
+  "crawledAt": "2026-10-04T00:37:52.161Z",
   "vnTime": "07:00 04/10/2026",
   "summary": {
-    "totalAlertCommunes": 225,
-    "totalLightningStrikes": 29131,
-    "totalLightningCG": 19258,
-    "totalLightningCC": 9873,
+    "totalAlertCommunes": 234,
+    "totalLightningStrikes": 29150,
+    "totalLightningCG": 18945,
+    "totalLightningCC": 10205,
     "maxLightningAmpKa": 346,
     "heavyRainPointsCount": 138,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Thái Nguyên",
-        "communeCount": 27,
-        "totalAlerts": 94,
+        "communeCount": 24,
+        "totalAlerts": 83,
         "sampleCommunes": [
           "Xã Thành Công",
           "Phường Phúc Thuận",
-          "Xã Thanh Thịnh",
           "Xã Chợ Mới",
-          "Xã Tân Kỳ"
+          "Xã Tân Kỳ",
+          "Xã Yên Bình"
         ]
       },
       {
         "province": "Tỉnh Bắc Ninh",
-        "communeCount": 23,
-        "totalAlerts": 33,
+        "communeCount": 20,
+        "totalAlerts": 39,
         "sampleCommunes": [
-          "Phường Từ Sơn",
-          "Phường Đồng Nguyên",
-          "Xã Phật Tích",
-          "Phường Vân Hà",
+          "Phường Tam Sơn",
+          "Xã Tiên Du",
+          "Xã Đại Đồng",
+          "Xã Liên Bão",
           "Phường Việt Yên"
         ]
       },
       {
         "province": "Tỉnh Lạng Sơn",
-        "communeCount": 12,
-        "totalAlerts": 40,
+        "communeCount": 14,
+        "totalAlerts": 43,
         "sampleCommunes": [
-          "Xã Thiện Hòa",
           "Xã Thiện Thuật",
+          "Xã Tân Tiến",
+          "Xã Hoa Thám",
           "Xã Thiện Long",
-          "Xã Quý Hòa",
-          "Xã Hồng Phong"
+          "Xã Bình Gia"
         ]
       },
       {
         "province": "Tỉnh Quảng Ninh",
         "communeCount": 8,
-        "totalAlerts": 20,
+        "totalAlerts": 17,
         "sampleCommunes": [
+          "Phường Bình Khê",
           "Phường Vàng Danh",
-          "Phường Đông Mai",
-          "Xã Quảng La",
-          "Phường Hoành Bồ",
-          "Xã Thống Nhất"
+          "Phường Cao Xanh",
+          "Xã Thống Nhất",
+          "Xã Lương Minh"
         ]
       },
       {
-        "province": "Tỉnh Đồng Nai",
+        "province": "Tỉnh Cao Bằng",
         "communeCount": 5,
-        "totalAlerts": 18,
+        "totalAlerts": 13,
         "sampleCommunes": [
-          "Xã Trị An",
-          "Xã Phú Lý",
-          "Xã Thanh Sơn",
-          "Xã Tân Lợi",
-          "Xã Đak Lua"
+          "Xã Hà Quảng",
+          "Xã Lũng Nặm",
+          "Xã Bế Văn Đàn",
+          "Xã Tổng Cọt",
+          "Xã Độc Lập"
         ]
       }
     ],
@@ -97,8 +97,8 @@
     ]
   },
   "counts": {
-    "dong_set": 225,
-    "lightning_strikes": 29131,
+    "dong_set": 234,
+    "lightning_strikes": 29150,
     "heavy_rain_points": 138,
     "radar_frames": 12,
     "radar_stations": 10
