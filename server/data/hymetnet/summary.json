@@ -1,75 +1,75 @@
 {
   "snapshotId": "20261005_0500",
   "exactTimeId": "20261005_0500",
-  "crawledAt": "2026-10-04T22:31:39.146Z",
+  "crawledAt": "2026-10-04T22:37:52.621Z",
   "vnTime": "05:00 05/10/2026",
   "summary": {
-    "totalAlertCommunes": 176,
-    "totalLightningStrikes": 55850,
-    "totalLightningCG": 42825,
-    "totalLightningCC": 13025,
+    "totalAlertCommunes": 252,
+    "totalLightningStrikes": 63561,
+    "totalLightningCG": 49373,
+    "totalLightningCC": 14188,
     "maxLightningAmpKa": 275,
     "heavyRainPointsCount": 134,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Ninh Bình",
-        "communeCount": 31,
-        "totalAlerts": 50,
+        "communeCount": 36,
+        "totalAlerts": 76,
         "sampleCommunes": [
           "Xã Yên Đồng",
-          "Xã Khánh Thiện",
-          "Xã Trần Thương",
-          "Xã Kim Sơn",
-          "Xã Chất Bình"
+          "Xã Yên Cường",
+          "Xã Khánh Hội",
+          "Xã Nghĩa Lâm",
+          "Xã Khánh Trung"
         ]
       },
       {
         "province": "Tỉnh Nghệ An",
         "communeCount": 18,
-        "totalAlerts": 62,
+        "totalAlerts": 84,
         "sampleCommunes": [
-          "Xã Bạch Ngọc",
-          "Xã Nghĩa Lâm",
-          "Xã Bình Minh",
+          "Xã Yên Thành",
           "Xã Giai Lạc",
-          "Xã Đông Thành"
+          "Xã Bình Minh",
+          "Xã Nghĩa Lâm",
+          "Xã Nghĩa Đàn"
         ]
       },
       {
         "province": "Tỉnh Hưng Yên",
-        "communeCount": 16,
+        "communeCount": 15,
         "totalAlerts": 23,
         "sampleCommunes": [
-          "Xã Nguyễn Trãi",
-          "Xã Quang Hưng",
-          "Xã Nghĩa Dân",
-          "Xã Phạm Ngũ Lão",
-          "Xã Lê Quý Đôn"
-        ]
-      },
-      {
-        "province": "Thành phố Hải Phòng",
-        "communeCount": 9,
-        "totalAlerts": 11,
-        "sampleCommunes": [
-          "Xã Hải Hưng",
-          "Xã Đường An",
-          "Phường Thạch Khôi",
-          "Xã Thượng Hồng",
-          "Xã Kẻ Sặt"
+          "Xã Ân Thi",
+          "Xã Hoàng Hoa Thám",
+          "Xã Đoàn Đào",
+          "Xã Tiền Hải",
+          "Xã Hồng Quang"
         ]
       },
       {
         "province": "Tỉnh Thanh Hóa",
-        "communeCount": 8,
-        "totalAlerts": 16,
+        "communeCount": 7,
+        "totalAlerts": 24,
         "sampleCommunes": [
           "Xã Thanh Kỳ",
           "Xã Yên Thọ",
-          "Xã Công Chính",
           "Xã Thạch Bình",
-          "Xã Kim Tân"
+          "Xã Thành Vinh",
+          "Phường Hải Bình"
+        ]
+      },
+      {
+        "province": "Tỉnh Phú Thọ",
+        "communeCount": 5,
+        "totalAlerts": 18,
+        "sampleCommunes": [
+          "Xã Long Cốc",
+          "Xã Xuân Đài",
+          "Xã Khả Cửu",
+          "Xã Phú Mỹ",
+          "Xã Chân Mộng"
         ]
       }
     ],
@@ -97,8 +97,8 @@
     ]
   },
   "counts": {
-    "dong_set": 176,
-    "lightning_strikes": 55850,
+    "dong_set": 252,
+    "lightning_strikes": 63561,
     "heavy_rain_points": 134,
     "radar_frames": 12,
     "radar_stations": 10
