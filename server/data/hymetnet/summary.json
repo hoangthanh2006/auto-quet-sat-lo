@@ -1,105 +1,105 @@
 {
   "snapshotId": "20261004_0900",
   "exactTimeId": "20261004_0900",
-  "crawledAt": "2026-10-04T02:37:48.767Z",
+  "crawledAt": "2026-10-04T02:47:04.688Z",
   "vnTime": "09:00 04/10/2026",
   "summary": {
-    "totalAlertCommunes": 181,
-    "totalLightningStrikes": 24832,
-    "totalLightningCG": 19597,
-    "totalLightningCC": 5235,
+    "totalAlertCommunes": 212,
+    "totalLightningStrikes": 27263,
+    "totalLightningCG": 20547,
+    "totalLightningCC": 6716,
     "maxLightningAmpKa": 346,
-    "heavyRainPointsCount": 135,
+    "heavyRainPointsCount": 139,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Tuyên Quang",
-        "communeCount": 14,
-        "totalAlerts": 48,
+        "communeCount": 18,
+        "totalAlerts": 49,
         "sampleCommunes": [
-          "Xã Trung Thịnh",
           "Xã Pờ Ly Ngài",
-          "Xã Yên Minh",
-          "Xã Mậu Duệ",
-          "Xã Du Già"
+          "Phường Hà Giang 1",
+          "Xã Lùng Tám",
+          "Xã Đường Thượng",
+          "Xã Mậu Duệ"
         ]
       },
       {
         "province": "Thành phố Hà Nội",
-        "communeCount": 13,
-        "totalAlerts": 24,
+        "communeCount": 18,
+        "totalAlerts": 54,
         "sampleCommunes": [
-          "Xã Ứng Thiên",
-          "Xã Phúc Thịnh",
-          "Xã Nội Bài",
-          "Xã Đại Thanh",
+          "Xã Mỹ Đức",
+          "Xã Hòa Xá",
+          "Xã Dân Hòa",
+          "Xã Ngọc Hồi",
           "Xã Sóc Sơn"
         ]
       },
       {
         "province": "Tỉnh Lạng Sơn",
-        "communeCount": 13,
+        "communeCount": 11,
+        "totalAlerts": 20,
+        "sampleCommunes": [
+          "Xã Vạn Linh",
+          "Xã Chiến Thắng",
+          "Phường Kỳ Lừa",
+          "Xã Cao Lộc",
+          "Xã Thống Nhất"
+        ]
+      },
+      {
+        "province": "Tỉnh Đồng Tháp",
+        "communeCount": 8,
         "totalAlerts": 21,
         "sampleCommunes": [
-          "Xã Quý Hòa",
-          "Xã Tân Đoàn",
-          "Xã Nhân Lý",
-          "Xã Đồng Đăng",
-          "Phường Đông Kinh"
+          "Xã Tân Thành",
+          "Phường Cao Lãnh",
+          "Xã Mỹ Quí",
+          "Xã Trường Xuân",
+          "Phường Mỹ Ngãi"
         ]
       },
       {
         "province": "Tỉnh Thái Nguyên",
-        "communeCount": 11,
-        "totalAlerts": 29,
-        "sampleCommunes": [
-          "Phường Bách Quang",
-          "Xã Điềm Thụy",
-          "Xã Tân Khánh",
-          "Xã Phú Bình",
-          "Xã Trại Cau"
-        ]
-      },
-      {
-        "province": "Tỉnh Bắc Ninh",
         "communeCount": 8,
-        "totalAlerts": 26,
+        "totalAlerts": 16,
         "sampleCommunes": [
-          "Xã Hợp Thịnh",
-          "Xã Bắc Lũng",
-          "Xã Lục Nam",
-          "Xã Tân Dĩnh",
-          "Xã Bảo Đài"
+          "Phường Phúc Thuận",
+          "Phường Trung Thành",
+          "Phường Vạn Xuân",
+          "Xã Tân Khánh",
+          "Xã Phú Bình"
         ]
       }
     ],
     "topRainProvinces": [
       {
-        "province": "Bắc Giang",
+        "province": "Thái Nguyên",
         "count": 30
       },
       {
-        "province": "Thái Nguyên",
+        "province": "Bắc Giang",
         "count": 29
       },
       {
         "province": "Lạng Sơn",
-        "count": 17
+        "count": 22
       },
       {
         "province": "Vĩnh Phúc",
-        "count": 16
+        "count": 17
       },
       {
         "province": "Bắc Ninh",
-        "count": 14
+        "count": 11
       }
     ]
   },
   "counts": {
-    "dong_set": 181,
-    "lightning_strikes": 24832,
-    "heavy_rain_points": 135,
+    "dong_set": 212,
+    "lightning_strikes": 27263,
+    "heavy_rain_points": 139,
     "radar_frames": 12,
     "radar_stations": 10
   }
