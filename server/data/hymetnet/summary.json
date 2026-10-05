@@ -1,103 +1,102 @@
 {
   "snapshotId": "20261006_0500",
   "exactTimeId": "20261006_0500",
-  "crawledAt": "2026-10-05T22:47:59.259Z",
+  "crawledAt": "2026-10-05T22:55:11.510Z",
   "vnTime": "05:00 06/10/2026",
   "summary": {
-    "totalAlertCommunes": 123,
-    "totalLightningStrikes": 29075,
-    "totalLightningCG": 22919,
-    "totalLightningCC": 6156,
+    "totalAlertCommunes": 115,
+    "totalLightningStrikes": 28309,
+    "totalLightningCG": 23178,
+    "totalLightningCC": 5131,
     "maxLightningAmpKa": 359,
-    "heavyRainPointsCount": 82,
+    "heavyRainPointsCount": 83,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Tỉnh Quảng Trị",
+        "province": "Tỉnh Đồng Nai",
         "communeCount": 10,
-        "totalAlerts": 36,
+        "totalAlerts": 41,
         "sampleCommunes": [
-          "Xã Tuyên Hóa",
-          "Xã Cam Hồng",
+          "Xã Thống Nhất",
+          "Xã La Ngà",
+          "Xã Thanh Sơn",
+          "Xã Xuân Bắc",
+          "Xã Định Quán"
+        ]
+      },
+      {
+        "province": "Tỉnh Quảng Trị",
+        "communeCount": 8,
+        "totalAlerts": 32,
+        "sampleCommunes": [
+          "Xã Cửa Việt",
           "Xã Nam Cửa Việt",
+          "Xã Hải Lăng",
           "Xã Vĩnh Định",
           "Xã Triệu Cơ"
         ]
       },
       {
-        "province": "Thành phố Hồ Chí Minh",
-        "communeCount": 7,
-        "totalAlerts": 26,
-        "sampleCommunes": [
-          "Xã Long Hòa",
-          "Xã Trừ Văn Thố",
-          "Phường Long Nguyên",
-          "Xã An Long",
-          "Xã Bàu Bàng"
-        ]
-      },
-      {
-        "province": "Tỉnh Đồng Nai",
-        "communeCount": 7,
-        "totalAlerts": 29,
-        "sampleCommunes": [
-          "Xã Thống Nhất",
-          "Xã La Ngà",
-          "Xã Thanh Sơn",
-          "Xã Định Quán",
-          "Xã Xuân Bắc"
-        ]
-      },
-      {
         "province": "Thành phố Huế",
-        "communeCount": 5,
-        "totalAlerts": 10,
+        "communeCount": 7,
+        "totalAlerts": 14,
         "sampleCommunes": [
+          "Xã A Lưới 5",
           "Xã Bình Điền",
           "Xã Long Quảng",
-          "Phường Phong Điền",
-          "Phường Phú Bài",
-          "Phường Kim Long"
+          "Xã A Lưới 4",
+          "Phường Kim Trà"
         ]
       },
       {
-        "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 3,
-        "totalAlerts": 6,
+        "province": "Thành phố Cần Thơ",
+        "communeCount": 5,
+        "totalAlerts": 15,
         "sampleCommunes": [
-          "Xã Vạn Tường",
-          "Xã Đông Sơn",
-          "Xã An Phú"
+          "Xã Thới Lai",
+          "Xã Đông Hiệp",
+          "Xã Trường Thành",
+          "Xã Phong Điền",
+          "Phường Phước Thới"
+        ]
+      },
+      {
+        "province": "Tỉnh Vĩnh Long",
+        "communeCount": 2,
+        "totalAlerts": 4,
+        "sampleCommunes": [
+          "Xã Cái Nhum",
+          "Xã Vĩnh Thành"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "Đồng Nai",
-        "count": 23
+        "count": 20
       },
       {
         "province": "Bình Dương",
-        "count": 17
+        "count": 18
       },
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 10
+        "count": 11
       },
       {
         "province": "TP. Cần Thơ",
-        "count": 6
+        "count": 8
       },
       {
         "province": "Quảng Nam",
-        "count": 4
+        "count": 5
       }
     ]
   },
   "counts": {
-    "dong_set": 123,
-    "lightning_strikes": 29075,
-    "heavy_rain_points": 82,
+    "dong_set": 115,
+    "lightning_strikes": 28309,
+    "heavy_rain_points": 83,
     "radar_frames": 12,
     "radar_stations": 10
   }
