@@ -1,105 +1,102 @@
 {
-  "snapshotId": "20261006_0100",
-  "exactTimeId": "20261006_0100",
-  "crawledAt": "2026-10-05T19:08:06.607Z",
-  "vnTime": "01:00 06/10/2026",
+  "snapshotId": "20261006_0300",
+  "exactTimeId": "20261006_0300",
+  "crawledAt": "2026-10-05T21:08:02.897Z",
+  "vnTime": "03:00 06/10/2026",
   "summary": {
-    "totalAlertCommunes": 148,
-    "totalLightningStrikes": 26381,
-    "totalLightningCG": 20779,
-    "totalLightningCC": 5602,
-    "maxLightningAmpKa": 310,
-    "heavyRainPointsCount": 57,
+    "totalAlertCommunes": 144,
+    "totalLightningStrikes": 25679,
+    "totalLightningCG": 19932,
+    "totalLightningCC": 5747,
+    "maxLightningAmpKa": 359,
+    "heavyRainPointsCount": 88,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Tỉnh Quảng Trị",
-        "communeCount": 12,
-        "totalAlerts": 33,
+        "province": "Thành phố Huế",
+        "communeCount": 17,
+        "totalAlerts": 50,
         "sampleCommunes": [
-          "Xã Vĩnh Linh",
-          "Xã Vĩnh Hoàng",
-          "Xã Phú Trạch",
-          "Xã Hòa Trạch",
-          "Xã Gio Linh"
-        ]
-      },
-      {
-        "province": "Tỉnh Đồng Tháp",
-        "communeCount": 9,
-        "totalAlerts": 33,
-        "sampleCommunes": [
-          "Xã Thường Phước",
-          "Phường Hồng Ngự",
-          "Xã Tân Hồng",
-          "Phường An Bình",
-          "Xã An Hòa"
-        ]
-      },
-      {
-        "province": "Tỉnh An Giang",
-        "communeCount": 7,
-        "totalAlerts": 12,
-        "sampleCommunes": [
-          "Xã Châu Phong",
-          "Xã Vĩnh Hậu",
-          "Xã Tân An",
-          "Xã Vĩnh Xương",
-          "Phường Long Phú"
+          "Phường Phong Điền",
+          "Phường Phong Dinh",
+          "Xã A Lưới 5",
+          "Phường Phong Thái",
+          "Xã Bình Điền"
         ]
       },
       {
         "province": "Tỉnh Đồng Nai",
-        "communeCount": 6,
-        "totalAlerts": 15,
+        "communeCount": 12,
+        "totalAlerts": 55,
         "sampleCommunes": [
           "Xã Trị An",
+          "Xã Tân An",
+          "Xã Trảng Bom",
           "Xã Hưng Thịnh",
-          "Xã Dầu Giây",
-          "Xã Thống Nhất",
           "Xã Bàu Hàm"
         ]
       },
       {
-        "province": "Tỉnh Hà Tĩnh",
-        "communeCount": 5,
-        "totalAlerts": 13,
+        "province": "Tỉnh Quảng Trị",
+        "communeCount": 6,
+        "totalAlerts": 11,
         "sampleCommunes": [
-          "Phường Hoành Sơn",
-          "Xã Kỳ Văn",
-          "Xã Kỳ Lạc",
-          "Xã Kỳ Xuân",
-          "Xã Kỳ Khang"
+          "Xã Triệu Cơ",
+          "Xã Vĩnh Định",
+          "Xã Cửa Tùng",
+          "Xã Diên Sanh",
+          "Xã Cam Hồng"
+        ]
+      },
+      {
+        "province": "Thành phố Đà Nẵng",
+        "communeCount": 4,
+        "totalAlerts": 6,
+        "sampleCommunes": [
+          "Xã Núi Thành",
+          "Phường Quảng Phú",
+          "Phường Hương Trà",
+          "Xã Tam Xuân"
+        ]
+      },
+      {
+        "province": "Tỉnh An Giang",
+        "communeCount": 3,
+        "totalAlerts": 7,
+        "sampleCommunes": [
+          "Xã Phú Lâm",
+          "Xã Thạnh Hưng",
+          "Xã Chợ Vàm"
         ]
       }
     ],
     "topRainProvinces": [
       {
+        "province": "Đồng Nai",
+        "count": 30
+      },
+      {
         "province": "Bà Rịa - Vũng Tàu",
-        "count": 12
+        "count": 16
       },
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 8
+        "count": 12
       },
       {
-        "province": "Phú Yên",
+        "province": "Quảng Bình",
         "count": 7
       },
       {
-        "province": "Đồng Nai",
-        "count": 6
-      },
-      {
-        "province": "An Giang",
-        "count": 6
+        "province": "Quảng Trị",
+        "count": 5
       }
     ]
   },
   "counts": {
-    "dong_set": 148,
-    "lightning_strikes": 26381,
-    "heavy_rain_points": 57,
+    "dong_set": 144,
+    "lightning_strikes": 25679,
+    "heavy_rain_points": 88,
     "radar_frames": 12,
     "radar_stations": 10
   }
