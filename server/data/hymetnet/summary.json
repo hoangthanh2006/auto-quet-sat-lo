@@ -1,64 +1,81 @@
 {
   "snapshotId": "20261005_1100",
   "exactTimeId": "20261005_1100",
-  "crawledAt": "2026-10-05T04:37:55.865Z",
+  "crawledAt": "2026-10-05T05:10:09.475Z",
   "vnTime": "11:00 05/10/2026",
   "summary": {
-    "totalAlertCommunes": 92,
-    "totalLightningStrikes": 11413,
-    "totalLightningCG": 8963,
-    "totalLightningCC": 2450,
+    "totalAlertCommunes": 144,
+    "totalLightningStrikes": 11655,
+    "totalLightningCG": 8281,
+    "totalLightningCC": 3374,
     "maxLightningAmpKa": 245,
-    "heavyRainPointsCount": 38,
+    "heavyRainPointsCount": 52,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Nghệ An",
         "communeCount": 15,
-        "totalAlerts": 50,
+        "totalAlerts": 48,
         "sampleCommunes": [
           "Xã Tam Quang",
+          "Xã Yên Hòa",
           "Xã Châu Khê",
-          "Xã Môn Sơn",
           "Xã Con Cuông",
-          "Xã Cát Ngạn"
-        ]
-      },
-      {
-        "province": "Tỉnh Hà Tĩnh",
-        "communeCount": 9,
-        "totalAlerts": 31,
-        "sampleCommunes": [
-          "Xã Cẩm Xuyên",
-          "Xã Cẩm Hưng",
-          "Xã Thiên Cầm",
-          "Xã Kỳ Xuân",
-          "Xã Kỳ Anh"
+          "Xã Lương Sơn"
         ]
       },
       {
         "province": "Tỉnh Lâm Đồng",
-        "communeCount": 2,
-        "totalAlerts": 2,
+        "communeCount": 10,
+        "totalAlerts": 28,
         "sampleCommunes": [
-          "Xã Quảng Trực",
-          "Xã Sơn Điền"
+          "Xã Di Linh",
+          "Phường Lang Biang - Đà Lạt",
+          "Phường Bắc Gia Nghĩa",
+          "Xã Bảo Thuận",
+          "Phường Xuân Trường - Đà Lạt"
+        ]
+      },
+      {
+        "province": "Tỉnh Hà Tĩnh",
+        "communeCount": 6,
+        "totalAlerts": 28,
+        "sampleCommunes": [
+          "Xã Cẩm Xuyên",
+          "Xã Yên Hòa",
+          "Xã Kỳ Xuân",
+          "Xã Kỳ Anh",
+          "Xã Kỳ Khang"
+        ]
+      },
+      {
+        "province": "Thành phố Cần Thơ",
+        "communeCount": 5,
+        "totalAlerts": 15,
+        "sampleCommunes": [
+          "Phường Long Phú 1",
+          "Phường Long Mỹ",
+          "Xã Phương Bình",
+          "Phường Ngã Năm",
+          "Xã Hiệp Hưng"
         ]
       },
       {
         "province": "Tỉnh Đắk Lắk",
-        "communeCount": 2,
-        "totalAlerts": 9,
+        "communeCount": 4,
+        "totalAlerts": 13,
         "sampleCommunes": [
+          "Xã Krông Nô",
           "Xã Liên Sơn Lắk",
-          "Xã Yang Mao"
+          "Xã Ea Kar",
+          "Xã Đắk Phơi"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "Hà Tĩnh",
-        "count": 12
+        "count": 20
       },
       {
         "province": "Nghệ An",
@@ -66,11 +83,11 @@
       },
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 7
+        "count": 10
       },
       {
-        "province": "Lai Châu",
-        "count": 2
+        "province": "Điện Biên",
+        "count": 3
       },
       {
         "province": "Quảng Nam",
@@ -79,9 +96,9 @@
     ]
   },
   "counts": {
-    "dong_set": 92,
-    "lightning_strikes": 11413,
-    "heavy_rain_points": 38,
+    "dong_set": 144,
+    "lightning_strikes": 11655,
+    "heavy_rain_points": 52,
     "radar_frames": 12,
     "radar_stations": 10
   }
