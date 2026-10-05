@@ -1,53 +1,44 @@
 {
   "snapshotId": "20261005_0900",
   "exactTimeId": "20261005_0900",
-  "crawledAt": "2026-10-05T02:37:51.515Z",
+  "crawledAt": "2026-10-05T02:46:09.578Z",
   "vnTime": "09:00 05/10/2026",
   "summary": {
-    "totalAlertCommunes": 36,
-    "totalLightningStrikes": 21553,
-    "totalLightningCG": 18386,
-    "totalLightningCC": 3167,
+    "totalAlertCommunes": 39,
+    "totalLightningStrikes": 19901,
+    "totalLightningCG": 16941,
+    "totalLightningCC": 2960,
     "maxLightningAmpKa": 314,
     "heavyRainPointsCount": 34,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Nghệ An",
-        "communeCount": 4,
-        "totalAlerts": 16,
+        "communeCount": 6,
+        "totalAlerts": 29,
         "sampleCommunes": [
-          "Xã Hạnh Lâm",
+          "Xã Châu Khê",
+          "Xã Vĩnh Tường",
           "Xã Sơn Lâm",
           "Xã Kim Bảng",
-          "Xã Bích Hào"
-        ]
-      },
-      {
-        "province": "Tỉnh Bắc Ninh",
-        "communeCount": 3,
-        "totalAlerts": 8,
-        "sampleCommunes": [
-          "Xã Tây Yên Tử",
-          "Xã Tuấn Đạo",
-          "Xã Sơn Động"
+          "Xã Hoa Quân"
         ]
       },
       {
         "province": "Tỉnh Hà Tĩnh",
-        "communeCount": 2,
-        "totalAlerts": 7,
+        "communeCount": 3,
+        "totalAlerts": 4,
         "sampleCommunes": [
-          "Xã Yên Hòa",
-          "Xã Thiên Cầm"
+          "Xã Thiên Cầm",
+          "Xã Cẩm Trung",
+          "Xã Kỳ Xuân"
         ]
       },
       {
         "province": "Thành phố Huế",
-        "communeCount": 2,
-        "totalAlerts": 5,
+        "communeCount": 1,
+        "totalAlerts": 6,
         "sampleCommunes": [
-          "Xã Phú Lộc",
           "Xã Chân Mây - Lăng Cô"
         ]
       }
@@ -55,7 +46,7 @@
     "topRainProvinces": [
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 13
+        "count": 12
       },
       {
         "province": "Quảng Ninh",
@@ -63,11 +54,11 @@
       },
       {
         "province": "Lạng Sơn",
-        "count": 4
+        "count": 3
       },
       {
-        "province": "TP. Hải Phòng",
-        "count": 3
+        "province": "Bắc Giang",
+        "count": 2
       },
       {
         "province": "Quảng Nam",
@@ -76,8 +67,8 @@
     ]
   },
   "counts": {
-    "dong_set": 36,
-    "lightning_strikes": 21553,
+    "dong_set": 39,
+    "lightning_strikes": 19901,
     "heavy_rain_points": 34,
     "radar_frames": 12,
     "radar_stations": 10
