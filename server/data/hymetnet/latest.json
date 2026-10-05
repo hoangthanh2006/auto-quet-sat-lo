@@ -1,8 +1,8 @@
 {
   "source": "http://hymetnet.gov.vn/",
   "sourceName": "Trung tâm Kỹ thuật Quan trắc Khí tượng Thủy văn (HYMETNET)",
-  "crawledAt": "2026-10-05T22:34:28.788Z",
-  "crawledVnTime": "05:34 06/10/2026",
+  "crawledAt": "2026-10-05T22:38:00.949Z",
+  "crawledVnTime": "05:38 06/10/2026",
   "dataTimeSource": "hymetnet_rain",
   "dataTimeLabel": "05:00 (VN) 06-10-2026",
   "vnTime": "05:00 06/10/2026",
@@ -10,7 +10,7 @@
   "exactTimeId": "20261006_0500",
   "date": "2026-10-06",
   "hour": "05:00",
-  "executionTimeMs": 2950,
+  "executionTimeMs": 7397,
   "summary": {
     "totalAlertCommunes": 119,
     "totalLightningStrikes": 28202,
@@ -114,8 +114,8 @@
     "dong_set": {
       "success": true,
       "sourceUrl": "http://hymetnet.gov.vn/dongset",
-      "fetchedAt": "2026-10-05T22:34:30.188Z",
-      "executionTimeMs": 1399,
+      "fetchedAt": "2026-10-05T22:38:06.946Z",
+      "executionTimeMs": 5996,
       "totalSteps": 6,
       "totalAlerts": 119,
       "summary": {
@@ -1527,8 +1527,8 @@
     "lightning": {
       "success": true,
       "sourceUrl": "http://hymetnet.gov.vn/lightningmaps/",
-      "fetchedAt": "2026-10-05T22:34:31.738Z",
-      "executionTimeMs": 2941,
+      "fetchedAt": "2026-10-05T22:38:08.346Z",
+      "executionTimeMs": 7383,
       "summary": {
         "totalStrikes": 28202,
         "totalCG": 22695,
@@ -381280,8 +381280,8 @@
     "rain": {
       "success": true,
       "sourceUrl": "http://hymetnet.gov.vn/rain/",
-      "fetchedAt": "2026-10-05T22:34:30.534Z",
-      "executionTimeMs": 1736,
+      "fetchedAt": "2026-10-05T22:38:07.126Z",
+      "executionTimeMs": 6162,
       "summary": {
         "totalFrames": 6,
         "totalHeavyRainPoints": 78,
@@ -382210,8 +382210,8 @@
     "radar": {
       "success": true,
       "sourceUrl": "http://hymetnet.gov.vn/radar/",
-      "fetchedAt": "2026-10-05T22:34:30.536Z",
-      "executionTimeMs": 1737,
+      "fetchedAt": "2026-10-05T22:38:07.112Z",
+      "executionTimeMs": 6148,
       "stations": [
         {
           "id": "PL",
@@ -382303,15 +382303,23 @@
       },
       "latestFrame": {
         "index": 0,
-        "timeKey": "202610052220",
-        "timeVn": "05:20 (VN) 06-10-2026",
-        "radarCmaxUrl": "http://hymetnet.gov.vn/dataout_web/COM/20261005/COM_202610052220_CMAX00.png",
-        "satelliteIrUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/IRB_202610052220.jpg",
-        "satelliteVisibleUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/VSB_202610052220.jpg"
+        "timeKey": "202610052230",
+        "timeVn": "05:30 (VN) 06-10-2026",
+        "radarCmaxUrl": "http://hymetnet.gov.vn/dataout_web/COM/20261005/COM_202610052230_CMAX00.png",
+        "satelliteIrUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/IRB_202610052230.jpg",
+        "satelliteVisibleUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/VSB_202610052230.jpg"
       },
       "timeline": [
         {
           "index": 0,
+          "timeKey": "202610052230",
+          "timeVn": "05:30 (VN) 06-10-2026",
+          "radarCmaxUrl": "http://hymetnet.gov.vn/dataout_web/COM/20261005/COM_202610052230_CMAX00.png",
+          "satelliteIrUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/IRB_202610052230.jpg",
+          "satelliteVisibleUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/VSB_202610052230.jpg"
+        },
+        {
+          "index": 1,
           "timeKey": "202610052220",
           "timeVn": "05:20 (VN) 06-10-2026",
           "radarCmaxUrl": "http://hymetnet.gov.vn/dataout_web/COM/20261005/COM_202610052220_CMAX00.png",
@@ -382319,7 +382327,7 @@
           "satelliteVisibleUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/VSB_202610052220.jpg"
         },
         {
-          "index": 1,
+          "index": 2,
           "timeKey": "202610052210",
           "timeVn": "05:10 (VN) 06-10-2026",
           "radarCmaxUrl": "http://hymetnet.gov.vn/dataout_web/COM/20261005/COM_202610052210_CMAX00.png",
@@ -382327,7 +382335,7 @@
           "satelliteVisibleUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/VSB_202610052210.jpg"
         },
         {
-          "index": 2,
+          "index": 3,
           "timeKey": "202610052200",
           "timeVn": "05:00 (VN) 06-10-2026",
           "radarCmaxUrl": "http://hymetnet.gov.vn/dataout_web/COM/20261005/COM_202610052200_CMAX00.png",
@@ -382335,7 +382343,7 @@
           "satelliteVisibleUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/VSB_202610052200.jpg"
         },
         {
-          "index": 3,
+          "index": 4,
           "timeKey": "202610052150",
           "timeVn": "04:50 (VN) 06-10-2026",
           "radarCmaxUrl": "http://hymetnet.gov.vn/dataout_web/COM/20261005/COM_202610052150_CMAX00.png",
@@ -382343,7 +382351,7 @@
           "satelliteVisibleUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/VSB_202610052150.jpg"
         },
         {
-          "index": 4,
+          "index": 5,
           "timeKey": "202610052140",
           "timeVn": "04:40 (VN) 06-10-2026",
           "radarCmaxUrl": "http://hymetnet.gov.vn/dataout_web/COM/20261005/COM_202610052140_CMAX00.png",
@@ -382351,7 +382359,7 @@
           "satelliteVisibleUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/VSB_202610052140.jpg"
         },
         {
-          "index": 5,
+          "index": 6,
           "timeKey": "202610052130",
           "timeVn": "04:30 (VN) 06-10-2026",
           "radarCmaxUrl": "http://hymetnet.gov.vn/dataout_web/COM/20261005/COM_202610052130_CMAX00.png",
@@ -382359,7 +382367,7 @@
           "satelliteVisibleUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/VSB_202610052130.jpg"
         },
         {
-          "index": 6,
+          "index": 7,
           "timeKey": "202610052120",
           "timeVn": "04:20 (VN) 06-10-2026",
           "radarCmaxUrl": "http://hymetnet.gov.vn/dataout_web/COM/20261005/COM_202610052120_CMAX00.png",
@@ -382367,7 +382375,7 @@
           "satelliteVisibleUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/VSB_202610052120.jpg"
         },
         {
-          "index": 7,
+          "index": 8,
           "timeKey": "202610052110",
           "timeVn": "04:10 (VN) 06-10-2026",
           "radarCmaxUrl": "http://hymetnet.gov.vn/dataout_web/COM/20261005/COM_202610052110_CMAX00.png",
@@ -382375,7 +382383,7 @@
           "satelliteVisibleUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/VSB_202610052110.jpg"
         },
         {
-          "index": 8,
+          "index": 9,
           "timeKey": "202610052100",
           "timeVn": "04:00 (VN) 06-10-2026",
           "radarCmaxUrl": "http://hymetnet.gov.vn/dataout_web/COM/20261005/COM_202610052100_CMAX00.png",
@@ -382383,7 +382391,7 @@
           "satelliteVisibleUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/VSB_202610052100.jpg"
         },
         {
-          "index": 9,
+          "index": 10,
           "timeKey": "202610052050",
           "timeVn": "03:50 (VN) 06-10-2026",
           "radarCmaxUrl": "http://hymetnet.gov.vn/dataout_web/COM/20261005/COM_202610052050_CMAX00.png",
@@ -382391,23 +382399,20 @@
           "satelliteVisibleUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/VSB_202610052050.jpg"
         },
         {
-          "index": 10,
+          "index": 11,
           "timeKey": "202610052040",
           "timeVn": "03:40 (VN) 06-10-2026",
           "radarCmaxUrl": "http://hymetnet.gov.vn/dataout_web/COM/20261005/COM_202610052040_CMAX00.png",
           "satelliteIrUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/IRB_202610052040.jpg",
           "satelliteVisibleUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/VSB_202610052040.jpg"
-        },
-        {
-          "index": 11,
-          "timeKey": "202610052030",
-          "timeVn": "03:30 (VN) 06-10-2026",
-          "radarCmaxUrl": "http://hymetnet.gov.vn/dataout_web/COM/20261005/COM_202610052030_CMAX00.png",
-          "satelliteIrUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/IRB_202610052030.jpg",
-          "satelliteVisibleUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/VSB_202610052030.jpg"
         }
       ],
       "radarTimeline": [
+        {
+          "timeKey": "202610052230",
+          "timeVn": "05:30 (VN) 06-10-2026",
+          "imageUrl": "http://hymetnet.gov.vn/dataout_web/COM/20261005/COM_202610052230_CMAX00.png"
+        },
         {
           "timeKey": "202610052220",
           "timeVn": "05:20 (VN) 06-10-2026",
@@ -382462,14 +382467,15 @@
           "timeKey": "202610052040",
           "timeVn": "03:40 (VN) 06-10-2026",
           "imageUrl": "http://hymetnet.gov.vn/dataout_web/COM/20261005/COM_202610052040_CMAX00.png"
-        },
-        {
-          "timeKey": "202610052030",
-          "timeVn": "03:30 (VN) 06-10-2026",
-          "imageUrl": "http://hymetnet.gov.vn/dataout_web/COM/20261005/COM_202610052030_CMAX00.png"
         }
       ],
       "satelliteTimeline": [
+        {
+          "timeKey": "202610052230",
+          "timeVn": "05:30 (VN) 06-10-2026",
+          "irUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/IRB_202610052230.jpg",
+          "visibleUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/VSB_202610052230.jpg"
+        },
         {
           "timeKey": "202610052220",
           "timeVn": "05:20 (VN) 06-10-2026",
@@ -382535,12 +382541,6 @@
           "timeVn": "03:40 (VN) 06-10-2026",
           "irUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/IRB_202610052040.jpg",
           "visibleUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/VSB_202610052040.jpg"
-        },
-        {
-          "timeKey": "202610052030",
-          "timeVn": "03:30 (VN) 06-10-2026",
-          "irUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/IRB_202610052030.jpg",
-          "visibleUrl": "http://hymetnet.gov.vn/dataout_web/VTI/20261005/VSB_202610052030.jpg"
         }
       ]
     }
