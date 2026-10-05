@@ -1,79 +1,87 @@
 {
-  "snapshotId": "20261005_1000",
-  "exactTimeId": "20261005_1000",
-  "crawledAt": "2026-10-05T04:07:55.379Z",
-  "vnTime": "10:00 05/10/2026",
+  "snapshotId": "20261005_1100",
+  "exactTimeId": "20261005_1100",
+  "crawledAt": "2026-10-05T04:37:55.865Z",
+  "vnTime": "11:00 05/10/2026",
   "summary": {
-    "totalAlertCommunes": 108,
-    "totalLightningStrikes": 13107,
-    "totalLightningCG": 10318,
-    "totalLightningCC": 2789,
-    "maxLightningAmpKa": 314,
-    "heavyRainPointsCount": 32,
+    "totalAlertCommunes": 92,
+    "totalLightningStrikes": 11413,
+    "totalLightningCG": 8963,
+    "totalLightningCC": 2450,
+    "maxLightningAmpKa": 245,
+    "heavyRainPointsCount": 38,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Nghệ An",
-        "communeCount": 17,
-        "totalAlerts": 69,
+        "communeCount": 15,
+        "totalAlerts": 50,
         "sampleCommunes": [
+          "Xã Tam Quang",
           "Xã Châu Khê",
-          "Xã Cát Ngạn",
-          "Xã Hoa Quân",
-          "Xã Tam Đồng",
-          "Xã Đô Lương"
+          "Xã Môn Sơn",
+          "Xã Con Cuông",
+          "Xã Cát Ngạn"
         ]
       },
       {
         "province": "Tỉnh Hà Tĩnh",
-        "communeCount": 11,
-        "totalAlerts": 36,
+        "communeCount": 9,
+        "totalAlerts": 31,
         "sampleCommunes": [
           "Xã Cẩm Xuyên",
-          "Xã Yên Hòa",
+          "Xã Cẩm Hưng",
           "Xã Thiên Cầm",
-          "Xã Cẩm Lạc",
-          "Xã Kỳ Xuân"
+          "Xã Kỳ Xuân",
+          "Xã Kỳ Anh"
         ]
       },
       {
-        "province": "Tỉnh Bắc Ninh",
-        "communeCount": 3,
-        "totalAlerts": 3,
+        "province": "Tỉnh Lâm Đồng",
+        "communeCount": 2,
+        "totalAlerts": 2,
         "sampleCommunes": [
-          "Phường Trạm Lộ",
-          "Xã Tân Chi",
-          "Xã Chi Lăng"
+          "Xã Quảng Trực",
+          "Xã Sơn Điền"
+        ]
+      },
+      {
+        "province": "Tỉnh Đắk Lắk",
+        "communeCount": 2,
+        "totalAlerts": 9,
+        "sampleCommunes": [
+          "Xã Liên Sơn Lắk",
+          "Xã Yang Mao"
         ]
       }
     ],
     "topRainProvinces": [
       {
+        "province": "Hà Tĩnh",
+        "count": 12
+      },
+      {
         "province": "Nghệ An",
-        "count": 8
+        "count": 11
       },
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 8
+        "count": 7
       },
       {
-        "province": "Hà Tĩnh",
-        "count": 4
+        "province": "Lai Châu",
+        "count": 2
       },
       {
-        "province": "Hải Dương",
-        "count": 3
-      },
-      {
-        "province": "Quảng Ninh",
+        "province": "Quảng Nam",
         "count": 2
       }
     ]
   },
   "counts": {
-    "dong_set": 108,
-    "lightning_strikes": 13107,
-    "heavy_rain_points": 32,
+    "dong_set": 92,
+    "lightning_strikes": 11413,
+    "heavy_rain_points": 38,
     "radar_frames": 12,
     "radar_stations": 10
   }
