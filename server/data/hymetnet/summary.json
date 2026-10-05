@@ -1,74 +1,75 @@
 {
   "snapshotId": "20261006_0100",
   "exactTimeId": "20261006_0100",
-  "crawledAt": "2026-10-05T18:56:11.329Z",
+  "crawledAt": "2026-10-05T19:08:06.607Z",
   "vnTime": "01:00 06/10/2026",
   "summary": {
-    "totalAlertCommunes": 113,
-    "totalLightningStrikes": 25030,
-    "totalLightningCG": 20286,
-    "totalLightningCC": 4744,
+    "totalAlertCommunes": 148,
+    "totalLightningStrikes": 26381,
+    "totalLightningCG": 20779,
+    "totalLightningCC": 5602,
     "maxLightningAmpKa": 310,
-    "heavyRainPointsCount": 60,
+    "heavyRainPointsCount": 57,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Tỉnh Hà Tĩnh",
-        "communeCount": 9,
-        "totalAlerts": 21,
+        "province": "Tỉnh Quảng Trị",
+        "communeCount": 12,
+        "totalAlerts": 33,
         "sampleCommunes": [
-          "Xã Kỳ Lạc",
-          "Xã Kỳ Hoa",
-          "Phường Vũng Áng",
-          "Phường Hoành Sơn",
-          "Xã Kỳ Thượng"
+          "Xã Vĩnh Linh",
+          "Xã Vĩnh Hoàng",
+          "Xã Phú Trạch",
+          "Xã Hòa Trạch",
+          "Xã Gio Linh"
         ]
       },
       {
         "province": "Tỉnh Đồng Tháp",
-        "communeCount": 7,
-        "totalAlerts": 22,
+        "communeCount": 9,
+        "totalAlerts": 33,
         "sampleCommunes": [
+          "Xã Thường Phước",
           "Phường Hồng Ngự",
           "Xã Tân Hồng",
-          "Xã Tân Hộ Cơ",
           "Phường An Bình",
-          "Xã An Phước"
+          "Xã An Hòa"
+        ]
+      },
+      {
+        "province": "Tỉnh An Giang",
+        "communeCount": 7,
+        "totalAlerts": 12,
+        "sampleCommunes": [
+          "Xã Châu Phong",
+          "Xã Vĩnh Hậu",
+          "Xã Tân An",
+          "Xã Vĩnh Xương",
+          "Phường Long Phú"
         ]
       },
       {
         "province": "Tỉnh Đồng Nai",
-        "communeCount": 7,
-        "totalAlerts": 19,
+        "communeCount": 6,
+        "totalAlerts": 15,
         "sampleCommunes": [
           "Xã Trị An",
+          "Xã Hưng Thịnh",
           "Xã Dầu Giây",
           "Xã Thống Nhất",
-          "Xã Hưng Thịnh",
           "Xã Bàu Hàm"
         ]
       },
       {
-        "province": "Tỉnh Quảng Trị",
+        "province": "Tỉnh Hà Tĩnh",
         "communeCount": 5,
-        "totalAlerts": 16,
-        "sampleCommunes": [
-          "Xã Phú Trạch",
-          "Xã Hải Lăng",
-          "Xã Vĩnh Hoàng",
-          "Xã Diên Sanh",
-          "Xã Tuyên Bình"
-        ]
-      },
-      {
-        "province": "Thành phố Hồ Chí Minh",
-        "communeCount": 4,
         "totalAlerts": 13,
         "sampleCommunes": [
-          "Xã Phước Hải",
-          "Xã Bàu Lâm",
-          "Xã Bình Châu",
-          "Xã Xuyên Mộc"
+          "Phường Hoành Sơn",
+          "Xã Kỳ Văn",
+          "Xã Kỳ Lạc",
+          "Xã Kỳ Xuân",
+          "Xã Kỳ Khang"
         ]
       }
     ],
@@ -79,26 +80,26 @@
       },
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 10
+        "count": 8
       },
       {
         "province": "Phú Yên",
+        "count": 7
+      },
+      {
+        "province": "Đồng Nai",
         "count": 6
       },
       {
         "province": "An Giang",
         "count": 6
-      },
-      {
-        "province": "Quảng Bình",
-        "count": 6
       }
     ]
   },
   "counts": {
-    "dong_set": 113,
-    "lightning_strikes": 25030,
-    "heavy_rain_points": 60,
+    "dong_set": 148,
+    "lightning_strikes": 26381,
+    "heavy_rain_points": 57,
     "radar_frames": 12,
     "radar_stations": 10
   }
