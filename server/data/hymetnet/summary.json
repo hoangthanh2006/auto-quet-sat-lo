@@ -1,103 +1,104 @@
 {
-  "snapshotId": "20261006_0400",
-  "exactTimeId": "20261006_0400",
-  "crawledAt": "2026-10-05T22:07:55.601Z",
-  "vnTime": "04:00 06/10/2026",
+  "snapshotId": "20261006_0500",
+  "exactTimeId": "20261006_0500",
+  "crawledAt": "2026-10-05T22:34:28.788Z",
+  "vnTime": "05:00 06/10/2026",
   "summary": {
-    "totalAlertCommunes": 165,
-    "totalLightningStrikes": 28289,
-    "totalLightningCG": 21448,
-    "totalLightningCC": 6841,
+    "totalAlertCommunes": 119,
+    "totalLightningStrikes": 28202,
+    "totalLightningCG": 22695,
+    "totalLightningCC": 5507,
     "maxLightningAmpKa": 359,
-    "heavyRainPointsCount": 76,
+    "heavyRainPointsCount": 78,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Tỉnh Đồng Nai",
-        "communeCount": 15,
-        "totalAlerts": 46,
+        "province": "Thành phố Hồ Chí Minh",
+        "communeCount": 9,
+        "totalAlerts": 39,
         "sampleCommunes": [
-          "Phường Chơn Thành",
-          "Phường Minh Hưng",
-          "Xã Xuân Quế",
-          "Xã Xuân Đường",
-          "Phường Xuân Lập"
+          "Xã Long Hòa",
+          "Xã Trừ Văn Thố",
+          "Phường Long Nguyên",
+          "Phường Bến Cát",
+          "Xã Bàu Bàng"
         ]
       },
       {
-        "province": "Thành phố Hồ Chí Minh",
-        "communeCount": 13,
-        "totalAlerts": 48,
+        "province": "Tỉnh Đồng Nai",
+        "communeCount": 8,
+        "totalAlerts": 27,
         "sampleCommunes": [
-          "Xã An Nhơn Tây",
-          "Phường Tây Nam",
-          "Phường Long Nguyên",
-          "Xã Long Hòa",
-          "Xã Trừ Văn Thố"
+          "Phường Chơn Thành",
+          "Xã La Ngà",
+          "Xã Thống Nhất",
+          "Xã Định Quán",
+          "Phường Bảo Vinh"
         ]
       },
       {
         "province": "Tỉnh Quảng Trị",
         "communeCount": 6,
-        "totalAlerts": 16,
+        "totalAlerts": 15,
         "sampleCommunes": [
-          "Xã Cửa Tùng",
-          "Xã Hải Lăng",
-          "Xã Vĩnh Hoàng",
+          "Xã Cửa Việt",
+          "Xã Nam Cửa Việt",
+          "Xã Triệu Cơ",
           "Xã Vĩnh Định",
-          "Xã Triệu Bình"
-        ]
-      },
-      {
-        "province": "Thành phố Huế",
-        "communeCount": 6,
-        "totalAlerts": 13,
-        "sampleCommunes": [
-          "Phường Phú Bài",
-          "Xã A Lưới 5",
-          "Phường Phong Điền",
-          "Xã Bình Điền",
-          "Xã Long Quảng"
+          "Xã Hải Lăng"
         ]
       },
       {
         "province": "Thành phố Cần Thơ",
-        "communeCount": 3,
-        "totalAlerts": 18,
+        "communeCount": 5,
+        "totalAlerts": 15,
         "sampleCommunes": [
-          "Xã Cờ Đỏ",
+          "Xã Đông Hiệp",
           "Xã Đông Thuận",
-          "Xã Đông Hiệp"
+          "Xã Thới Lai",
+          "Xã Trường Thành",
+          "Phường Ô Môn"
+        ]
+      },
+      {
+        "province": "Tỉnh Quảng Ngãi",
+        "communeCount": 4,
+        "totalAlerts": 10,
+        "sampleCommunes": [
+          "Xã Vạn Tường",
+          "Xã Đông Sơn",
+          "Xã Bình Sơn",
+          "Xã Tịnh Khê"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "Đồng Nai",
-        "count": 25
-      },
-      {
-        "province": "TP. Hồ Chí Minh",
-        "count": 12
+        "count": 24
       },
       {
         "province": "Bình Dương",
-        "count": 8
+        "count": 15
       },
       {
-        "province": "Quảng Trị",
-        "count": 7
+        "province": "TP. Hồ Chí Minh",
+        "count": 11
       },
       {
-        "province": "Bà Rịa - Vũng Tàu",
-        "count": 7
+        "province": "TP. Cần Thơ",
+        "count": 4
+      },
+      {
+        "province": "Quảng Nam",
+        "count": 4
       }
     ]
   },
   "counts": {
-    "dong_set": 165,
-    "lightning_strikes": 28289,
-    "heavy_rain_points": 76,
+    "dong_set": 119,
+    "lightning_strikes": 28202,
+    "heavy_rain_points": 78,
     "radar_frames": 12,
     "radar_stations": 10
   }
