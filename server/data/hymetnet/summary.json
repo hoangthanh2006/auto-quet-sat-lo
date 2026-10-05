@@ -1,77 +1,100 @@
 {
-  "snapshotId": "20261005_0900",
-  "exactTimeId": "20261005_0900",
-  "crawledAt": "2026-10-05T03:07:56.785Z",
-  "vnTime": "09:00 05/10/2026",
+  "snapshotId": "20261005_1000",
+  "exactTimeId": "20261005_1000",
+  "crawledAt": "2026-10-05T03:37:59.044Z",
+  "vnTime": "10:00 05/10/2026",
   "summary": {
-    "totalAlertCommunes": 68,
-    "totalLightningStrikes": 17660,
-    "totalLightningCG": 14344,
-    "totalLightningCC": 3316,
+    "totalAlertCommunes": 104,
+    "totalLightningStrikes": 15368,
+    "totalLightningCG": 11859,
+    "totalLightningCC": 3509,
     "maxLightningAmpKa": 314,
-    "heavyRainPointsCount": 32,
+    "heavyRainPointsCount": 30,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Nghệ An",
-        "communeCount": 13,
-        "totalAlerts": 41,
+        "communeCount": 16,
+        "totalAlerts": 59,
         "sampleCommunes": [
-          "Xã Môn Sơn",
           "Xã Con Cuông",
+          "Xã Môn Sơn",
           "Xã Sơn Lâm",
           "Xã Hoa Quân",
-          "Xã Kim Bảng"
+          "Xã Tam Đồng"
+        ]
+      },
+      {
+        "province": "Thành phố Hải Phòng",
+        "communeCount": 9,
+        "totalAlerts": 13,
+        "sampleCommunes": [
+          "Phường Tứ Minh",
+          "Phường Việt Hòa",
+          "Xã Tuệ Tĩnh",
+          "Phường Thành Đông",
+          "Phường Lê Thanh Nghị"
         ]
       },
       {
         "province": "Tỉnh Hà Tĩnh",
-        "communeCount": 6,
-        "totalAlerts": 25,
+        "communeCount": 7,
+        "totalAlerts": 24,
         "sampleCommunes": [
-          "Xã Thiên Cầm",
+          "Xã Đồng Tiến",
           "Xã Yên Hòa",
-          "Xã Cẩm Trung",
-          "Xã Cẩm Hưng",
-          "Xã Cẩm Lạc"
+          "Xã Kỳ Xuân",
+          "Xã Kỳ Khang",
+          "Xã Cẩm Xuyên"
         ]
       },
       {
-        "province": "Thành phố Huế",
-        "communeCount": 1,
-        "totalAlerts": 2,
+        "province": "Tỉnh Bắc Ninh",
+        "communeCount": 4,
+        "totalAlerts": 7,
         "sampleCommunes": [
-          "Xã Chân Mây - Lăng Cô"
+          "Xã Trung Chính",
+          "Xã Trung Kênh",
+          "Xã Lương Tài",
+          "Xã Nhân Thắng"
+        ]
+      },
+      {
+        "province": "Tỉnh Quảng Ngãi",
+        "communeCount": 1,
+        "totalAlerts": 1,
+        "sampleCommunes": [
+          "Xã Đăk Long"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 11
-      },
-      {
-        "province": "Bắc Giang",
-        "count": 4
+        "count": 9
       },
       {
         "province": "Hải Dương",
+        "count": 4
+      },
+      {
+        "province": "Nghệ An",
         "count": 3
       },
       {
-        "province": "Quảng Ninh",
+        "province": "Thừa Thiên Huế",
         "count": 3
       },
       {
         "province": "Quảng Trị",
-        "count": 2
+        "count": 3
       }
     ]
   },
   "counts": {
-    "dong_set": 68,
-    "lightning_strikes": 17660,
-    "heavy_rain_points": 32,
+    "dong_set": 104,
+    "lightning_strikes": 15368,
+    "heavy_rain_points": 30,
     "radar_frames": 12,
     "radar_stations": 10
   }
