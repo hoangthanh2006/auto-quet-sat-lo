@@ -1,105 +1,105 @@
 {
   "snapshotId": "20261005_0600",
   "exactTimeId": "20261005_0600",
-  "crawledAt": "2026-10-04T23:41:21.364Z",
+  "crawledAt": "2026-10-05T00:07:55.835Z",
   "vnTime": "06:00 05/10/2026",
   "summary": {
-    "totalAlertCommunes": 268,
-    "totalLightningStrikes": 67863,
-    "totalLightningCG": 53223,
-    "totalLightningCC": 14640,
+    "totalAlertCommunes": 223,
+    "totalLightningStrikes": 61795,
+    "totalLightningCG": 48938,
+    "totalLightningCC": 12857,
     "maxLightningAmpKa": 232,
-    "heavyRainPointsCount": 118,
+    "heavyRainPointsCount": 100,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Ninh Bình",
-        "communeCount": 45,
-        "totalAlerts": 99,
+        "communeCount": 31,
+        "totalAlerts": 71,
         "sampleCommunes": [
-          "Xã Phong Doanh",
-          "Xã Tân Minh",
-          "Xã Vạn Thắng",
-          "Xã Yên Đồng",
-          "Phường Mỹ Lộc"
-        ]
-      },
-      {
-        "province": "Tỉnh Nghệ An",
-        "communeCount": 21,
-        "totalAlerts": 90,
-        "sampleCommunes": [
-          "Phường Tây Hiếu",
-          "Xã Nghĩa Mai",
-          "Xã Nghĩa Đàn",
-          "Xã Bình Minh",
-          "Xã Nghĩa Lâm"
+          "Xã Minh Tân",
+          "Xã Bình An",
+          "Xã Hiển Khánh",
+          "Xã Vụ Bản",
+          "Phường Trường Thi"
         ]
       },
       {
         "province": "Tỉnh Hưng Yên",
         "communeCount": 19,
-        "totalAlerts": 26,
+        "totalAlerts": 35,
         "sampleCommunes": [
-          "Xã Tân Thuận",
-          "Xã Vũ Thư",
-          "Phường Trần Hưng Đạo",
-          "Xã Thư Vũ",
+          "Xã Thư Trì",
+          "Phường Vũ Phúc",
+          "Phường Trần Lãm",
+          "Xã Bình Thanh",
           "Xã Tiền Hải"
         ]
       },
       {
-        "province": "Tỉnh Bắc Ninh",
-        "communeCount": 8,
-        "totalAlerts": 16,
+        "province": "Tỉnh Nghệ An",
+        "communeCount": 14,
+        "totalAlerts": 56,
         "sampleCommunes": [
-          "Phường Nhân Hòa",
-          "Phường Việt Yên",
-          "Phường Nếnh",
-          "Phường Đa Mai",
-          "Phường Tự Lạn"
+          "Xã Nghĩa Mai",
+          "Xã Nghĩa Lâm",
+          "Xã Nghĩa Lộc",
+          "Xã Nghĩa Đàn",
+          "Xã Quỳnh Tam"
         ]
       },
       {
         "province": "Tỉnh Phú Thọ",
         "communeCount": 6,
-        "totalAlerts": 19,
+        "totalAlerts": 17,
         "sampleCommunes": [
+          "Xã Trung Sơn",
           "Xã Sơn Lương",
-          "Xã Tân Sơn",
           "Xã Xuân Viên",
           "Xã Tiên Lương",
-          "Xã Long Cốc"
+          "Xã Thu Cúc"
+        ]
+      },
+      {
+        "province": "Tỉnh Thanh Hóa",
+        "communeCount": 5,
+        "totalAlerts": 16,
+        "sampleCommunes": [
+          "Xã Thọ Ngọc",
+          "Xã Sao Vàng",
+          "Xã Trường Lâm",
+          "Xã Thanh Kỳ",
+          "Xã Thọ Bình"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "Nghệ An",
-        "count": 26
+        "count": 27
       },
       {
         "province": "Nam Định",
-        "count": 24
+        "count": 21
       },
       {
         "province": "Hải Dương",
-        "count": 15
+        "count": 10
       },
       {
         "province": "Thái Bình",
-        "count": 13
+        "count": 8
       },
       {
         "province": "Bắc Ninh",
-        "count": 10
+        "count": 8
       }
     ]
   },
   "counts": {
-    "dong_set": 268,
-    "lightning_strikes": 67863,
-    "heavy_rain_points": 118,
+    "dong_set": 223,
+    "lightning_strikes": 61795,
+    "heavy_rain_points": 100,
     "radar_frames": 12,
     "radar_stations": 10
   }
