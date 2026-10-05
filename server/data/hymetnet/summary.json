@@ -1,100 +1,102 @@
 {
   "snapshotId": "20261005_1200",
   "exactTimeId": "20261005_1200",
-  "crawledAt": "2026-10-05T05:37:58.588Z",
+  "crawledAt": "2026-10-05T06:07:59.773Z",
   "vnTime": "12:00 05/10/2026",
   "summary": {
-    "totalAlertCommunes": 180,
-    "totalLightningStrikes": 13596,
-    "totalLightningCG": 8627,
-    "totalLightningCC": 4969,
+    "totalAlertCommunes": 241,
+    "totalLightningStrikes": 19552,
+    "totalLightningCG": 11419,
+    "totalLightningCC": 8133,
     "maxLightningAmpKa": 245,
-    "heavyRainPointsCount": 54,
+    "heavyRainPointsCount": 73,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Lâm Đồng",
-        "communeCount": 21,
-        "totalAlerts": 50,
+        "communeCount": 35,
+        "totalAlerts": 131,
         "sampleCommunes": [
           "Xã Quảng Trực",
+          "Xã Quảng Tân",
           "Xã Quảng Tín",
-          "Xã Bảo Lâm 5",
-          "Phường 2 Bảo Lộc",
-          "Xã Bảo Lâm 1"
-        ]
-      },
-      {
-        "province": "Tỉnh Hà Tĩnh",
-        "communeCount": 11,
-        "totalAlerts": 49,
-        "sampleCommunes": [
-          "Xã Cẩm Duệ",
-          "Xã Cẩm Xuyên",
-          "Xã Yên Hòa",
-          "Xã Thiên Cầm",
-          "Xã Cẩm Hưng"
-        ]
-      },
-      {
-        "province": "Tỉnh Đắk Lắk",
-        "communeCount": 4,
-        "totalAlerts": 12,
-        "sampleCommunes": [
-          "Xã Liên Sơn Lắk",
-          "Xã Krông Nô",
-          "Xã Cư Pui",
-          "Xã Yang Mao"
-        ]
-      },
-      {
-        "province": "Tỉnh Nghệ An",
-        "communeCount": 3,
-        "totalAlerts": 13,
-        "sampleCommunes": [
-          "Xã Tam Quang",
-          "Xã Yên Hòa",
-          "Xã Tam Thái"
+          "Xã Cát Tiên 3",
+          "Xã Kiến Đức"
         ]
       },
       {
         "province": "Tỉnh An Giang",
-        "communeCount": 3,
-        "totalAlerts": 9,
+        "communeCount": 10,
+        "totalAlerts": 25,
         "sampleCommunes": [
-          "Xã Sơn Kiên",
-          "Phường Tân Châu",
-          "Xã Mỹ Thuận"
+          "Xã Mỹ Thuận",
+          "Xã Phú Lâm",
+          "Xã Châu Phong",
+          "Phường Long Phú",
+          "Xã Chợ Mới"
+        ]
+      },
+      {
+        "province": "Tỉnh Hà Tĩnh",
+        "communeCount": 7,
+        "totalAlerts": 30,
+        "sampleCommunes": [
+          "Xã Cẩm Xuyên",
+          "Xã Thiên Cầm",
+          "Xã Cẩm Lạc",
+          "Xã Kỳ Văn",
+          "Xã Kỳ Xuân"
+        ]
+      },
+      {
+        "province": "Tỉnh Đồng Nai",
+        "communeCount": 4,
+        "totalAlerts": 12,
+        "sampleCommunes": [
+          "Xã Đak Nhau",
+          "Xã Sông Ray",
+          "Xã Thọ Sơn",
+          "Xã Bom Bo"
+        ]
+      },
+      {
+        "province": "Tỉnh Điện Biên",
+        "communeCount": 3,
+        "totalAlerts": 7,
+        "sampleCommunes": [
+          "Xã Nà Hỳ",
+          "Xã Si Pa Phìn",
+          "Xã Tuần Giáo"
         ]
       }
     ],
     "topRainProvinces": [
       {
+        "province": "Lâm Đồng",
+        "count": 17
+      },
+      {
         "province": "Hà Tĩnh",
-        "count": 16
+        "count": 15
       },
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 10
-      },
-      {
-        "province": "Nghệ An",
         "count": 8
       },
       {
-        "province": "Lâm Đồng",
-        "count": 5
+        "province": "Điện Biên",
+        "count": 7
       },
       {
-        "province": "Điện Biên",
-        "count": 4
+        "province": "Đăk Lắk",
+        "count": 6
       }
     ]
   },
   "counts": {
-    "dong_set": 180,
-    "lightning_strikes": 13596,
-    "heavy_rain_points": 54,
+    "dong_set": 241,
+    "lightning_strikes": 19552,
+    "heavy_rain_points": 73,
     "radar_frames": 12,
     "radar_stations": 10
   }
