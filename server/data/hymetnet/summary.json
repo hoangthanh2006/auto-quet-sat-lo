@@ -1,70 +1,65 @@
 {
-  "snapshotId": "20261007_0400",
-  "exactTimeId": "20261007_0400",
-  "crawledAt": "2026-10-06T22:08:36.815Z",
-  "vnTime": "04:00 07/10/2026",
+  "snapshotId": "20261007_0500",
+  "exactTimeId": "20261007_0500",
+  "crawledAt": "2026-10-06T22:38:02.546Z",
+  "vnTime": "05:00 07/10/2026",
   "summary": {
-    "totalAlertCommunes": 90,
-    "totalLightningStrikes": 16303,
-    "totalLightningCG": 14793,
-    "totalLightningCC": 1510,
+    "totalAlertCommunes": 121,
+    "totalLightningStrikes": 17946,
+    "totalLightningCG": 15492,
+    "totalLightningCC": 2454,
     "maxLightningAmpKa": 383,
-    "heavyRainPointsCount": 30,
+    "heavyRainPointsCount": 25,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 20,
-        "totalAlerts": 37,
+        "communeCount": 27,
+        "totalAlerts": 70,
         "sampleCommunes": [
-          "Xã Tư Nghĩa",
-          "Xã Long Phụng",
-          "Xã Thanh Bồng",
+          "Xã Trà Bồng",
+          "Xã Cà Đam",
           "Xã Đông Trà Bồng",
-          "Xã Mỏ Cày"
-        ]
-      },
-      {
-        "province": "Thành phố Huế",
-        "communeCount": 10,
-        "totalAlerts": 32,
-        "sampleCommunes": [
-          "Xã Hưng Lộc",
-          "Xã Lộc An",
-          "Xã Phú Vang",
-          "Xã Vinh Lộc",
-          "Xã Phú Vinh"
+          "Xã Bình Minh",
+          "Xã Trà Giang"
         ]
       },
       {
         "province": "Thành phố Đà Nẵng",
-        "communeCount": 10,
-        "totalAlerts": 20,
+        "communeCount": 15,
+        "totalAlerts": 38,
         "sampleCommunes": [
-          "Xã Tam Mỹ",
-          "Xã Đức Phú",
+          "Xã Phước Thành",
           "Phường Hải Vân",
           "Xã Trà Liên",
-          "Xã Bà Nà"
+          "Xã Tam Mỹ",
+          "Xã Đức Phú"
         ]
       },
       {
-        "province": "Thành phố Hà Nội",
-        "communeCount": 1,
-        "totalAlerts": 1,
+        "province": "Thành phố Huế",
+        "communeCount": 4,
+        "totalAlerts": 13,
         "sampleCommunes": [
-          "Phường Tây Hồ"
+          "Xã Vinh Lộc",
+          "Xã Lộc An",
+          "Xã Phú Vang",
+          "Xã Khe Tre"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 16
+        "count": 12
       },
       {
         "province": "Hải Dương",
-        "count": 8
+        "count": 6
+      },
+      {
+        "province": "Hưng Yên",
+        "count": 2
       },
       {
         "province": "Long An",
@@ -73,17 +68,13 @@
       {
         "province": "Đồng Tháp",
         "count": 2
-      },
-      {
-        "province": "Hưng Yên",
-        "count": 1
       }
     ]
   },
   "counts": {
-    "dong_set": 90,
-    "lightning_strikes": 16303,
-    "heavy_rain_points": 30,
+    "dong_set": 121,
+    "lightning_strikes": 17946,
+    "heavy_rain_points": 25,
     "radar_frames": 12,
     "radar_stations": 10
   }
