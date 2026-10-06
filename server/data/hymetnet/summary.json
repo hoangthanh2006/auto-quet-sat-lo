@@ -1,89 +1,90 @@
 {
-  "snapshotId": "20261007_0500",
-  "exactTimeId": "20261007_0500",
-  "crawledAt": "2026-10-06T23:08:02.592Z",
-  "vnTime": "05:00 07/10/2026",
+  "snapshotId": "20261007_0600",
+  "exactTimeId": "20261007_0600",
+  "crawledAt": "2026-10-06T23:28:42.659Z",
+  "vnTime": "06:00 07/10/2026",
   "summary": {
-    "totalAlertCommunes": 106,
-    "totalLightningStrikes": 17718,
-    "totalLightningCG": 15281,
-    "totalLightningCC": 2437,
+    "totalAlertCommunes": 109,
+    "totalLightningStrikes": 17446,
+    "totalLightningCG": 15236,
+    "totalLightningCC": 2210,
     "maxLightningAmpKa": 383,
-    "heavyRainPointsCount": 19,
+    "heavyRainPointsCount": 24,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Thành phố Đà Nẵng",
-        "communeCount": 21,
-        "totalAlerts": 39,
+        "communeCount": 20,
+        "totalAlerts": 43,
         "sampleCommunes": [
-          "Xã Hòa Vang",
-          "Xã Sơn Cẩm Hà",
-          "Xã Tam Mỹ",
-          "Xã Tam Xuân",
-          "Xã Núi Thành"
+          "Xã Trà Giáp",
+          "Xã Thăng An",
+          "Phường Hải Vân",
+          "Xã Duy Nghĩa",
+          "Xã Thăng Trường"
         ]
       },
       {
         "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 15,
-        "totalAlerts": 41,
+        "communeCount": 19,
+        "totalAlerts": 35,
         "sampleCommunes": [
           "Xã Thanh Bồng",
           "Xã Tây Trà",
-          "Xã Tây Trà Bồng",
           "Xã Trà Bồng",
+          "Xã Ba Dinh",
           "Xã Ba Tơ"
         ]
       },
       {
         "province": "Thành phố Huế",
-        "communeCount": 8,
-        "totalAlerts": 23,
+        "communeCount": 10,
+        "totalAlerts": 26,
         "sampleCommunes": [
+          "Xã Phú Vinh",
           "Xã Lộc An",
-          "Xã Phú Vang",
           "Xã Vinh Lộc",
-          "Xã Hưng Lộc",
-          "Xã Khe Tre"
+          "Xã Phú Vang",
+          "Xã Phú Lộc"
         ]
       },
       {
         "province": "Tỉnh Gia Lai",
-        "communeCount": 1,
-        "totalAlerts": 3,
+        "communeCount": 2,
+        "totalAlerts": 5,
         "sampleCommunes": [
-          "Xã An Vinh"
+          "Xã An Vinh",
+          "Xã An Toàn"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 9
-      },
-      {
-        "province": "Hải Dương",
-        "count": 5
+        "count": 14
       },
       {
         "province": "TP. Hà Nội",
-        "count": 3
+        "count": 4
       },
       {
-        "province": "Bình Phước",
+        "province": "Hải Dương",
+        "count": 2
+      },
+      {
+        "province": "Quảng Nam",
         "count": 1
       },
       {
-        "province": "Hưng Yên",
+        "province": "Điện Biên",
         "count": 1
       }
     ]
   },
   "counts": {
-    "dong_set": 106,
-    "lightning_strikes": 17718,
-    "heavy_rain_points": 19,
+    "dong_set": 109,
+    "lightning_strikes": 17446,
+    "heavy_rain_points": 24,
     "radar_frames": 12,
     "radar_stations": 10
   }
