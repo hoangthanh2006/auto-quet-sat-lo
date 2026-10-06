@@ -1,51 +1,65 @@
 {
   "snapshotId": "20261006_1000",
   "exactTimeId": "20261006_1000",
-  "crawledAt": "2026-10-06T03:20:04.469Z",
+  "crawledAt": "2026-10-06T03:38:01.764Z",
   "vnTime": "10:00 06/10/2026",
   "summary": {
-    "totalAlertCommunes": 22,
-    "totalLightningStrikes": 22761,
-    "totalLightningCG": 21128,
-    "totalLightningCC": 1633,
+    "totalAlertCommunes": 48,
+    "totalLightningStrikes": 22745,
+    "totalLightningCG": 20963,
+    "totalLightningCC": 1782,
     "maxLightningAmpKa": 379,
-    "heavyRainPointsCount": 28,
+    "heavyRainPointsCount": 23,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
+      {
+        "province": "Tỉnh An Giang",
+        "communeCount": 4,
+        "totalAlerts": 13,
+        "sampleCommunes": [
+          "Xã Núi Cấm",
+          "Phường Chi Lăng",
+          "Xã Thạnh Mỹ Tây",
+          "Xã Châu Phú"
+        ]
+      },
+      {
+        "province": "Thành phố Huế",
+        "communeCount": 4,
+        "totalAlerts": 8,
+        "sampleCommunes": [
+          "Phường Hương An",
+          "Phường Kim Long",
+          "Phường Kim Trà",
+          "Xã Chân Mây - Lăng Cô"
+        ]
+      },
+      {
+        "province": "Tỉnh Tây Ninh",
+        "communeCount": 3,
+        "totalAlerts": 7,
+        "sampleCommunes": [
+          "Xã Thuận Mỹ",
+          "Xã Mỹ Yên",
+          "Xã Lương Hòa"
+        ]
+      },
       {
         "province": "Tỉnh Quảng Ngãi",
         "communeCount": 3,
         "totalAlerts": 9,
         "sampleCommunes": [
-          "Xã Vạn Tường",
           "Xã Bình Sơn",
-          "Xã Bình Minh"
+          "Xã Vạn Tường",
+          "Xã Ngọk Réo"
         ]
       },
       {
-        "province": "Tỉnh Quảng Trị",
-        "communeCount": 2,
+        "province": "Thành phố Hồ Chí Minh",
+        "communeCount": 1,
         "totalAlerts": 6,
         "sampleCommunes": [
-          "Xã Triệu Bình",
-          "Phường Nam Đông Hà"
-        ]
-      },
-      {
-        "province": "Thành phố Đà Nẵng",
-        "communeCount": 2,
-        "totalAlerts": 4,
-        "sampleCommunes": [
-          "Xã Phú Thuận",
-          "Xã Núi Thành"
-        ]
-      },
-      {
-        "province": "Thành phố Huế",
-        "communeCount": 1,
-        "totalAlerts": 3,
-        "sampleCommunes": [
-          "Xã Chân Mây - Lăng Cô"
+          "Xã Bình Lợi"
         ]
       }
     ],
@@ -55,27 +69,23 @@
         "count": 16
       },
       {
+        "province": "Quảng Nam",
+        "count": 3
+      },
+      {
         "province": "Hải Dương",
         "count": 3
       },
       {
         "province": "TP. Đà Nẵng",
-        "count": 3
-      },
-      {
-        "province": "Quảng Nam",
-        "count": 3
-      },
-      {
-        "province": "Đồng Nai",
-        "count": 2
+        "count": 1
       }
     ]
   },
   "counts": {
-    "dong_set": 22,
-    "lightning_strikes": 22761,
-    "heavy_rain_points": 28,
+    "dong_set": 48,
+    "lightning_strikes": 22745,
+    "heavy_rain_points": 23,
     "radar_frames": 12,
     "radar_stations": 10
   }
