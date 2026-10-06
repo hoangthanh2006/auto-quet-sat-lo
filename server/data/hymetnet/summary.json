@@ -1,86 +1,89 @@
 {
   "snapshotId": "20261006_0700",
   "exactTimeId": "20261006_0700",
-  "crawledAt": "2026-10-06T00:38:05.268Z",
+  "crawledAt": "2026-10-06T01:07:57.734Z",
   "vnTime": "07:00 06/10/2026",
   "summary": {
-    "totalAlertCommunes": 62,
-    "totalLightningStrikes": 25021,
-    "totalLightningCG": 22660,
-    "totalLightningCC": 2361,
+    "totalAlertCommunes": 67,
+    "totalLightningStrikes": 24556,
+    "totalLightningCG": 22202,
+    "totalLightningCC": 2354,
     "maxLightningAmpKa": 379,
-    "heavyRainPointsCount": 30,
+    "heavyRainPointsCount": 26,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 13,
-        "totalAlerts": 27,
+        "communeCount": 8,
+        "totalAlerts": 24,
         "sampleCommunes": [
-          "Xã Bình Minh",
-          "Xã Bình Chương",
+          "Xã Trà Giang",
+          "Xã Trường Giang",
+          "Xã Ba Gia",
           "Xã Sơn Tịnh",
-          "Xã Thọ Phong",
-          "Xã Vạn Tường"
+          "Xã Sơn Hạ"
         ]
       },
       {
         "province": "Tỉnh Quảng Trị",
-        "communeCount": 8,
-        "totalAlerts": 23,
+        "communeCount": 6,
+        "totalAlerts": 19,
         "sampleCommunes": [
-          "Xã Vĩnh Linh",
-          "Xã Vĩnh Hoàng",
+          "Xã Bến Hải",
           "Xã Mỹ Thủy",
-          "Xã Cửa Tùng",
-          "Xã Vĩnh Định"
+          "Xã Vĩnh Định",
+          "Xã Nam Cửa Việt",
+          "Xã Cửa Việt"
+        ]
+      },
+      {
+        "province": "Thành phố Đà Nẵng",
+        "communeCount": 4,
+        "totalAlerts": 14,
+        "sampleCommunes": [
+          "Phường Hải Vân",
+          "Xã Trà Tập",
+          "Phường Liên Chiểu",
+          "Phường Hòa Khánh"
         ]
       },
       {
         "province": "Thành phố Huế",
         "communeCount": 2,
-        "totalAlerts": 8,
+        "totalAlerts": 10,
         "sampleCommunes": [
           "Xã Chân Mây - Lăng Cô",
           "Xã Phú Lộc"
-        ]
-      },
-      {
-        "province": "Thành phố Đà Nẵng",
-        "communeCount": 1,
-        "totalAlerts": 4,
-        "sampleCommunes": [
-          "Phường Hải Vân"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 15
-      },
-      {
-        "province": "Quảng Trị",
-        "count": 3
+        "count": 13
       },
       {
         "province": "Hải Dương",
+        "count": 4
+      },
+      {
+        "province": "Quảng Ngãi",
         "count": 3
       },
       {
-        "province": "TP. Cần Thơ",
+        "province": "Quảng Ninh",
         "count": 2
       },
       {
-        "province": "Điện Biên",
-        "count": 2
+        "province": "Kiên Giang",
+        "count": 1
       }
     ]
   },
   "counts": {
-    "dong_set": 62,
-    "lightning_strikes": 25021,
-    "heavy_rain_points": 30,
+    "dong_set": 67,
+    "lightning_strikes": 24556,
+    "heavy_rain_points": 26,
     "radar_frames": 12,
     "radar_stations": 10
   }
