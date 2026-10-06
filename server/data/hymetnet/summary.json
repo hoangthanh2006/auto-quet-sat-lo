@@ -1,105 +1,105 @@
 {
   "snapshotId": "20261006_1200",
   "exactTimeId": "20261006_1200",
-  "crawledAt": "2026-10-06T05:38:02.447Z",
+  "crawledAt": "2026-10-06T06:07:56.325Z",
   "vnTime": "12:00 06/10/2026",
   "summary": {
-    "totalAlertCommunes": 186,
-    "totalLightningStrikes": 23886,
-    "totalLightningCG": 18748,
-    "totalLightningCC": 5138,
+    "totalAlertCommunes": 322,
+    "totalLightningStrikes": 35081,
+    "totalLightningCG": 24174,
+    "totalLightningCC": 10907,
     "maxLightningAmpKa": 301,
-    "heavyRainPointsCount": 82,
+    "heavyRainPointsCount": 109,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh An Giang",
-        "communeCount": 11,
-        "totalAlerts": 45,
+        "communeCount": 25,
+        "totalAlerts": 111,
         "sampleCommunes": [
           "Xã Hòa Điền",
-          "Xã Bình Giang",
           "Xã Vĩnh Điều",
-          "Xã Bình Sơn",
-          "Xã Vĩnh Trạch"
+          "Xã Bình Giang",
+          "Xã Vĩnh Gia",
+          "Xã Bình Sơn"
         ]
       },
       {
         "province": "Tỉnh Vĩnh Long",
-        "communeCount": 10,
-        "totalAlerts": 37,
+        "communeCount": 25,
+        "totalAlerts": 43,
         "sampleCommunes": [
-          "Xã Vĩnh Xuân",
-          "Xã Tam Ngãi",
-          "Xã Cầu Kè",
-          "Xã Hiếu Thành",
-          "Xã An Trường"
+          "Xã Mỹ Thuận",
+          "Xã Song Phú",
+          "Xã Tam Bình",
+          "Xã Hòa Hiệp",
+          "Xã Hòa Bình"
         ]
       },
       {
         "province": "Tỉnh Lâm Đồng",
-        "communeCount": 9,
-        "totalAlerts": 33,
+        "communeCount": 14,
+        "totalAlerts": 46,
         "sampleCommunes": [
-          "Xã Tuy Đức",
           "Xã Quảng Tân",
-          "Xã Hàm Tân",
-          "Xã Nam Đà",
-          "Phường Xuân Trường - Đà Lạt"
-        ]
-      },
-      {
-        "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 9,
-        "totalAlerts": 17,
-        "sampleCommunes": [
-          "Xã Ngọk Tụ",
-          "Phường Kon Tum",
-          "Phường Đăk Cấm",
-          "Xã Kon Đào",
-          "Xã Ngọk Bay"
+          "Xã Quảng Tín",
+          "Xã Tuy Đức",
+          "Xã Đạ Huoai 2",
+          "Xã Bảo Lâm 4"
         ]
       },
       {
         "province": "Tỉnh Đắk Lắk",
-        "communeCount": 6,
-        "totalAlerts": 11,
+        "communeCount": 9,
+        "totalAlerts": 15,
         "sampleCommunes": [
-          "Xã Ea M’Droh",
-          "Xã Cư M’gar",
-          "Xã Liên Sơn Lắk",
-          "Xã Hòa Thịnh",
-          "Phường Buôn Ma Thuột"
+          "Phường Buôn Ma Thuột",
+          "Xã Quảng Phú",
+          "Xã Cuôr Đăng",
+          "Xã Ea Knuếc",
+          "Phường Tân An"
+        ]
+      },
+      {
+        "province": "Tỉnh Gia Lai",
+        "communeCount": 8,
+        "totalAlerts": 22,
+        "sampleCommunes": [
+          "Xã Ia Lâu",
+          "Xã Ia Rsai",
+          "Xã Phú Túc",
+          "Xã Ia Boòng",
+          "Xã Bờ Ngoong"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "Tiền Giang",
-        "count": 13
+        "count": 17
       },
       {
         "province": "An Giang",
-        "count": 12
+        "count": 15
       },
       {
-        "province": "TP. Hồ Chí Minh",
+        "province": "Kon Tum",
         "count": 9
       },
       {
-        "province": "Long An",
+        "province": "Kiên Giang",
         "count": 8
       },
       {
         "province": "Đồng Tháp",
-        "count": 6
+        "count": 8
       }
     ]
   },
   "counts": {
-    "dong_set": 186,
-    "lightning_strikes": 23886,
-    "heavy_rain_points": 82,
+    "dong_set": 322,
+    "lightning_strikes": 35081,
+    "heavy_rain_points": 109,
     "radar_frames": 12,
     "radar_stations": 10
   }
