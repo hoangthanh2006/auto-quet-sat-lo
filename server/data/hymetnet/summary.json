@@ -1,89 +1,88 @@
 {
-  "snapshotId": "20261006_1900",
-  "exactTimeId": "20261006_1900",
-  "crawledAt": "2026-10-06T13:08:02.339Z",
-  "vnTime": "19:00 06/10/2026",
+  "snapshotId": "20261006_2000",
+  "exactTimeId": "20261006_2000",
+  "crawledAt": "2026-10-06T13:37:58.151Z",
+  "vnTime": "20:00 06/10/2026",
   "summary": {
-    "totalAlertCommunes": 277,
-    "totalLightningStrikes": 35981,
-    "totalLightningCG": 24410,
-    "totalLightningCC": 11571,
+    "totalAlertCommunes": 215,
+    "totalLightningStrikes": 28217,
+    "totalLightningCG": 19628,
+    "totalLightningCC": 8589,
     "maxLightningAmpKa": 216,
-    "heavyRainPointsCount": 134,
+    "heavyRainPointsCount": 123,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Lâm Đồng",
-        "communeCount": 39,
-        "totalAlerts": 115,
+        "communeCount": 27,
+        "totalAlerts": 82,
         "sampleCommunes": [
-          "Xã Thuận An",
           "Xã Bảo Lâm 4",
-          "Xã Bảo Lâm 1",
+          "Xã Tân Thành",
           "Xã Hàm Kiệm",
-          "Xã Hàm Thạnh"
+          "Phường Bình Thuận",
+          "Xã Hàm Thuận"
         ]
       },
       {
         "province": "Tỉnh Tây Ninh",
-        "communeCount": 26,
-        "totalAlerts": 122,
+        "communeCount": 25,
+        "totalAlerts": 118,
         "sampleCommunes": [
           "Xã Phước Vinh",
-          "Xã Hòa Hội",
+          "Xã Tân Lập",
+          "Xã Tân Biên",
           "Xã Hảo Đước",
-          "Xã Trà Vong",
-          "Xã Thạnh Bình"
+          "Xã Trà Vong"
         ]
       },
       {
         "province": "Thành phố Hồ Chí Minh",
-        "communeCount": 10,
-        "totalAlerts": 39,
+        "communeCount": 4,
+        "totalAlerts": 14,
         "sampleCommunes": [
           "Xã Dầu Tiếng",
-          "Xã Minh Thạnh",
           "Xã Thanh An",
-          "Phường Tây Nam",
-          "Xã Long Hòa"
+          "Xã Long Hòa",
+          "Xã Minh Thạnh"
         ]
       },
       {
-        "province": "Tỉnh Đắk Lắk",
+        "province": "Thành phố Đà Nẵng",
         "communeCount": 1,
         "totalAlerts": 1,
         "sampleCommunes": [
-          "Xã Nam Ka"
+          "Phường Bàn Thạch"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "Bình Dương",
-        "count": 30
-      },
-      {
-        "province": "Bình Thuận",
-        "count": 22
-      },
-      {
-        "province": "Lâm Đồng",
-        "count": 18
+        "count": 29
       },
       {
         "province": "Tây Ninh",
-        "count": 16
+        "count": 26
       },
       {
-        "province": "Đồng Nai",
-        "count": 13
+        "province": "Lâm Đồng",
+        "count": 22
+      },
+      {
+        "province": "Bình Thuận",
+        "count": 12
+      },
+      {
+        "province": "Đăk Nông",
+        "count": 11
       }
     ]
   },
   "counts": {
-    "dong_set": 277,
-    "lightning_strikes": 35981,
-    "heavy_rain_points": 134,
+    "dong_set": 215,
+    "lightning_strikes": 28217,
+    "heavy_rain_points": 123,
     "radar_frames": 12,
     "radar_stations": 10
   }
