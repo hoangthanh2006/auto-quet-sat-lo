@@ -1,105 +1,105 @@
 {
-  "snapshotId": "20261006_1500",
-  "exactTimeId": "20261006_1500",
-  "crawledAt": "2026-10-06T09:08:03.322Z",
-  "vnTime": "15:00 06/10/2026",
+  "snapshotId": "20261006_1600",
+  "exactTimeId": "20261006_1600",
+  "crawledAt": "2026-10-06T09:37:59.975Z",
+  "vnTime": "16:00 06/10/2026",
   "summary": {
-    "totalAlertCommunes": 396,
-    "totalLightningStrikes": 51004,
-    "totalLightningCG": 36067,
-    "totalLightningCC": 14937,
+    "totalAlertCommunes": 347,
+    "totalLightningStrikes": 49820,
+    "totalLightningCG": 36326,
+    "totalLightningCC": 13494,
     "maxLightningAmpKa": 243,
-    "heavyRainPointsCount": 299,
+    "heavyRainPointsCount": 276,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Lâm Đồng",
-        "communeCount": 31,
-        "totalAlerts": 108,
+        "communeCount": 35,
+        "totalAlerts": 121,
         "sampleCommunes": [
-          "Xã Đạ Huoai",
-          "Xã Hoài Đức",
+          "Xã Trà Tân",
+          "Xã Tuy Đức",
+          "Xã Thuận Hạnh",
           "Xã Đức Linh",
-          "Xã Nam Thành",
-          "Xã Tánh Linh"
-        ]
-      },
-      {
-        "province": "Tỉnh Đồng Tháp",
-        "communeCount": 26,
-        "totalAlerts": 68,
-        "sampleCommunes": [
-          "Xã Hội Cư",
-          "Xã Cái Bè",
-          "Xã Mỹ Thành",
-          "Xã Thạnh Phú",
-          "Xã Hiệp Đức"
-        ]
-      },
-      {
-        "province": "Tỉnh Đắk Lắk",
-        "communeCount": 17,
-        "totalAlerts": 49,
-        "sampleCommunes": [
-          "Xã Ea Bung",
-          "Xã Ea Súp",
-          "Xã Ea Kiết",
-          "Xã Cư Pơng",
-          "Xã Cư Pui"
-        ]
-      },
-      {
-        "province": "Tỉnh Vĩnh Long",
-        "communeCount": 15,
-        "totalAlerts": 41,
-        "sampleCommunes": [
-          "Xã Tân Phú",
-          "Xã Tân Thành Bình",
-          "Xã Đồng Khởi",
-          "Phường An Hội",
-          "Phường Phú Tân"
+          "Xã Nam Thành"
         ]
       },
       {
         "province": "Tỉnh Đồng Nai",
-        "communeCount": 15,
-        "totalAlerts": 59,
+        "communeCount": 21,
+        "totalAlerts": 70,
         "sampleCommunes": [
-          "Xã Đồng Tâm",
-          "Xã Tân Lợi",
+          "Xã Thuận Lợi",
+          "Phường Đồng Xoài",
           "Xã Phú Lý",
-          "Xã Đak Lua",
-          "Xã Xuân Lộc"
+          "Xã Thanh Sơn",
+          "Xã Định Quán"
+        ]
+      },
+      {
+        "province": "Tỉnh Vĩnh Long",
+        "communeCount": 20,
+        "totalAlerts": 39,
+        "sampleCommunes": [
+          "Xã Ngãi Tứ",
+          "Xã Trà Côn",
+          "Xã Tam Bình",
+          "Xã Hòa Bình",
+          "Xã Hòa Hiệp"
+        ]
+      },
+      {
+        "province": "Tỉnh Đắk Lắk",
+        "communeCount": 18,
+        "totalAlerts": 47,
+        "sampleCommunes": [
+          "Xã Ea Bung",
+          "Xã Buôn Đôn",
+          "Xã Ia Rvê",
+          "Xã Ea Súp",
+          "Xã Ea Tul"
+        ]
+      },
+      {
+        "province": "Tỉnh Khánh Hòa",
+        "communeCount": 13,
+        "totalAlerts": 35,
+        "sampleCommunes": [
+          "Xã Tây Khánh Vĩnh",
+          "Xã Trung Khánh Vĩnh",
+          "Xã Bắc Khánh Vĩnh",
+          "Xã Khánh Vĩnh",
+          "Xã Diên Lâm"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "Bến Tre",
-        "count": 41
+        "count": 36
       },
       {
-        "province": "Gia Lai",
-        "count": 24
+        "province": "Tiền Giang",
+        "count": 32
       },
       {
-        "province": "Đồng Tháp",
-        "count": 24
+        "province": "Bình Thuận",
+        "count": 28
+      },
+      {
+        "province": "Đăk Lắk",
+        "count": 25
       },
       {
         "province": "Lâm Đồng",
         "count": 23
-      },
-      {
-        "province": "Bình Thuận",
-        "count": 21
       }
     ]
   },
   "counts": {
-    "dong_set": 396,
-    "lightning_strikes": 51004,
-    "heavy_rain_points": 299,
+    "dong_set": 347,
+    "lightning_strikes": 49820,
+    "heavy_rain_points": 276,
     "radar_frames": 12,
     "radar_stations": 10
   }
