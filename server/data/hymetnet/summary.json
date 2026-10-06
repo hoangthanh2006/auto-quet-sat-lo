@@ -1,87 +1,78 @@
 {
   "snapshotId": "20261006_0900",
   "exactTimeId": "20261006_0900",
-  "crawledAt": "2026-10-06T02:37:53.377Z",
+  "crawledAt": "2026-10-06T02:55:01.344Z",
   "vnTime": "09:00 06/10/2026",
   "summary": {
-    "totalAlertCommunes": 37,
-    "totalLightningStrikes": 23520,
-    "totalLightningCG": 21669,
-    "totalLightningCC": 1851,
+    "totalAlertCommunes": 30,
+    "totalLightningStrikes": 23617,
+    "totalLightningCG": 21850,
+    "totalLightningCC": 1767,
     "maxLightningAmpKa": 379,
-    "heavyRainPointsCount": 29,
+    "heavyRainPointsCount": 28,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Tỉnh Quảng Trị",
-        "communeCount": 6,
-        "totalAlerts": 21,
+        "province": "Thành phố Huế",
+        "communeCount": 5,
+        "totalAlerts": 18,
         "sampleCommunes": [
-          "Xã Gio Linh",
-          "Xã Triệu Bình",
-          "Xã Ái Tử",
-          "Xã Nam Cửa Việt",
-          "Phường Đông Hà"
+          "Xã Quảng Điền",
+          "Phường Hóa Châu",
+          "Phường Dương Nỗ",
+          "Phường Kim Trà",
+          "Phường Hương Trà"
         ]
       },
       {
         "province": "Thành phố Đà Nẵng",
         "communeCount": 4,
-        "totalAlerts": 9,
+        "totalAlerts": 6,
         "sampleCommunes": [
-          "Phường Hải Vân",
-          "Phường Hòa Khánh",
           "Xã Bà Nà",
-          "Xã Thu Bồn"
+          "Xã Thu Bồn",
+          "Xã Sông Vàng",
+          "Xã Núi Thành"
         ]
       },
       {
-        "province": "Thành phố Huế",
+        "province": "Tỉnh Quảng Trị",
         "communeCount": 3,
-        "totalAlerts": 3,
+        "totalAlerts": 6,
         "sampleCommunes": [
-          "Phường Hương An",
-          "Phường Kim Long",
-          "Phường Kim Trà"
-        ]
-      },
-      {
-        "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 2,
-        "totalAlerts": 4,
-        "sampleCommunes": [
-          "Xã Sơn Kỳ",
-          "Xã Kon Plông"
+          "Xã Triệu Bình",
+          "Xã Ái Tử",
+          "Phường Nam Đông Hà"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 11
+        "count": 13
       },
       {
         "province": "TP. Đà Nẵng",
-        "count": 5
-      },
-      {
-        "province": "Quảng Ninh",
         "count": 4
       },
       {
         "province": "Quảng Nam",
-        "count": 2
+        "count": 3
       },
       {
-        "province": "Đồng Nai",
+        "province": "Quảng Ninh",
+        "count": 3
+      },
+      {
+        "province": "Hải Dương",
         "count": 2
       }
     ]
   },
   "counts": {
-    "dong_set": 37,
-    "lightning_strikes": 23520,
-    "heavy_rain_points": 29,
+    "dong_set": 30,
+    "lightning_strikes": 23617,
+    "heavy_rain_points": 28,
     "radar_frames": 12,
     "radar_stations": 10
   }
