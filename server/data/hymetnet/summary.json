@@ -1,56 +1,60 @@
 {
-  "snapshotId": "20261007_0100",
-  "exactTimeId": "20261007_0100",
-  "crawledAt": "2026-10-06T19:08:00.715Z",
-  "vnTime": "01:00 07/10/2026",
+  "snapshotId": "20261007_0200",
+  "exactTimeId": "20261007_0200",
+  "crawledAt": "2026-10-06T19:38:05.498Z",
+  "vnTime": "02:00 07/10/2026",
   "summary": {
-    "totalAlertCommunes": 94,
-    "totalLightningStrikes": 16938,
-    "totalLightningCG": 14754,
-    "totalLightningCC": 2184,
+    "totalAlertCommunes": 106,
+    "totalLightningStrikes": 16754,
+    "totalLightningCG": 14540,
+    "totalLightningCC": 2214,
     "maxLightningAmpKa": 259,
-    "heavyRainPointsCount": 39,
+    "heavyRainPointsCount": 38,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
+      {
+        "province": "Tỉnh Đồng Tháp",
+        "communeCount": 9,
+        "totalAlerts": 48,
+        "sampleCommunes": [
+          "Xã Thường Phước",
+          "Phường Thường Lạc",
+          "Xã Long Khánh",
+          "Phường An Bình",
+          "Phường Hồng Ngự"
+        ]
+      },
       {
         "province": "Tỉnh Tây Ninh",
         "communeCount": 9,
         "totalAlerts": 36,
         "sampleCommunes": [
+          "Xã Hưng Điền",
           "Xã Tân Lập",
           "Xã Tân Hội",
-          "Xã Tân Châu",
-          "Xã Tân Thành",
-          "Xã Tân Hòa"
-        ]
-      },
-      {
-        "province": "Tỉnh Đồng Tháp",
-        "communeCount": 7,
-        "totalAlerts": 37,
-        "sampleCommunes": [
-          "Xã Thường Phước",
-          "Phường Hồng Ngự",
-          "Xã Tân Hồng",
-          "Xã Tân Hộ Cơ",
+          "Xã Tân Đông",
           "Xã Tân Thành"
         ]
       },
       {
         "province": "Thành phố Đà Nẵng",
-        "communeCount": 2,
-        "totalAlerts": 11,
+        "communeCount": 5,
+        "totalAlerts": 12,
         "sampleCommunes": [
           "Phường Hải Vân",
-          "Xã Sông Vàng"
+          "Xã Bà Nà",
+          "Xã Sông Vàng",
+          "Xã Núi Thành",
+          "Xã Tam Anh"
         ]
       },
       {
         "province": "Thành phố Hồ Chí Minh",
-        "communeCount": 1,
+        "communeCount": 2,
         "totalAlerts": 5,
         "sampleCommunes": [
-          "Xã Long Hòa"
+          "Xã Long Hòa",
+          "Xã Trừ Văn Thố"
         ]
       },
       {
@@ -64,31 +68,31 @@
     ],
     "topRainProvinces": [
       {
-        "province": "Tây Ninh",
-        "count": 15
-      },
-      {
         "province": "TP. Hồ Chí Minh",
-        "count": 15
+        "count": 14
       },
       {
-        "province": "Hải Dương",
+        "province": "Tây Ninh",
+        "count": 12
+      },
+      {
+        "province": "Đồng Tháp",
         "count": 3
       },
       {
-        "province": "Thái Bình",
+        "province": "Đồng Nai",
         "count": 2
       },
       {
-        "province": "Đồng Nai",
+        "province": "Bình Dương",
         "count": 2
       }
     ]
   },
   "counts": {
-    "dong_set": 94,
-    "lightning_strikes": 16938,
-    "heavy_rain_points": 39,
+    "dong_set": 106,
+    "lightning_strikes": 16754,
+    "heavy_rain_points": 38,
     "radar_frames": 12,
     "radar_stations": 10
   }
