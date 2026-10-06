@@ -1,81 +1,86 @@
 {
-  "snapshotId": "20261006_0600",
-  "exactTimeId": "20261006_0600",
-  "crawledAt": "2026-10-06T00:08:09.026Z",
-  "vnTime": "06:00 06/10/2026",
+  "snapshotId": "20261006_0700",
+  "exactTimeId": "20261006_0700",
+  "crawledAt": "2026-10-06T00:35:46.159Z",
+  "vnTime": "07:00 06/10/2026",
   "summary": {
-    "totalAlertCommunes": 83,
-    "totalLightningStrikes": 26303,
-    "totalLightningCG": 23492,
-    "totalLightningCC": 2811,
-    "maxLightningAmpKa": 359,
-    "heavyRainPointsCount": 37,
+    "totalAlertCommunes": 62,
+    "totalLightningStrikes": 25021,
+    "totalLightningCG": 22660,
+    "totalLightningCC": 2361,
+    "maxLightningAmpKa": 379,
+    "heavyRainPointsCount": 30,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Tỉnh Quảng Trị",
+        "province": "Tỉnh Quảng Ngãi",
         "communeCount": 13,
-        "totalAlerts": 42,
+        "totalAlerts": 27,
         "sampleCommunes": [
-          "Xã Vĩnh Hoàng",
-          "Xã Nam Cửa Việt",
-          "Xã Hải Lăng",
-          "Xã Vĩnh Định",
-          "Xã Nam Hải Lăng"
+          "Xã Bình Minh",
+          "Xã Bình Chương",
+          "Xã Sơn Tịnh",
+          "Xã Thọ Phong",
+          "Xã Vạn Tường"
         ]
       },
       {
-        "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 9,
-        "totalAlerts": 27,
+        "province": "Tỉnh Quảng Trị",
+        "communeCount": 8,
+        "totalAlerts": 23,
         "sampleCommunes": [
-          "Xã Tây Trà",
-          "Xã Đông Sơn",
-          "Xã Vạn Tường",
-          "Xã Thọ Phong",
-          "Xã Trà Bồng"
+          "Xã Vĩnh Linh",
+          "Xã Vĩnh Hoàng",
+          "Xã Mỹ Thủy",
+          "Xã Cửa Tùng",
+          "Xã Vĩnh Định"
         ]
       },
       {
         "province": "Thành phố Huế",
-        "communeCount": 7,
-        "totalAlerts": 14,
+        "communeCount": 2,
+        "totalAlerts": 8,
         "sampleCommunes": [
           "Xã Chân Mây - Lăng Cô",
-          "Xã Phú Vinh",
-          "Xã Phú Lộc",
-          "Xã Phú Vang",
-          "Xã Vinh Lộc"
+          "Xã Phú Lộc"
+        ]
+      },
+      {
+        "province": "Thành phố Đà Nẵng",
+        "communeCount": 1,
+        "totalAlerts": 4,
+        "sampleCommunes": [
+          "Phường Hải Vân"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 13
-      },
-      {
-        "province": "Đồng Nai",
-        "count": 6
-      },
-      {
-        "province": "TP. Cần Thơ",
-        "count": 4
+        "count": 15
       },
       {
         "province": "Quảng Trị",
         "count": 3
       },
       {
-        "province": "Quảng Ninh",
+        "province": "Hải Dương",
         "count": 3
+      },
+      {
+        "province": "TP. Cần Thơ",
+        "count": 2
+      },
+      {
+        "province": "Điện Biên",
+        "count": 2
       }
     ]
   },
   "counts": {
-    "dong_set": 83,
-    "lightning_strikes": 26303,
-    "heavy_rain_points": 37,
+    "dong_set": 62,
+    "lightning_strikes": 25021,
+    "heavy_rain_points": 30,
     "radar_frames": 12,
     "radar_stations": 10
   }
