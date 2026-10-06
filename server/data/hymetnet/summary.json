@@ -1,97 +1,99 @@
 {
-  "snapshotId": "20261006_2000",
-  "exactTimeId": "20261006_2000",
-  "crawledAt": "2026-10-06T14:08:00.016Z",
-  "vnTime": "20:00 06/10/2026",
+  "snapshotId": "20261006_2100",
+  "exactTimeId": "20261006_2100",
+  "crawledAt": "2026-10-06T14:34:04.530Z",
+  "vnTime": "21:00 06/10/2026",
   "summary": {
-    "totalAlertCommunes": 165,
-    "totalLightningStrikes": 23987,
-    "totalLightningCG": 17346,
-    "totalLightningCC": 6641,
+    "totalAlertCommunes": 153,
+    "totalLightningStrikes": 22132,
+    "totalLightningCG": 16565,
+    "totalLightningCC": 5567,
     "maxLightningAmpKa": 216,
-    "heavyRainPointsCount": 109,
+    "heavyRainPointsCount": 90,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Tây Ninh",
-        "communeCount": 29,
-        "totalAlerts": 128,
+        "communeCount": 26,
+        "totalAlerts": 122,
         "sampleCommunes": [
+          "Xã Phước Vinh",
           "Xã Tân Biên",
           "Xã Hòa Hội",
-          "Xã Phước Vinh",
-          "Xã Hảo Đước",
-          "Xã Trà Vong"
+          "Xã Ninh Điền",
+          "Xã Tân Lập"
         ]
       },
       {
-        "province": "Tỉnh Lâm Đồng",
-        "communeCount": 11,
-        "totalAlerts": 28,
+        "province": "Tỉnh Quảng Ngãi",
+        "communeCount": 7,
+        "totalAlerts": 10,
         "sampleCommunes": [
-          "Xã Đam Rông 2",
-          "Xã Phú Sơn Lâm Hà",
-          "Xã Nam Hà Lâm Hà",
-          "Xã Đam Rông 3",
-          "Xã Đam Rông 4"
+          "Xã Bình Sơn",
+          "Xã Đông Sơn",
+          "Xã Bình Minh",
+          "Xã Thọ Phong",
+          "Xã Bình Chương"
         ]
       },
       {
         "province": "Thành phố Đà Nẵng",
         "communeCount": 4,
-        "totalAlerts": 5,
+        "totalAlerts": 7,
         "sampleCommunes": [
-          "Xã Bà Nà",
           "Phường Hải Vân",
           "Xã Núi Thành",
-          "Xã Hòa Tiến"
+          "Xã Bà Nà",
+          "Xã Sông Vàng"
         ]
       },
       {
-        "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 2,
-        "totalAlerts": 2,
+        "province": "Tỉnh Lâm Đồng",
+        "communeCount": 3,
+        "totalAlerts": 6,
         "sampleCommunes": [
-          "Xã Bình Sơn",
-          "Xã Vạn Tường"
+          "Xã Đam Rông 2",
+          "Xã Phú Sơn Lâm Hà",
+          "Xã Nam Hà Lâm Hà"
         ]
       },
       {
         "province": "Thành phố Hồ Chí Minh",
-        "communeCount": 1,
-        "totalAlerts": 2,
+        "communeCount": 2,
+        "totalAlerts": 8,
         "sampleCommunes": [
-          "Xã Dầu Tiếng"
+          "Xã Dầu Tiếng",
+          "Xã Long Hòa"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "Tây Ninh",
-        "count": 31
+        "count": 37
       },
       {
         "province": "Lâm Đồng",
-        "count": 25
-      },
-      {
-        "province": "Bình Dương",
-        "count": 16
-      },
-      {
-        "province": "Bình Thuận",
-        "count": 11
+        "count": 20
       },
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 8
+        "count": 10
+      },
+      {
+        "province": "Bình Dương",
+        "count": 7
+      },
+      {
+        "province": "Bình Thuận",
+        "count": 6
       }
     ]
   },
   "counts": {
-    "dong_set": 165,
-    "lightning_strikes": 23987,
-    "heavy_rain_points": 109,
+    "dong_set": 153,
+    "lightning_strikes": 22132,
+    "heavy_rain_points": 90,
     "radar_frames": 12,
     "radar_stations": 10
   }
