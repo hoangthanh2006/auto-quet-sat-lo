@@ -1,35 +1,47 @@
 {
   "snapshotId": "20261007_0200",
   "exactTimeId": "20261007_0200",
-  "crawledAt": "2026-10-06T19:53:38.582Z",
+  "crawledAt": "2026-10-06T20:08:00.178Z",
   "vnTime": "02:00 07/10/2026",
   "summary": {
-    "totalAlertCommunes": 115,
-    "totalLightningStrikes": 16864,
-    "totalLightningCG": 14951,
-    "totalLightningCC": 1913,
+    "totalAlertCommunes": 132,
+    "totalLightningStrikes": 17783,
+    "totalLightningCG": 15764,
+    "totalLightningCC": 2019,
     "maxLightningAmpKa": 259,
-    "heavyRainPointsCount": 42,
+    "heavyRainPointsCount": 44,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Đồng Tháp",
-        "communeCount": 11,
-        "totalAlerts": 50,
+        "communeCount": 14,
+        "totalAlerts": 65,
         "sampleCommunes": [
+          "Xã Thường Phước",
           "Phường Thường Lạc",
-          "Xã Long Phú Thuận",
           "Xã Long Khánh",
-          "Phường An Bình",
-          "Phường Hồng Ngự"
+          "Xã Long Phú Thuận",
+          "Phường An Bình"
+        ]
+      },
+      {
+        "province": "Thành phố Đà Nẵng",
+        "communeCount": 9,
+        "totalAlerts": 19,
+        "sampleCommunes": [
+          "Phường Hải Vân",
+          "Xã Quế Sơn Trung",
+          "Xã Tam Xuân",
+          "Xã Đức Phú",
+          "Xã Tam Mỹ"
         ]
       },
       {
         "province": "Tỉnh Tây Ninh",
-        "communeCount": 7,
-        "totalAlerts": 35,
+        "communeCount": 8,
+        "totalAlerts": 30,
         "sampleCommunes": [
-          "Xã Tân Biên",
+          "Xã Hưng Điền",
           "Xã Tân Lập",
           "Xã Tân Hội",
           "Xã Tân Thành",
@@ -37,35 +49,24 @@
         ]
       },
       {
-        "province": "Thành phố Đà Nẵng",
-        "communeCount": 4,
+        "province": "Thành phố Huế",
+        "communeCount": 5,
         "totalAlerts": 11,
         "sampleCommunes": [
-          "Phường Hải Vân",
-          "Xã Núi Thành",
-          "Phường Sơn Trà",
-          "Xã Sông Vàng"
-        ]
-      },
-      {
-        "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 4,
-        "totalAlerts": 4,
-        "sampleCommunes": [
-          "Xã Bình Minh",
-          "Xã Vạn Tường",
-          "Xã Đông Trà Bồng",
-          "Xã Đông Sơn"
-        ]
-      },
-      {
-        "province": "Thành phố Huế",
-        "communeCount": 3,
-        "totalAlerts": 6,
-        "sampleCommunes": [
-          "Xã Chân Mây - Lăng Cô",
           "Xã Vinh Lộc",
-          "Xã Phú Lộc"
+          "Xã Chân Mây - Lăng Cô",
+          "Xã Phú Lộc",
+          "Xã Lộc An",
+          "Xã Khe Tre"
+        ]
+      },
+      {
+        "province": "Tỉnh An Giang",
+        "communeCount": 2,
+        "totalAlerts": 5,
+        "sampleCommunes": [
+          "Xã Chợ Vàm",
+          "Xã Phú An"
         ]
       }
     ],
@@ -75,27 +76,27 @@
         "count": 14
       },
       {
-        "province": "Tây Ninh",
-        "count": 10
+        "province": "Đồng Tháp",
+        "count": 12
       },
       {
-        "province": "Đồng Tháp",
+        "province": "Tây Ninh",
         "count": 9
       },
       {
         "province": "Bình Dương",
-        "count": 3
+        "count": 4
       },
       {
-        "province": "Hải Dương",
+        "province": "An Giang",
         "count": 2
       }
     ]
   },
   "counts": {
-    "dong_set": 115,
-    "lightning_strikes": 16864,
-    "heavy_rain_points": 42,
+    "dong_set": 132,
+    "lightning_strikes": 17783,
+    "heavy_rain_points": 44,
     "radar_frames": 12,
     "radar_stations": 10
   }
