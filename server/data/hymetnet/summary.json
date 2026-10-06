@@ -1,98 +1,81 @@
 {
   "snapshotId": "20261006_0600",
   "exactTimeId": "20261006_0600",
-  "crawledAt": "2026-10-05T23:37:58.279Z",
+  "crawledAt": "2026-10-06T00:08:09.026Z",
   "vnTime": "06:00 06/10/2026",
   "summary": {
-    "totalAlertCommunes": 74,
-    "totalLightningStrikes": 26589,
-    "totalLightningCG": 23402,
-    "totalLightningCC": 3187,
+    "totalAlertCommunes": 83,
+    "totalLightningStrikes": 26303,
+    "totalLightningCG": 23492,
+    "totalLightningCC": 2811,
     "maxLightningAmpKa": 359,
-    "heavyRainPointsCount": 60,
+    "heavyRainPointsCount": 37,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Quảng Trị",
-        "communeCount": 11,
-        "totalAlerts": 41,
+        "communeCount": 13,
+        "totalAlerts": 42,
         "sampleCommunes": [
           "Xã Vĩnh Hoàng",
-          "Xã Triệu Cơ",
-          "Xã Diên Sanh",
-          "Xã Mỹ Thủy",
-          "Xã Sen Ngư"
+          "Xã Nam Cửa Việt",
+          "Xã Hải Lăng",
+          "Xã Vĩnh Định",
+          "Xã Nam Hải Lăng"
         ]
       },
       {
         "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 8,
-        "totalAlerts": 16,
+        "communeCount": 9,
+        "totalAlerts": 27,
         "sampleCommunes": [
-          "Xã Thanh Bồng",
-          "Xã Đông Trà Bồng",
+          "Xã Tây Trà",
+          "Xã Đông Sơn",
           "Xã Vạn Tường",
-          "Đặc khu Lý Sơn",
-          "Xã Tây Trà"
+          "Xã Thọ Phong",
+          "Xã Trà Bồng"
         ]
       },
       {
         "province": "Thành phố Huế",
-        "communeCount": 5,
-        "totalAlerts": 13,
+        "communeCount": 7,
+        "totalAlerts": 14,
         "sampleCommunes": [
-          "Phường Phong Điền",
-          "Phường Phong Phú",
+          "Xã Chân Mây - Lăng Cô",
           "Xã Phú Vinh",
-          "Xã Vinh Lộc",
-          "Xã Phú Vang"
-        ]
-      },
-      {
-        "province": "Thành phố Đà Nẵng",
-        "communeCount": 2,
-        "totalAlerts": 3,
-        "sampleCommunes": [
-          "Xã Tam Mỹ",
-          "Xã Núi Thành"
-        ]
-      },
-      {
-        "province": "Tỉnh Đồng Nai",
-        "communeCount": 1,
-        "totalAlerts": 1,
-        "sampleCommunes": [
-          "Xã Xuân Lộc"
+          "Xã Phú Lộc",
+          "Xã Phú Vang",
+          "Xã Vinh Lộc"
         ]
       }
     ],
     "topRainProvinces": [
       {
-        "province": "Đồng Nai",
-        "count": 12
-      },
-      {
-        "province": "Bình Dương",
-        "count": 12
-      },
-      {
         "province": "TP. Hồ Chí Minh",
-        "count": 11
+        "count": 13
+      },
+      {
+        "province": "Đồng Nai",
+        "count": 6
       },
       {
         "province": "TP. Cần Thơ",
-        "count": 8
+        "count": 4
       },
       {
-        "province": "Bà Rịa - Vũng Tàu",
-        "count": 4
+        "province": "Quảng Trị",
+        "count": 3
+      },
+      {
+        "province": "Quảng Ninh",
+        "count": 3
       }
     ]
   },
   "counts": {
-    "dong_set": 74,
-    "lightning_strikes": 26589,
-    "heavy_rain_points": 60,
+    "dong_set": 83,
+    "lightning_strikes": 26303,
+    "heavy_rain_points": 37,
     "radar_frames": 12,
     "radar_stations": 10
   }
