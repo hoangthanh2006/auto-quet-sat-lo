@@ -1,15 +1,15 @@
 {
   "snapshotId": "20261007_0400",
   "exactTimeId": "20261007_0400",
-  "crawledAt": "2026-10-06T21:37:55.492Z",
+  "crawledAt": "2026-10-06T21:46:04.852Z",
   "vnTime": "04:00 07/10/2026",
   "summary": {
     "totalAlertCommunes": 110,
-    "totalLightningStrikes": 16259,
-    "totalLightningCG": 14598,
-    "totalLightningCC": 1661,
+    "totalLightningStrikes": 16355,
+    "totalLightningCG": 14661,
+    "totalLightningCC": 1694,
     "maxLightningAmpKa": 368,
-    "heavyRainPointsCount": 29,
+    "heavyRainPointsCount": 25,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
@@ -75,30 +75,30 @@
     "topRainProvinces": [
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 12
+        "count": 13
       },
       {
         "province": "Hải Dương",
-        "count": 6
+        "count": 5
       },
       {
         "province": "Đồng Tháp",
-        "count": 6
-      },
-      {
-        "province": "Tây Ninh",
-        "count": 2
+        "count": 4
       },
       {
         "province": "Lai Châu",
+        "count": 1
+      },
+      {
+        "province": "TP. Đà Nẵng",
         "count": 1
       }
     ]
   },
   "counts": {
     "dong_set": 110,
-    "lightning_strikes": 16259,
-    "heavy_rain_points": 29,
+    "lightning_strikes": 16355,
+    "heavy_rain_points": 25,
     "radar_frames": 12,
     "radar_stations": 10
   }
