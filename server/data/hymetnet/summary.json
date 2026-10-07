@@ -1,79 +1,80 @@
 {
-  "snapshotId": "20261007_0800",
-  "exactTimeId": "20261007_0800",
-  "crawledAt": "2026-10-07T02:08:01.839Z",
-  "vnTime": "08:00 07/10/2026",
+  "snapshotId": "20261007_0900",
+  "exactTimeId": "20261007_0900",
+  "crawledAt": "2026-10-07T02:37:59.409Z",
+  "vnTime": "09:00 07/10/2026",
   "summary": {
-    "totalAlertCommunes": 52,
-    "totalLightningStrikes": 10431,
-    "totalLightningCG": 9600,
-    "totalLightningCC": 831,
-    "maxLightningAmpKa": 307,
-    "heavyRainPointsCount": 24,
+    "totalAlertCommunes": 89,
+    "totalLightningStrikes": 9717,
+    "totalLightningCG": 8333,
+    "totalLightningCC": 1384,
+    "maxLightningAmpKa": 226,
+    "heavyRainPointsCount": 18,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Thành phố Đà Nẵng",
-        "communeCount": 11,
-        "totalAlerts": 28,
+        "communeCount": 25,
+        "totalAlerts": 54,
         "sampleCommunes": [
+          "Phường Hải Vân",
+          "Xã Hiệp Đức",
+          "Xã Sơn Cẩm Hà",
           "Xã Thăng Bình",
-          "Xã Thăng An",
-          "Xã Thăng Điền",
-          "Phường Sơn Trà",
-          "Xã Đồng Dương"
+          "Xã Thăng An"
         ]
       },
       {
         "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 9,
-        "totalAlerts": 21,
+        "communeCount": 12,
+        "totalAlerts": 26,
         "sampleCommunes": [
-          "Xã Sơn Kỳ",
           "Xã Ba Vì",
-          "Xã Ba Dinh",
-          "Xã Ba Vinh",
-          "Xã Kon Plông"
+          "Xã Bình Minh",
+          "Xã Bình Sơn",
+          "Xã Kon Plông",
+          "Xã Đông Sơn"
         ]
       },
       {
         "province": "Thành phố Huế",
-        "communeCount": 3,
-        "totalAlerts": 3,
+        "communeCount": 4,
+        "totalAlerts": 9,
         "sampleCommunes": [
-          "Phường Phong Quảng",
-          "Xã Quảng Điền",
-          "Xã Chân Mây - Lăng Cô"
+          "Phường Phong Thái",
+          "Phường Phong Điền",
+          "Phường Phong Phú",
+          "Phường Phong Dinh"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 9
+        "count": 10
       },
       {
-        "province": "TP. Hà Nội",
-        "count": 7
-      },
-      {
-        "province": "Yên Bái",
+        "province": "Nghệ An",
         "count": 1
       },
       {
-        "province": "Hòa Bình",
+        "province": "Lai Châu",
         "count": 1
       },
       {
-        "province": "Hưng Yên",
+        "province": "Hải Dương",
+        "count": 1
+      },
+      {
+        "province": "Thái Bình",
         "count": 1
       }
     ]
   },
   "counts": {
-    "dong_set": 52,
-    "lightning_strikes": 10431,
-    "heavy_rain_points": 24,
+    "dong_set": 89,
+    "lightning_strikes": 9717,
+    "heavy_rain_points": 18,
     "radar_frames": 12,
     "radar_stations": 10
   }
