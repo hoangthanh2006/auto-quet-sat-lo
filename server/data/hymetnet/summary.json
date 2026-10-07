@@ -1,27 +1,27 @@
 {
   "snapshotId": "20261007_0800",
   "exactTimeId": "20261007_0800",
-  "crawledAt": "2026-10-07T01:28:19.103Z",
+  "crawledAt": "2026-10-07T01:38:07.600Z",
   "vnTime": "08:00 07/10/2026",
   "summary": {
-    "totalAlertCommunes": 47,
-    "totalLightningStrikes": 12240,
-    "totalLightningCG": 11180,
-    "totalLightningCC": 1060,
+    "totalAlertCommunes": 44,
+    "totalLightningStrikes": 11672,
+    "totalLightningCG": 10773,
+    "totalLightningCC": 899,
     "maxLightningAmpKa": 383,
-    "heavyRainPointsCount": 24,
+    "heavyRainPointsCount": 27,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Thành phố Đà Nẵng",
-        "communeCount": 13,
-        "totalAlerts": 33,
+        "communeCount": 12,
+        "totalAlerts": 29,
         "sampleCommunes": [
+          "Xã Sơn Cẩm Hà",
           "Xã Thăng An",
           "Xã Thăng Trường",
           "Xã Thăng Bình",
-          "Xã Thăng Điền",
-          "Phường Quảng Phú"
+          "Xã Thăng Điền"
         ]
       },
       {
@@ -30,21 +30,29 @@
         "totalAlerts": 14,
         "sampleCommunes": [
           "Xã Sơn Kỳ",
-          "Xã Trà Bồng",
-          "Xã Sơn Linh",
-          "Xã Ba Vì",
-          "Xã Minh Long"
+          "Xã Kon Plông",
+          "Xã Sơn Thủy",
+          "Xã Mỏ Cày",
+          "Xã Mộ Đức"
+        ]
+      },
+      {
+        "province": "Tỉnh Hưng Yên",
+        "communeCount": 1,
+        "totalAlerts": 1,
+        "sampleCommunes": [
+          "Xã Đông Tiền Hải"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 12
+        "count": 11
       },
       {
         "province": "TP. Hà Nội",
-        "count": 4
+        "count": 6
       },
       {
         "province": "Thái Bình",
@@ -55,15 +63,15 @@
         "count": 3
       },
       {
-        "province": "Kon Tum",
+        "province": "Bắc Giang",
         "count": 1
       }
     ]
   },
   "counts": {
-    "dong_set": 47,
-    "lightning_strikes": 12240,
-    "heavy_rain_points": 24,
+    "dong_set": 44,
+    "lightning_strikes": 11672,
+    "heavy_rain_points": 27,
     "radar_frames": 12,
     "radar_stations": 10
   }
