@@ -1,105 +1,105 @@
 {
-  "snapshotId": "20261007_1300",
-  "exactTimeId": "20261007_1300",
-  "crawledAt": "2026-10-07T07:07:59.513Z",
-  "vnTime": "13:00 07/10/2026",
+  "snapshotId": "20261007_1400",
+  "exactTimeId": "20261007_1400",
+  "crawledAt": "2026-10-07T07:38:02.305Z",
+  "vnTime": "14:00 07/10/2026",
   "summary": {
-    "totalAlertCommunes": 233,
-    "totalLightningStrikes": 18124,
-    "totalLightningCG": 12310,
-    "totalLightningCC": 5814,
-    "maxLightningAmpKa": 191,
-    "heavyRainPointsCount": 118,
+    "totalAlertCommunes": 234,
+    "totalLightningStrikes": 17938,
+    "totalLightningCG": 13436,
+    "totalLightningCC": 4502,
+    "maxLightningAmpKa": 182,
+    "heavyRainPointsCount": 154,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Thành phố Cần Thơ",
+        "province": "Tỉnh Gia Lai",
         "communeCount": 22,
-        "totalAlerts": 59,
+        "totalAlerts": 58,
         "sampleCommunes": [
-          "Xã Phú Hữu",
-          "Xã An Lạc Thôn",
-          "Xã Phú Tâm",
-          "Xã Thuận Hòa",
-          "Xã Nhơn Mỹ"
+          "Xã Ia Pnôn",
+          "Xã Ia Boòng",
+          "Xã Ia Pia",
+          "Xã Ia Tôr",
+          "Xã Kon Chiêng"
         ]
       },
       {
-        "province": "Tỉnh Gia Lai",
-        "communeCount": 15,
+        "province": "Tỉnh Đắk Lắk",
+        "communeCount": 14,
         "totalAlerts": 41,
         "sampleCommunes": [
-          "Xã Chư Prông",
-          "Xã Ia Tôr",
-          "Xã Ia Pia",
-          "Xã Kon Chiêng",
-          "Xã Pờ Tó"
+          "Xã Ea H’Leo",
+          "Xã Ea Khăl",
+          "Xã Vân Hòa",
+          "Xã Hòa Mỹ",
+          "Xã Tuy An Tây"
         ]
       },
       {
-        "province": "Thành phố Hồ Chí Minh",
-        "communeCount": 12,
-        "totalAlerts": 37,
+        "province": "Thành phố Cần Thơ",
+        "communeCount": 13,
+        "totalAlerts": 40,
         "sampleCommunes": [
-          "Xã Châu Pha",
-          "Phường Long Hương",
-          "Xã Long Điền",
-          "Phường Tam Long",
-          "Xã Đất Đỏ"
-        ]
-      },
-      {
-        "province": "Tỉnh Vĩnh Long",
-        "communeCount": 11,
-        "totalAlerts": 18,
-        "sampleCommunes": [
-          "Xã Tân Hòa",
-          "Xã Ngũ Lạc",
-          "Xã Quới Điền",
-          "Xã Thạnh Phú",
-          "Xã Đôn Châu"
+          "Xã Phú Hữu",
+          "Phường Đại Thành",
+          "Xã An Lạc Thôn",
+          "Xã Đại Hải",
+          "Xã Tân Thạnh"
         ]
       },
       {
         "province": "Tỉnh Lâm Đồng",
-        "communeCount": 11,
-        "totalAlerts": 26,
+        "communeCount": 12,
+        "totalAlerts": 34,
         "sampleCommunes": [
-          "Xã Đông Giang",
-          "Xã Sơn Điền",
           "Xã Hàm Thuận",
-          "Xã Đam Rông 4",
+          "Xã Hàm Thuận Bắc",
+          "Xã Hàm Liêm",
+          "Xã Tà Hine",
           "Xã Tà Năng"
+        ]
+      },
+      {
+        "province": "Tỉnh Vĩnh Long",
+        "communeCount": 10,
+        "totalAlerts": 23,
+        "sampleCommunes": [
+          "Xã Cầu Kè",
+          "Xã Phong Thạnh",
+          "Xã Cầu Ngang",
+          "Xã Tân Thủy",
+          "Xã Tiểu Cần"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "Lâm Đồng",
-        "count": 22
-      },
-      {
-        "province": "Gia Lai",
-        "count": 20
+        "count": 29
       },
       {
         "province": "Bà Rịa - Vũng Tàu",
-        "count": 17
+        "count": 24
       },
       {
-        "province": "TP. Hồ Chí Minh",
-        "count": 9
+        "province": "Gia Lai",
+        "count": 23
+      },
+      {
+        "province": "Sóc Trăng",
+        "count": 11
       },
       {
         "province": "Bình Thuận",
-        "count": 8
+        "count": 9
       }
     ]
   },
   "counts": {
-    "dong_set": 233,
-    "lightning_strikes": 18124,
-    "heavy_rain_points": 118,
+    "dong_set": 234,
+    "lightning_strikes": 17938,
+    "heavy_rain_points": 154,
     "radar_frames": 12,
     "radar_stations": 10
   }
