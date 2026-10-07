@@ -1,88 +1,80 @@
 {
   "snapshotId": "20261007_0600",
   "exactTimeId": "20261007_0600",
-  "crawledAt": "2026-10-06T23:38:06.414Z",
+  "crawledAt": "2026-10-07T00:08:02.439Z",
   "vnTime": "06:00 07/10/2026",
   "summary": {
-    "totalAlertCommunes": 55,
-    "totalLightningStrikes": 15760,
-    "totalLightningCG": 14259,
-    "totalLightningCC": 1501,
+    "totalAlertCommunes": 60,
+    "totalLightningStrikes": 15383,
+    "totalLightningCG": 13967,
+    "totalLightningCC": 1416,
     "maxLightningAmpKa": 383,
-    "heavyRainPointsCount": 21,
+    "heavyRainPointsCount": 22,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 17,
-        "totalAlerts": 35,
+        "communeCount": 16,
+        "totalAlerts": 31,
         "sampleCommunes": [
-          "Xã Ba Tô",
-          "Xã Ba Dinh",
-          "Xã Ba Tơ",
-          "Xã An Phú",
-          "Xã Tịnh Khê"
-        ]
-      },
-      {
-        "province": "Thành phố Đà Nẵng",
-        "communeCount": 6,
-        "totalAlerts": 8,
-        "sampleCommunes": [
-          "Xã Tam Mỹ",
-          "Xã Trà Liên",
-          "Xã Thăng Điền",
-          "Xã Tây Hồ",
-          "Xã Chiên Đàn"
+          "Xã Đăk Sao",
+          "Xã Xốp",
+          "Xã Thanh Bồng",
+          "Xã Đăk Môn",
+          "Xã Phước Giang"
         ]
       },
       {
         "province": "Thành phố Huế",
-        "communeCount": 4,
-        "totalAlerts": 11,
+        "communeCount": 8,
+        "totalAlerts": 23,
         "sampleCommunes": [
-          "Phường Phú Bài",
           "Phường Hương Thủy",
           "Xã Phú Vang",
-          "Xã Hưng Lộc"
+          "Xã Phú Hồ",
+          "Xã Hưng Lộc",
+          "Phường Phú Bài"
         ]
       },
       {
-        "province": "Tỉnh Gia Lai",
-        "communeCount": 1,
-        "totalAlerts": 1,
+        "province": "Thành phố Đà Nẵng",
+        "communeCount": 4,
+        "totalAlerts": 6,
         "sampleCommunes": [
-          "Xã Sơn Lang"
+          "Xã Sơn Cẩm Hà",
+          "Xã Trà Liên",
+          "Xã Lãnh Ngọc",
+          "Xã Trà Giáp"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 13
-      },
-      {
-        "province": "TP. Hà Nội",
-        "count": 4
+        "count": 14
       },
       {
         "province": "Quảng Nam",
+        "count": 2
+      },
+      {
+        "province": "Hải Dương",
         "count": 1
       },
       {
-        "province": "Điện Biên",
+        "province": "Quảng Ngãi",
         "count": 1
       },
       {
-        "province": "Hà Tĩnh",
+        "province": "Bắc Giang",
         "count": 1
       }
     ]
   },
   "counts": {
-    "dong_set": 55,
-    "lightning_strikes": 15760,
-    "heavy_rain_points": 21,
+    "dong_set": 60,
+    "lightning_strikes": 15383,
+    "heavy_rain_points": 22,
     "radar_frames": 12,
     "radar_stations": 10
   }
