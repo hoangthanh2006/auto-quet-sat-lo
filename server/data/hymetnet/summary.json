@@ -1,61 +1,61 @@
 {
-  "snapshotId": "20261007_1100",
-  "exactTimeId": "20261007_1100",
-  "crawledAt": "2026-10-07T05:07:59.475Z",
-  "vnTime": "11:00 07/10/2026",
+  "snapshotId": "20261007_1200",
+  "exactTimeId": "20261007_1200",
+  "crawledAt": "2026-10-07T05:37:59.262Z",
+  "vnTime": "12:00 07/10/2026",
   "summary": {
-    "totalAlertCommunes": 79,
-    "totalLightningStrikes": 5866,
-    "totalLightningCG": 4965,
-    "totalLightningCC": 901,
+    "totalAlertCommunes": 118,
+    "totalLightningStrikes": 7738,
+    "totalLightningCG": 5965,
+    "totalLightningCC": 1773,
     "maxLightningAmpKa": 198,
-    "heavyRainPointsCount": 28,
+    "heavyRainPointsCount": 34,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Thành phố Đà Nẵng",
-        "communeCount": 10,
-        "totalAlerts": 16,
-        "sampleCommunes": [
-          "Phường Hải Vân",
-          "Xã Thạnh Bình",
-          "Xã Trà My",
-          "Xã Trà Giáp",
-          "Phường Hội An Tây"
-        ]
-      },
-      {
-        "province": "Thành phố Huế",
-        "communeCount": 7,
-        "totalAlerts": 13,
-        "sampleCommunes": [
-          "Phường Phong Dinh",
-          "Phường Phong Phú",
-          "Phường Dương Nỗ",
-          "Phường Phong Điền",
-          "Phường Thủy Xuân"
-        ]
-      },
-      {
         "province": "Tỉnh Lâm Đồng",
-        "communeCount": 4,
-        "totalAlerts": 12,
+        "communeCount": 11,
+        "totalAlerts": 34,
         "sampleCommunes": [
+          "Phường 3 Bảo Lộc",
           "Phường 2 Bảo Lộc",
-          "Xã Hiệp Thạnh",
-          "Xã Hàm Thuận",
+          "Xã La Dạ",
+          "Xã Nam Ban Lâm Hà",
           "Phường Xuân Hương - Đà Lạt"
         ]
       },
       {
         "province": "Tỉnh Gia Lai",
-        "communeCount": 4,
-        "totalAlerts": 10,
+        "communeCount": 10,
+        "totalAlerts": 23,
         "sampleCommunes": [
-          "Xã Ia Boòng",
-          "Xã Lơ Pang",
+          "Xã Đức Cơ",
           "Xã Ia Púch",
-          "Phường Hoài Nhơn Bắc"
+          "Xã Ia Boòng",
+          "Xã Bờ Ngoong",
+          "Xã Lơ Pang"
+        ]
+      },
+      {
+        "province": "Tỉnh Vĩnh Long",
+        "communeCount": 9,
+        "totalAlerts": 25,
+        "sampleCommunes": [
+          "Xã Quới An",
+          "Xã Quới Thiện",
+          "Phường Bến Tre",
+          "Phường An Hội",
+          "Xã Trung Ngãi"
+        ]
+      },
+      {
+        "province": "Tỉnh Đồng Nai",
+        "communeCount": 3,
+        "totalAlerts": 14,
+        "sampleCommunes": [
+          "Xã Bom Bo",
+          "Xã Sông Ray",
+          "Xã Bù Đăng"
         ]
       },
       {
@@ -63,39 +63,39 @@
         "communeCount": 3,
         "totalAlerts": 11,
         "sampleCommunes": [
-          "Xã Sơn Hòa",
-          "Xã Tây Sơn",
-          "Xã Suối Trai"
+          "Xã Đức Bình",
+          "Xã Phú Mỡ",
+          "Xã Sơn Hòa"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 16
+        "count": 15
       },
       {
         "province": "Gia Lai",
-        "count": 5
+        "count": 9
       },
       {
-        "province": "Quảng Ninh",
+        "province": "Phú Yên",
         "count": 2
       },
       {
-        "province": "Lai Châu",
+        "province": "Hải Dương",
         "count": 2
       },
       {
-        "province": "Điện Biên",
+        "province": "Lâm Đồng",
         "count": 1
       }
     ]
   },
   "counts": {
-    "dong_set": 79,
-    "lightning_strikes": 5866,
-    "heavy_rain_points": 28,
+    "dong_set": 118,
+    "lightning_strikes": 7738,
+    "heavy_rain_points": 34,
     "radar_frames": 12,
     "radar_stations": 10
   }
