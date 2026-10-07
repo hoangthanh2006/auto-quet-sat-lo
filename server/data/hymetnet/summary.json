@@ -1,80 +1,87 @@
 {
   "snapshotId": "20261007_0900",
   "exactTimeId": "20261007_0900",
-  "crawledAt": "2026-10-07T02:37:59.409Z",
+  "crawledAt": "2026-10-07T03:03:33.295Z",
   "vnTime": "09:00 07/10/2026",
   "summary": {
-    "totalAlertCommunes": 89,
-    "totalLightningStrikes": 9717,
-    "totalLightningCG": 8333,
-    "totalLightningCC": 1384,
-    "maxLightningAmpKa": 226,
-    "heavyRainPointsCount": 18,
+    "totalAlertCommunes": 105,
+    "totalLightningStrikes": 8943,
+    "totalLightningCG": 7555,
+    "totalLightningCC": 1388,
+    "maxLightningAmpKa": 202,
+    "heavyRainPointsCount": 20,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Thành phố Đà Nẵng",
-        "communeCount": 25,
-        "totalAlerts": 54,
+        "communeCount": 27,
+        "totalAlerts": 73,
         "sampleCommunes": [
-          "Phường Hải Vân",
-          "Xã Hiệp Đức",
-          "Xã Sơn Cẩm Hà",
+          "Phường Liên Chiểu",
+          "Xã Lãnh Ngọc",
+          "Xã Đồng Dương",
           "Xã Thăng Bình",
           "Xã Thăng An"
         ]
       },
       {
         "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 12,
-        "totalAlerts": 26,
+        "communeCount": 13,
+        "totalAlerts": 22,
         "sampleCommunes": [
-          "Xã Ba Vì",
-          "Xã Bình Minh",
           "Xã Bình Sơn",
-          "Xã Kon Plông",
-          "Xã Đông Sơn"
+          "Xã Bình Minh",
+          "Xã Đông Sơn",
+          "Xã An Phú",
+          "Xã Tịnh Khê"
         ]
       },
       {
         "province": "Thành phố Huế",
-        "communeCount": 4,
+        "communeCount": 3,
         "totalAlerts": 9,
         "sampleCommunes": [
-          "Phường Phong Thái",
-          "Phường Phong Điền",
           "Phường Phong Phú",
-          "Phường Phong Dinh"
+          "Phường Phong Dinh",
+          "Phường Phong Điền"
+        ]
+      },
+      {
+        "province": "Tỉnh Quảng Trị",
+        "communeCount": 1,
+        "totalAlerts": 1,
+        "sampleCommunes": [
+          "Xã Mỹ Thủy"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 10
-      },
-      {
-        "province": "Nghệ An",
-        "count": 1
-      },
-      {
-        "province": "Lai Châu",
-        "count": 1
+        "count": 12
       },
       {
         "province": "Hải Dương",
+        "count": 2
+      },
+      {
+        "province": "Quảng Ninh",
+        "count": 2
+      },
+      {
+        "province": "TP. Hải Phòng",
         "count": 1
       },
       {
-        "province": "Thái Bình",
+        "province": "Nghệ An",
         "count": 1
       }
     ]
   },
   "counts": {
-    "dong_set": 89,
-    "lightning_strikes": 9717,
-    "heavy_rain_points": 18,
+    "dong_set": 105,
+    "lightning_strikes": 8943,
+    "heavy_rain_points": 20,
     "radar_frames": 12,
     "radar_stations": 10
   }
