@@ -1,104 +1,104 @@
 {
-  "snapshotId": "20261007_1600",
-  "exactTimeId": "20261007_1600",
-  "crawledAt": "2026-10-07T10:07:57.661Z",
-  "vnTime": "16:00 07/10/2026",
+  "snapshotId": "20261007_1700",
+  "exactTimeId": "20261007_1700",
+  "crawledAt": "2026-10-07T10:37:58.963Z",
+  "vnTime": "17:00 07/10/2026",
   "summary": {
-    "totalAlertCommunes": 228,
-    "totalLightningStrikes": 23976,
-    "totalLightningCG": 16249,
-    "totalLightningCC": 7727,
+    "totalAlertCommunes": 254,
+    "totalLightningStrikes": 25981,
+    "totalLightningCG": 17147,
+    "totalLightningCC": 8834,
     "maxLightningAmpKa": 187,
     "heavyRainPointsCount": 196,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Tỉnh Lâm Đồng",
-        "communeCount": 14,
-        "totalAlerts": 32,
+        "province": "Tỉnh Đồng Nai",
+        "communeCount": 23,
+        "totalAlerts": 69,
         "sampleCommunes": [
-          "Xã Suối Kiết",
-          "Xã Đắk Wil",
-          "Xã Nam Dong",
-          "Xã Quảng Lập",
-          "Xã D’Ran"
+          "Xã Trị An",
+          "Xã Tân An",
+          "Xã Bình Minh",
+          "Xã An Viễn",
+          "Xã Hưng Thịnh"
         ]
       },
       {
         "province": "Thành phố Hồ Chí Minh",
-        "communeCount": 13,
-        "totalAlerts": 34,
+        "communeCount": 21,
+        "totalAlerts": 68,
         "sampleCommunes": [
-          "Xã An Nhơn Tây",
-          "Phường Tây Nam",
-          "Phường Bến Cát",
-          "Xã Bàu Bàng",
-          "Phường Chánh Phú Hòa"
+          "Xã Củ Chi",
+          "Xã Phú Hòa Đông",
+          "Phường Long Nguyên",
+          "Xã Bình Mỹ",
+          "Phường Bến Cát"
         ]
       },
       {
-        "province": "Tỉnh Đồng Nai",
-        "communeCount": 13,
-        "totalAlerts": 33,
+        "province": "Tỉnh Quảng Ngãi",
+        "communeCount": 10,
+        "totalAlerts": 23,
         "sampleCommunes": [
-          "Xã Trị An",
-          "Phường Bình Lộc",
-          "Phường Xuân Lập",
-          "Xã Xuân Hòa",
-          "Xã An Phước"
-        ]
-      },
-      {
-        "province": "Tỉnh Khánh Hòa",
-        "communeCount": 13,
-        "totalAlerts": 34,
-        "sampleCommunes": [
-          "Xã Anh Dũng",
-          "Xã Ninh Sơn",
-          "Xã Bác Ái Tây",
-          "Xã Bác Ái",
-          "Xã Suối Hiệp"
+          "Xã Bình Minh",
+          "Xã Vạn Tường",
+          "Xã Đông Sơn",
+          "Xã Bình Sơn",
+          "Xã Tịnh Khê"
         ]
       },
       {
         "province": "Tỉnh Tây Ninh",
-        "communeCount": 12,
-        "totalAlerts": 45,
+        "communeCount": 9,
+        "totalAlerts": 36,
         "sampleCommunes": [
-          "Xã Khánh Hưng",
           "Xã Tuyên Bình",
+          "Xã Phước Vinh",
           "Xã Tân Biên",
           "Xã Tân Lập",
-          "Xã Thạnh Bình"
+          "Xã Bình Hiệp"
+        ]
+      },
+      {
+        "province": "Tỉnh Lâm Đồng",
+        "communeCount": 9,
+        "totalAlerts": 21,
+        "sampleCommunes": [
+          "Xã Tân Minh",
+          "Xã Hàm Tân",
+          "Xã Đắk Song",
+          "Xã Tuy Phong",
+          "Xã Sơn Mỹ"
         ]
       }
     ],
     "topRainProvinces": [
       {
+        "province": "Bình Dương",
+        "count": 28
+      },
+      {
         "province": "Tây Ninh",
-        "count": 35
-      },
-      {
-        "province": "Bến Tre",
-        "count": 25
-      },
-      {
-        "province": "Bình Thuận",
-        "count": 23
-      },
-      {
-        "province": "Đăk Lắk",
-        "count": 18
+        "count": 24
       },
       {
         "province": "Đồng Nai",
-        "count": 14
+        "count": 22
+      },
+      {
+        "province": "Bình Thuận",
+        "count": 21
+      },
+      {
+        "province": "Bến Tre",
+        "count": 19
       }
     ]
   },
   "counts": {
-    "dong_set": 228,
-    "lightning_strikes": 23976,
+    "dong_set": 254,
+    "lightning_strikes": 25981,
     "heavy_rain_points": 196,
     "radar_frames": 12,
     "radar_stations": 10
