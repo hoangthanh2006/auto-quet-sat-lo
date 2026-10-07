@@ -1,80 +1,79 @@
 {
   "snapshotId": "20261007_0800",
   "exactTimeId": "20261007_0800",
-  "crawledAt": "2026-10-07T01:48:36.163Z",
+  "crawledAt": "2026-10-07T02:08:01.839Z",
   "vnTime": "08:00 07/10/2026",
   "summary": {
-    "totalAlertCommunes": 59,
-    "totalLightningStrikes": 10861,
-    "totalLightningCG": 9932,
-    "totalLightningCC": 929,
-    "maxLightningAmpKa": 383,
-    "heavyRainPointsCount": 29,
+    "totalAlertCommunes": 52,
+    "totalLightningStrikes": 10431,
+    "totalLightningCG": 9600,
+    "totalLightningCC": 831,
+    "maxLightningAmpKa": 307,
+    "heavyRainPointsCount": 24,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 14,
-        "totalAlerts": 26,
+        "province": "Thành phố Đà Nẵng",
+        "communeCount": 11,
+        "totalAlerts": 28,
         "sampleCommunes": [
-          "Xã Sơn Linh",
-          "Xã Sơn Kỳ",
-          "Xã Minh Long",
-          "Xã Ba Vinh",
-          "Xã Ba Dinh"
+          "Xã Thăng Bình",
+          "Xã Thăng An",
+          "Xã Thăng Điền",
+          "Phường Sơn Trà",
+          "Xã Đồng Dương"
         ]
       },
       {
-        "province": "Thành phố Đà Nẵng",
-        "communeCount": 10,
-        "totalAlerts": 24,
+        "province": "Tỉnh Quảng Ngãi",
+        "communeCount": 9,
+        "totalAlerts": 21,
         "sampleCommunes": [
-          "Xã Trà Liên",
-          "Xã Thăng An",
-          "Xã Thăng Trường",
-          "Xã Thăng Bình",
-          "Xã Thăng Điền"
+          "Xã Sơn Kỳ",
+          "Xã Ba Vì",
+          "Xã Ba Dinh",
+          "Xã Ba Vinh",
+          "Xã Kon Plông"
         ]
       },
       {
         "province": "Thành phố Huế",
-        "communeCount": 4,
-        "totalAlerts": 9,
+        "communeCount": 3,
+        "totalAlerts": 3,
         "sampleCommunes": [
           "Phường Phong Quảng",
-          "Xã Đan Điền",
-          "Phường Phong Thái",
-          "Phường Hương Trà"
+          "Xã Quảng Điền",
+          "Xã Chân Mây - Lăng Cô"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 11
+        "count": 9
       },
       {
         "province": "TP. Hà Nội",
         "count": 7
       },
       {
-        "province": "Thái Bình",
-        "count": 3
-      },
-      {
-        "province": "Hải Dương",
-        "count": 2
+        "province": "Yên Bái",
+        "count": 1
       },
       {
         "province": "Hòa Bình",
+        "count": 1
+      },
+      {
+        "province": "Hưng Yên",
         "count": 1
       }
     ]
   },
   "counts": {
-    "dong_set": 59,
-    "lightning_strikes": 10861,
-    "heavy_rain_points": 29,
+    "dong_set": 52,
+    "lightning_strikes": 10431,
+    "heavy_rain_points": 24,
     "radar_frames": 12,
     "radar_stations": 10
   }
