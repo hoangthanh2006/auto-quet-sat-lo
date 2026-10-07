@@ -1,25 +1,25 @@
 {
-  "snapshotId": "20261008_0300",
-  "exactTimeId": "20261008_0300",
-  "crawledAt": "2026-10-07T21:07:56.448Z",
-  "vnTime": "03:00 08/10/2026",
+  "snapshotId": "20261008_0400",
+  "exactTimeId": "20261008_0400",
+  "crawledAt": "2026-10-07T21:37:56.933Z",
+  "vnTime": "04:00 08/10/2026",
   "summary": {
-    "totalAlertCommunes": 219,
-    "totalLightningStrikes": 17960,
-    "totalLightningCG": 13753,
-    "totalLightningCC": 4207,
+    "totalAlertCommunes": 241,
+    "totalLightningStrikes": 19525,
+    "totalLightningCG": 13892,
+    "totalLightningCC": 5633,
     "maxLightningAmpKa": 275,
-    "heavyRainPointsCount": 102,
+    "heavyRainPointsCount": 105,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Đồng Tháp",
-        "communeCount": 35,
-        "totalAlerts": 86,
+        "communeCount": 46,
+        "totalAlerts": 112,
         "sampleCommunes": [
           "Xã Long Phú Thuận",
-          "Xã Long Khánh",
           "Xã Tân Long",
+          "Phường An Bình",
           "Xã An Hòa",
           "Xã An Long"
         ]
@@ -27,68 +27,67 @@
       {
         "province": "Tỉnh An Giang",
         "communeCount": 29,
-        "totalAlerts": 82,
+        "totalAlerts": 77,
         "sampleCommunes": [
-          "Xã Vĩnh Hanh",
-          "Xã Cần Đăng",
-          "Xã Phú Lâm",
-          "Xã Chợ Vàm",
-          "Xã Phú Tân"
+          "Xã Tri Tôn",
+          "Xã Cô Tô",
+          "Xã Định Mỹ",
+          "Xã Tây Phú",
+          "Xã Phú Lâm"
         ]
       },
       {
         "province": "Tỉnh Tây Ninh",
-        "communeCount": 6,
-        "totalAlerts": 9,
+        "communeCount": 7,
+        "totalAlerts": 16,
         "sampleCommunes": [
-          "Xã Vĩnh Thạnh",
           "Xã Vĩnh Châu",
           "Xã Nhơn Ninh",
-          "Xã Hưng Điền",
-          "Xã Mộc Hóa"
+          "Xã Tân Thạnh",
+          "Xã Thạnh Phước",
+          "Xã Thạnh Hóa"
         ]
       },
       {
-        "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 6,
-        "totalAlerts": 7,
+        "province": "Thành phố Cần Thơ",
+        "communeCount": 5,
+        "totalAlerts": 16,
         "sampleCommunes": [
-          "Xã Lân Phong",
-          "Xã Mộ Đức",
-          "Phường Đức Phổ",
-          "Xã Bình Minh",
-          "Xã Đặng Thùy Trâm"
+          "Xã Vĩnh Trinh",
+          "Xã Thạnh Quới",
+          "Xã Vĩnh Thạnh",
+          "Phường Tân Lộc",
+          "Xã Thạnh Phú"
         ]
       },
       {
         "province": "Tỉnh Vĩnh Long",
-        "communeCount": 5,
-        "totalAlerts": 12,
+        "communeCount": 4,
+        "totalAlerts": 6,
         "sampleCommunes": [
-          "Xã Tân Long Hội",
-          "Xã Thành Thới",
           "Xã Quới Điền",
+          "Xã Hương Mỹ",
           "Xã Thạnh Phú",
-          "Xã Hương Mỹ"
+          "Xã Phú Túc"
         ]
       }
     ],
     "topRainProvinces": [
       {
-        "province": "Long An",
-        "count": 29
+        "province": "Đồng Tháp",
+        "count": 25
+      },
+      {
+        "province": "Tiền Giang",
+        "count": 23
       },
       {
         "province": "An Giang",
         "count": 21
       },
       {
-        "province": "Tiền Giang",
-        "count": 17
-      },
-      {
-        "province": "Đồng Tháp",
-        "count": 16
+        "province": "Long An",
+        "count": 20
       },
       {
         "province": "Bến Tre",
@@ -97,9 +96,9 @@
     ]
   },
   "counts": {
-    "dong_set": 219,
-    "lightning_strikes": 17960,
-    "heavy_rain_points": 102,
+    "dong_set": 241,
+    "lightning_strikes": 19525,
+    "heavy_rain_points": 105,
     "radar_frames": 12,
     "radar_stations": 10
   }
