@@ -1,7 +1,7 @@
 {
   "source": "http://hymetnet.gov.vn/",
   "sourceName": "Trung tâm Kỹ thuật Quan trắc Khí tượng Thủy văn (HYMETNET)",
-  "crawledAt": "2026-10-07T22:07:04.835Z",
+  "crawledAt": "2026-10-07T22:07:59.247Z",
   "crawledVnTime": "05:07 08/10/2026",
   "dataTimeSource": "hymetnet_rain",
   "dataTimeLabel": "04:00 (VN) 08-10-2026",
@@ -10,7 +10,7 @@
   "exactTimeId": "20261008_0400",
   "date": "2026-10-08",
   "hour": "04:00",
-  "executionTimeMs": 2264,
+  "executionTimeMs": 11657,
   "summary": {
     "totalAlertCommunes": 273,
     "totalLightningStrikes": 20230,
@@ -115,8 +115,8 @@
     "dong_set": {
       "success": true,
       "sourceUrl": "http://hymetnet.gov.vn/dongset",
-      "fetchedAt": "2026-10-07T22:07:06.255Z",
-      "executionTimeMs": 1420,
+      "fetchedAt": "2026-10-07T22:08:00.505Z",
+      "executionTimeMs": 1258,
       "totalSteps": 6,
       "totalAlerts": 273,
       "summary": {
@@ -3092,8 +3092,8 @@
     "lightning": {
       "success": true,
       "sourceUrl": "http://hymetnet.gov.vn/lightningmaps/",
-      "fetchedAt": "2026-10-07T22:07:07.098Z",
-      "executionTimeMs": 2251,
+      "fetchedAt": "2026-10-07T22:08:10.904Z",
+      "executionTimeMs": 11645,
       "summary": {
         "totalStrikes": 20230,
         "totalCG": 14048,
@@ -279209,8 +279209,8 @@
     "rain": {
       "success": true,
       "sourceUrl": "http://hymetnet.gov.vn/rain/",
-      "fetchedAt": "2026-10-07T22:07:06.521Z",
-      "executionTimeMs": 1673,
+      "fetchedAt": "2026-10-07T22:08:01.006Z",
+      "executionTimeMs": 1747,
       "summary": {
         "totalFrames": 6,
         "totalHeavyRainPoints": 110,
@@ -280427,8 +280427,8 @@
     "radar": {
       "success": true,
       "sourceUrl": "http://hymetnet.gov.vn/radar/",
-      "fetchedAt": "2026-10-07T22:07:06.515Z",
-      "executionTimeMs": 1666,
+      "fetchedAt": "2026-10-07T22:08:00.981Z",
+      "executionTimeMs": 1721,
       "stations": [
         {
           "id": "PL",
