@@ -1,84 +1,87 @@
 {
   "snapshotId": "20261007_1000",
   "exactTimeId": "20261007_1000",
-  "crawledAt": "2026-10-07T03:38:02.932Z",
+  "crawledAt": "2026-10-07T04:08:01.293Z",
   "vnTime": "10:00 07/10/2026",
   "summary": {
-    "totalAlertCommunes": 64,
-    "totalLightningStrikes": 6643,
-    "totalLightningCG": 5855,
-    "totalLightningCC": 788,
+    "totalAlertCommunes": 71,
+    "totalLightningStrikes": 5987,
+    "totalLightningCG": 5295,
+    "totalLightningCC": 692,
     "maxLightningAmpKa": 202,
-    "heavyRainPointsCount": 24,
+    "heavyRainPointsCount": 23,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Thành phố Đà Nẵng",
-        "communeCount": 16,
-        "totalAlerts": 34,
+        "province": "Thành phố Huế",
+        "communeCount": 13,
+        "totalAlerts": 26,
         "sampleCommunes": [
-          "Xã Thăng Trường",
-          "Phường Hải Vân",
-          "Xã Thăng An",
-          "Xã Thăng Điền",
-          "Phường Bàn Thạch"
+          "Phường Phong Điền",
+          "Phường Phong Quảng",
+          "Xã Đan Điền",
+          "Phường Dương Nỗ",
+          "Phường Mỹ Thượng"
         ]
       },
       {
         "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 6,
-        "totalAlerts": 11,
+        "communeCount": 12,
+        "totalAlerts": 23,
         "sampleCommunes": [
-          "Xã Bình Minh",
+          "Xã Tây Trà",
+          "Xã Trà Bồng",
           "Xã Cà Đam",
-          "Xã Trường Giang",
-          "Xã Mỏ Cày",
-          "Xã Lân Phong"
+          "Xã Sơn Linh",
+          "Xã An Phú"
         ]
       },
       {
-        "province": "Thành phố Huế",
-        "communeCount": 4,
-        "totalAlerts": 12,
+        "province": "Thành phố Đà Nẵng",
+        "communeCount": 6,
+        "totalAlerts": 11,
         "sampleCommunes": [
-          "Phường Phong Dinh",
-          "Phường Phong Phú",
-          "Phường Phong Thái",
-          "Phường Phong Điền"
+          "Xã Lãnh Ngọc",
+          "Xã Tây Hồ",
+          "Xã Trà Liên",
+          "Xã Tiên Phước",
+          "Xã Thạnh Bình"
         ]
       },
       {
         "province": "Tỉnh Gia Lai",
-        "communeCount": 1,
-        "totalAlerts": 3,
+        "communeCount": 3,
+        "totalAlerts": 8,
         "sampleCommunes": [
-          "Xã Ia Pia"
+          "Xã Ia Ko",
+          "Xã Ia Pia",
+          "Xã Ia Le"
         ]
       },
       {
-        "province": "Tỉnh Quảng Trị",
+        "province": "Tỉnh Đắk Lắk",
         "communeCount": 1,
-        "totalAlerts": 4,
+        "totalAlerts": 3,
         "sampleCommunes": [
-          "Xã Nam Hải Lăng"
+          "Xã Tây Sơn"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 17
-      },
-      {
-        "province": "Quảng Ninh",
-        "count": 3
+        "count": 16
       },
       {
         "province": "Quảng Nam",
+        "count": 2
+      },
+      {
+        "province": "Gia Lai",
         "count": 1
       },
       {
-        "province": "Điện Biên",
+        "province": "Lai Châu",
         "count": 1
       },
       {
@@ -88,9 +91,9 @@
     ]
   },
   "counts": {
-    "dong_set": 64,
-    "lightning_strikes": 6643,
-    "heavy_rain_points": 24,
+    "dong_set": 71,
+    "lightning_strikes": 5987,
+    "heavy_rain_points": 23,
     "radar_frames": 12,
     "radar_stations": 10
   }
