@@ -1,69 +1,69 @@
 {
-  "snapshotId": "20261007_0700",
-  "exactTimeId": "20261007_0700",
-  "crawledAt": "2026-10-07T01:08:03.068Z",
-  "vnTime": "07:00 07/10/2026",
+  "snapshotId": "20261007_0800",
+  "exactTimeId": "20261007_0800",
+  "crawledAt": "2026-10-07T01:28:19.103Z",
+  "vnTime": "08:00 07/10/2026",
   "summary": {
-    "totalAlertCommunes": 82,
-    "totalLightningStrikes": 14073,
-    "totalLightningCG": 12367,
-    "totalLightningCC": 1706,
+    "totalAlertCommunes": 47,
+    "totalLightningStrikes": 12240,
+    "totalLightningCG": 11180,
+    "totalLightningCC": 1060,
     "maxLightningAmpKa": 383,
-    "heavyRainPointsCount": 22,
+    "heavyRainPointsCount": 24,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Thành phố Đà Nẵng",
-        "communeCount": 23,
-        "totalAlerts": 56,
+        "communeCount": 13,
+        "totalAlerts": 33,
         "sampleCommunes": [
-          "Phường Hải Vân",
-          "Xã Hiệp Đức",
-          "Xã Sơn Cẩm Hà",
           "Xã Thăng An",
-          "Xã Phước Hiệp"
+          "Xã Thăng Trường",
+          "Xã Thăng Bình",
+          "Xã Thăng Điền",
+          "Phường Quảng Phú"
         ]
       },
       {
         "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 14,
-        "totalAlerts": 26,
+        "communeCount": 8,
+        "totalAlerts": 14,
         "sampleCommunes": [
-          "Xã Bình Sơn",
-          "Xã Vạn Tường",
-          "Xã Đông Sơn",
-          "Xã Long Phụng",
-          "Xã Bình Chương"
+          "Xã Sơn Kỳ",
+          "Xã Trà Bồng",
+          "Xã Sơn Linh",
+          "Xã Ba Vì",
+          "Xã Minh Long"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 14
+        "count": 12
+      },
+      {
+        "province": "TP. Hà Nội",
+        "count": 4
+      },
+      {
+        "province": "Thái Bình",
+        "count": 3
       },
       {
         "province": "Hải Dương",
         "count": 3
       },
       {
-        "province": "Thái Bình",
-        "count": 2
-      },
-      {
-        "province": "Đồng Nai",
-        "count": 1
-      },
-      {
-        "province": "Nghệ An",
+        "province": "Kon Tum",
         "count": 1
       }
     ]
   },
   "counts": {
-    "dong_set": 82,
-    "lightning_strikes": 14073,
-    "heavy_rain_points": 22,
+    "dong_set": 47,
+    "lightning_strikes": 12240,
+    "heavy_rain_points": 24,
     "radar_frames": 12,
     "radar_stations": 10
   }
