@@ -1,105 +1,105 @@
 {
   "snapshotId": "20261008_0000",
   "exactTimeId": "20261008_0000",
-  "crawledAt": "2026-10-07T17:38:01.339Z",
+  "crawledAt": "2026-10-07T18:08:01.406Z",
   "vnTime": "00:00 08/10/2026",
   "summary": {
-    "totalAlertCommunes": 325,
-    "totalLightningStrikes": 32338,
-    "totalLightningCG": 20747,
-    "totalLightningCC": 11591,
+    "totalAlertCommunes": 227,
+    "totalLightningStrikes": 22067,
+    "totalLightningCG": 14424,
+    "totalLightningCC": 7643,
     "maxLightningAmpKa": 223,
-    "heavyRainPointsCount": 171,
+    "heavyRainPointsCount": 176,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Tỉnh Vĩnh Long",
-        "communeCount": 23,
-        "totalAlerts": 64,
-        "sampleCommunes": [
-          "Xã Long Hồ",
-          "Xã Bình Phước",
-          "Xã Trung Hiệp",
-          "Xã Cái Nhum",
-          "Xã Quới An"
-        ]
-      },
-      {
-        "province": "Tỉnh An Giang",
-        "communeCount": 22,
-        "totalAlerts": 74,
-        "sampleCommunes": [
-          "Xã Bình Sơn",
-          "Xã Sơn Kiên",
-          "Xã Cô Tô",
-          "Xã Thạnh Mỹ Tây",
-          "Xã Tây Phú"
-        ]
-      },
-      {
         "province": "Tỉnh Lâm Đồng",
-        "communeCount": 20,
-        "totalAlerts": 85,
+        "communeCount": 18,
+        "totalAlerts": 70,
         "sampleCommunes": [
-          "Xã Sơn Điền",
-          "Xã Di Linh",
-          "Xã Hàm Thuận Bắc",
-          "Xã Sông Lũy",
-          "Xã Bảo Thuận"
+          "Xã Bảo Thuận",
+          "Xã Hồng Sơn",
+          "Xã Gia Hiệp",
+          "Xã Hòa Thắng",
+          "Xã Phan Sơn"
         ]
       },
       {
         "province": "Tỉnh Đồng Tháp",
-        "communeCount": 14,
-        "totalAlerts": 29,
+        "communeCount": 17,
+        "totalAlerts": 55,
         "sampleCommunes": [
-          "Xã Bình Hàng Trung",
-          "Xã Long Định",
-          "Xã Tân Phú Đông",
-          "Xã Tân Điền",
-          "Xã Gia Thuận"
+          "Xã Phương Thịnh",
+          "Phường Mỹ Trà",
+          "Xã Trường Xuân",
+          "Xã Mỹ Thọ",
+          "Xã Mỹ Quí"
+        ]
+      },
+      {
+        "province": "Tỉnh Vĩnh Long",
+        "communeCount": 11,
+        "totalAlerts": 26,
+        "sampleCommunes": [
+          "Xã An Bình",
+          "Xã Hiếu Phụng",
+          "Xã Long Vĩnh",
+          "Xã Trung Hiệp",
+          "Xã Trung Thành"
         ]
       },
       {
         "province": "Thành phố Cần Thơ",
-        "communeCount": 7,
-        "totalAlerts": 27,
+        "communeCount": 10,
+        "totalAlerts": 26,
         "sampleCommunes": [
-          "Xã Thạnh An",
-          "Xã Thạnh Quới",
+          "Xã Thạnh Phú",
           "Xã Vĩnh Trinh",
-          "Phường Thốt Nốt",
-          "Xã Trường Xuân"
+          "Xã Thới Hưng",
+          "Xã Trung Hưng",
+          "Xã Hòa An"
+        ]
+      },
+      {
+        "province": "Tỉnh Tây Ninh",
+        "communeCount": 6,
+        "totalAlerts": 7,
+        "sampleCommunes": [
+          "Xã Vĩnh Châu",
+          "Xã Vĩnh Hưng",
+          "Xã Mỹ Quý",
+          "Xã Thạnh Đức",
+          "Xã Bình Thành"
         ]
       }
     ],
     "topRainProvinces": [
       {
-        "province": "An Giang",
-        "count": 32
-      },
-      {
         "province": "Long An",
-        "count": 28
+        "count": 33
       },
       {
         "province": "Tiền Giang",
+        "count": 28
+      },
+      {
+        "province": "An Giang",
         "count": 26
       },
       {
-        "province": "Bình Thuận",
-        "count": 16
+        "province": "TP. Hồ Chí Minh",
+        "count": 17
       },
       {
-        "province": "TP. Cần Thơ",
-        "count": 14
+        "province": "Bến Tre",
+        "count": 15
       }
     ]
   },
   "counts": {
-    "dong_set": 325,
-    "lightning_strikes": 32338,
-    "heavy_rain_points": 171,
+    "dong_set": 227,
+    "lightning_strikes": 22067,
+    "heavy_rain_points": 176,
     "radar_frames": 12,
     "radar_stations": 10
   }
