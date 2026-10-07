@@ -1,105 +1,105 @@
 {
-  "snapshotId": "20261008_0000",
-  "exactTimeId": "20261008_0000",
-  "crawledAt": "2026-10-07T18:08:01.406Z",
-  "vnTime": "00:00 08/10/2026",
+  "snapshotId": "20261008_0100",
+  "exactTimeId": "20261008_0100",
+  "crawledAt": "2026-10-07T18:38:03.181Z",
+  "vnTime": "01:00 08/10/2026",
   "summary": {
-    "totalAlertCommunes": 227,
-    "totalLightningStrikes": 22067,
-    "totalLightningCG": 14424,
-    "totalLightningCC": 7643,
-    "maxLightningAmpKa": 223,
-    "heavyRainPointsCount": 176,
+    "totalAlertCommunes": 211,
+    "totalLightningStrikes": 19557,
+    "totalLightningCG": 14177,
+    "totalLightningCC": 5380,
+    "maxLightningAmpKa": 212,
+    "heavyRainPointsCount": 139,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Lâm Đồng",
-        "communeCount": 18,
-        "totalAlerts": 70,
+        "communeCount": 16,
+        "totalAlerts": 51,
         "sampleCommunes": [
+          "Xã Hàm Thuận",
+          "Xã Hàm Liêm",
+          "Xã Sơn Điền",
           "Xã Bảo Thuận",
-          "Xã Hồng Sơn",
-          "Xã Gia Hiệp",
-          "Xã Hòa Thắng",
-          "Xã Phan Sơn"
+          "Xã Gia Hiệp"
         ]
       },
       {
         "province": "Tỉnh Đồng Tháp",
-        "communeCount": 17,
-        "totalAlerts": 55,
+        "communeCount": 14,
+        "totalAlerts": 30,
         "sampleCommunes": [
-          "Xã Phương Thịnh",
-          "Phường Mỹ Trà",
-          "Xã Trường Xuân",
+          "Xã Ba Sao",
           "Xã Mỹ Thọ",
-          "Xã Mỹ Quí"
+          "Xã Bình Hàng Trung",
+          "Xã Mỹ Hiệp",
+          "Xã Thanh Mỹ"
         ]
       },
       {
-        "province": "Tỉnh Vĩnh Long",
-        "communeCount": 11,
-        "totalAlerts": 26,
+        "province": "Tỉnh Tây Ninh",
+        "communeCount": 13,
+        "totalAlerts": 35,
         "sampleCommunes": [
-          "Xã An Bình",
-          "Xã Hiếu Phụng",
-          "Xã Long Vĩnh",
-          "Xã Trung Hiệp",
-          "Xã Trung Thành"
+          "Xã Vĩnh Châu",
+          "Xã Tân Hưng",
+          "Xã Tuyên Bình",
+          "Phường Long Hoa",
+          "Xã Đông Thành"
+        ]
+      },
+      {
+        "province": "Tỉnh An Giang",
+        "communeCount": 11,
+        "totalAlerts": 37,
+        "sampleCommunes": [
+          "Xã Cần Đăng",
+          "Xã An Châu",
+          "Phường Bình Đức",
+          "Xã Phú Hòa",
+          "Phường Long Xuyên"
         ]
       },
       {
         "province": "Thành phố Cần Thơ",
         "communeCount": 10,
-        "totalAlerts": 26,
+        "totalAlerts": 22,
         "sampleCommunes": [
+          "Xã Thạnh An",
+          "Xã Thạnh Quới",
+          "Xã Vĩnh Thạnh",
           "Xã Thạnh Phú",
-          "Xã Vĩnh Trinh",
-          "Xã Thới Hưng",
-          "Xã Trung Hưng",
-          "Xã Hòa An"
-        ]
-      },
-      {
-        "province": "Tỉnh Tây Ninh",
-        "communeCount": 6,
-        "totalAlerts": 7,
-        "sampleCommunes": [
-          "Xã Vĩnh Châu",
-          "Xã Vĩnh Hưng",
-          "Xã Mỹ Quý",
-          "Xã Thạnh Đức",
-          "Xã Bình Thành"
+          "Xã Vĩnh Trinh"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "Long An",
-        "count": 33
-      },
-      {
-        "province": "Tiền Giang",
-        "count": 28
-      },
-      {
-        "province": "An Giang",
-        "count": 26
+        "count": 25
       },
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 17
+        "count": 22
       },
       {
-        "province": "Bến Tre",
-        "count": 15
+        "province": "Tiền Giang",
+        "count": 18
+      },
+      {
+        "province": "An Giang",
+        "count": 16
+      },
+      {
+        "province": "Đồng Tháp",
+        "count": 11
       }
     ]
   },
   "counts": {
-    "dong_set": 227,
-    "lightning_strikes": 22067,
-    "heavy_rain_points": 176,
+    "dong_set": 211,
+    "lightning_strikes": 19557,
+    "heavy_rain_points": 139,
     "radar_frames": 12,
     "radar_stations": 10
   }
