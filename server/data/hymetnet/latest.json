@@ -1,8 +1,8 @@
 {
   "source": "http://hymetnet.gov.vn/",
   "sourceName": "Trung tâm Kỹ thuật Quan trắc Khí tượng Thủy văn (HYMETNET)",
-  "crawledAt": "2026-10-07T08:34:34.318Z",
-  "crawledVnTime": "15:34 07/10/2026",
+  "crawledAt": "2026-10-07T08:37:56.824Z",
+  "crawledVnTime": "15:37 07/10/2026",
   "dataTimeSource": "hymetnet_rain",
   "dataTimeLabel": "15:00 (VN) 07-10-2026",
   "vnTime": "15:00 07/10/2026",
@@ -10,7 +10,7 @@
   "exactTimeId": "20261007_1500",
   "date": "2026-10-07",
   "hour": "15:00",
-  "executionTimeMs": 2844,
+  "executionTimeMs": 2702,
   "summary": {
     "totalAlertCommunes": 298,
     "totalLightningStrikes": 25827,
@@ -115,8 +115,8 @@
     "dong_set": {
       "success": true,
       "sourceUrl": "http://hymetnet.gov.vn/dongset",
-      "fetchedAt": "2026-10-07T08:34:36.174Z",
-      "executionTimeMs": 1856,
+      "fetchedAt": "2026-10-07T08:37:58.668Z",
+      "executionTimeMs": 1844,
       "totalSteps": 6,
       "totalAlerts": 298,
       "summary": {
@@ -3400,8 +3400,8 @@
     "lightning": {
       "success": true,
       "sourceUrl": "http://hymetnet.gov.vn/lightningmaps/",
-      "fetchedAt": "2026-10-07T08:34:37.161Z",
-      "executionTimeMs": 2836,
+      "fetchedAt": "2026-10-07T08:37:59.526Z",
+      "executionTimeMs": 2693,
       "summary": {
         "totalStrikes": 25827,
         "totalCG": 17396,
@@ -352278,8 +352278,8 @@
     "rain": {
       "success": true,
       "sourceUrl": "http://hymetnet.gov.vn/rain/",
-      "fetchedAt": "2026-10-07T08:34:36.429Z",
-      "executionTimeMs": 2103,
+      "fetchedAt": "2026-10-07T08:37:58.582Z",
+      "executionTimeMs": 1748,
       "summary": {
         "totalFrames": 6,
         "totalHeavyRainPoints": 142,
@@ -353784,8 +353784,8 @@
     "radar": {
       "success": true,
       "sourceUrl": "http://hymetnet.gov.vn/radar/",
-      "fetchedAt": "2026-10-07T08:34:36.430Z",
-      "executionTimeMs": 2104,
+      "fetchedAt": "2026-10-07T08:37:58.589Z",
+      "executionTimeMs": 1754,
       "stations": [
         {
           "id": "PL",
