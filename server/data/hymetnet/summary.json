@@ -1,23 +1,35 @@
 {
   "snapshotId": "20261007_0800",
   "exactTimeId": "20261007_0800",
-  "crawledAt": "2026-10-07T01:41:12.061Z",
+  "crawledAt": "2026-10-07T01:48:36.163Z",
   "vnTime": "08:00 07/10/2026",
   "summary": {
-    "totalAlertCommunes": 44,
-    "totalLightningStrikes": 11155,
-    "totalLightningCG": 10305,
-    "totalLightningCC": 850,
+    "totalAlertCommunes": 59,
+    "totalLightningStrikes": 10861,
+    "totalLightningCG": 9932,
+    "totalLightningCC": 929,
     "maxLightningAmpKa": 383,
-    "heavyRainPointsCount": 26,
+    "heavyRainPointsCount": 29,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Thành phố Đà Nẵng",
-        "communeCount": 12,
-        "totalAlerts": 29,
+        "province": "Tỉnh Quảng Ngãi",
+        "communeCount": 14,
+        "totalAlerts": 26,
         "sampleCommunes": [
-          "Xã Sơn Cẩm Hà",
+          "Xã Sơn Linh",
+          "Xã Sơn Kỳ",
+          "Xã Minh Long",
+          "Xã Ba Vinh",
+          "Xã Ba Dinh"
+        ]
+      },
+      {
+        "province": "Thành phố Đà Nẵng",
+        "communeCount": 10,
+        "totalAlerts": 24,
+        "sampleCommunes": [
+          "Xã Trà Liên",
           "Xã Thăng An",
           "Xã Thăng Trường",
           "Xã Thăng Bình",
@@ -25,34 +37,25 @@
         ]
       },
       {
-        "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 8,
-        "totalAlerts": 14,
+        "province": "Thành phố Huế",
+        "communeCount": 4,
+        "totalAlerts": 9,
         "sampleCommunes": [
-          "Xã Sơn Kỳ",
-          "Xã Kon Plông",
-          "Xã Sơn Thủy",
-          "Xã Mỏ Cày",
-          "Xã Mộ Đức"
-        ]
-      },
-      {
-        "province": "Tỉnh Hưng Yên",
-        "communeCount": 1,
-        "totalAlerts": 1,
-        "sampleCommunes": [
-          "Xã Đông Tiền Hải"
+          "Phường Phong Quảng",
+          "Xã Đan Điền",
+          "Phường Phong Thái",
+          "Phường Hương Trà"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 10
+        "count": 11
       },
       {
         "province": "TP. Hà Nội",
-        "count": 6
+        "count": 7
       },
       {
         "province": "Thái Bình",
@@ -63,15 +66,15 @@
         "count": 2
       },
       {
-        "province": "Hưng Yên",
+        "province": "Hòa Bình",
         "count": 1
       }
     ]
   },
   "counts": {
-    "dong_set": 44,
-    "lightning_strikes": 11155,
-    "heavy_rain_points": 26,
+    "dong_set": 59,
+    "lightning_strikes": 10861,
+    "heavy_rain_points": 29,
     "radar_frames": 12,
     "radar_stations": 10
   }
