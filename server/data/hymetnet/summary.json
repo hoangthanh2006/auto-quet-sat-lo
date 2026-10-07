@@ -1,105 +1,105 @@
 {
   "snapshotId": "20261007_1500",
   "exactTimeId": "20261007_1500",
-  "crawledAt": "2026-10-07T08:37:56.824Z",
+  "crawledAt": "2026-10-07T08:58:27.286Z",
   "vnTime": "15:00 07/10/2026",
   "summary": {
-    "totalAlertCommunes": 298,
-    "totalLightningStrikes": 25827,
-    "totalLightningCG": 17396,
-    "totalLightningCC": 8431,
+    "totalAlertCommunes": 323,
+    "totalLightningStrikes": 29565,
+    "totalLightningCG": 19571,
+    "totalLightningCC": 9994,
     "maxLightningAmpKa": 187,
-    "heavyRainPointsCount": 142,
+    "heavyRainPointsCount": 154,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Tỉnh Đắk Lắk",
-        "communeCount": 28,
-        "totalAlerts": 80,
-        "sampleCommunes": [
-          "Xã Ea Súp",
-          "Xã Buôn Đôn",
-          "Xã Ea Kiết",
-          "Xã Ea Wy",
-          "Xã Ea Khăl"
-        ]
-      },
-      {
         "province": "Tỉnh Vĩnh Long",
-        "communeCount": 22,
-        "totalAlerts": 39,
+        "communeCount": 34,
+        "totalAlerts": 90,
         "sampleCommunes": [
-          "Xã Tân An",
           "Xã Trung Ngãi",
-          "Phường Nguyệt Hóa",
-          "Xã Vinh Kim",
-          "Xã Nhị Trường"
+          "Xã Càng Long",
+          "Xã Thành Thới",
+          "Xã Hưng Mỹ",
+          "Xã An Định"
         ]
       },
       {
         "province": "Tỉnh Lâm Đồng",
-        "communeCount": 18,
-        "totalAlerts": 60,
+        "communeCount": 20,
+        "totalAlerts": 64,
         "sampleCommunes": [
+          "Xã Hoài Đức",
           "Xã Nam Thành",
-          "Xã Đạ Huoai 3",
           "Xã Tân Lập",
           "Xã Hàm Thuận Nam",
-          "Xã Hàm Kiệm"
+          "Xã Tân Thành"
+        ]
+      },
+      {
+        "province": "Tỉnh Đắk Lắk",
+        "communeCount": 15,
+        "totalAlerts": 50,
+        "sampleCommunes": [
+          "Xã Ea Súp",
+          "Xã Buôn Đôn",
+          "Phường Buôn Ma Thuột",
+          "Xã Ea Khăl",
+          "Xã Cư Pơng"
         ]
       },
       {
         "province": "Tỉnh Tây Ninh",
         "communeCount": 14,
-        "totalAlerts": 52,
+        "totalAlerts": 66,
         "sampleCommunes": [
-          "Xã Châu Thành",
-          "Xã Trà Vong",
-          "Phường Bình Minh",
-          "Phường Tân Ninh",
-          "Phường Hòa Thành"
+          "Xã Thạnh Bình",
+          "Xã Tân Phú",
+          "Xã Tân Châu",
+          "Phường Hòa Thành",
+          "Phường Bình Minh"
         ]
       },
       {
-        "province": "Tỉnh Gia Lai",
-        "communeCount": 8,
-        "totalAlerts": 19,
+        "province": "Tỉnh Đồng Nai",
+        "communeCount": 6,
+        "totalAlerts": 26,
         "sampleCommunes": [
-          "Xã Ia Mơ",
-          "Xã Al Bá",
-          "Xã Uar",
-          "Xã Phú Túc",
-          "Xã Ia Pnôn"
+          "Xã Trị An",
+          "Xã Thanh Sơn",
+          "Xã Tân Phú",
+          "Xã Phú Vinh",
+          "Xã Định Quán"
         ]
       }
     ],
     "topRainProvinces": [
       {
-        "province": "Gia Lai",
-        "count": 21
-      },
-      {
         "province": "Trà Vinh",
-        "count": 21
+        "count": 27
       },
       {
-        "province": "Bà Rịa - Vũng Tàu",
-        "count": 13
+        "province": "Gia Lai",
+        "count": 19
       },
       {
         "province": "Đăk Lắk",
-        "count": 11
+        "count": 15
       },
       {
-        "province": "Lâm Đồng",
+        "province": "Tây Ninh",
+        "count": 14
+      },
+      {
+        "province": "Bình Thuận",
         "count": 11
       }
     ]
   },
   "counts": {
-    "dong_set": 298,
-    "lightning_strikes": 25827,
-    "heavy_rain_points": 142,
+    "dong_set": 323,
+    "lightning_strikes": 29565,
+    "heavy_rain_points": 154,
     "radar_frames": 12,
     "radar_stations": 10
   }
