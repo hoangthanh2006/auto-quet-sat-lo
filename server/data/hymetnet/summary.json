@@ -1,104 +1,104 @@
 {
-  "snapshotId": "20261008_0200",
-  "exactTimeId": "20261008_0200",
-  "crawledAt": "2026-10-07T20:08:13.456Z",
-  "vnTime": "02:00 08/10/2026",
+  "snapshotId": "20261008_0300",
+  "exactTimeId": "20261008_0300",
+  "crawledAt": "2026-10-07T20:38:01.589Z",
+  "vnTime": "03:00 08/10/2026",
   "summary": {
-    "totalAlertCommunes": 212,
-    "totalLightningStrikes": 17780,
-    "totalLightningCG": 11975,
-    "totalLightningCC": 5805,
+    "totalAlertCommunes": 228,
+    "totalLightningStrikes": 17315,
+    "totalLightningCG": 12385,
+    "totalLightningCC": 4930,
     "maxLightningAmpKa": 275,
     "heavyRainPointsCount": 100,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Tỉnh Đồng Tháp",
-        "communeCount": 20,
-        "totalAlerts": 61,
+        "communeCount": 31,
+        "totalAlerts": 85,
         "sampleCommunes": [
+          "Xã Long Phú Thuận",
           "Xã Tân Long",
           "Xã An Long",
           "Xã Phú Thọ",
-          "Xã Tam Nông",
-          "Xã Thanh Bình"
+          "Xã An Hòa"
         ]
       },
       {
         "province": "Tỉnh An Giang",
         "communeCount": 17,
-        "totalAlerts": 58,
+        "totalAlerts": 66,
         "sampleCommunes": [
-          "Xã Vĩnh An",
-          "Xã Vĩnh Hanh",
-          "Xã Định Mỹ",
+          "Xã Thạnh Mỹ Tây",
           "Xã Tây Phú",
-          "Xã Phú Tân"
-        ]
-      },
-      {
-        "province": "Tỉnh Vĩnh Long",
-        "communeCount": 10,
-        "totalAlerts": 22,
-        "sampleCommunes": [
-          "Xã Bình Phước",
-          "Xã Nhơn Phú",
-          "Xã Thạnh Phú",
-          "Xã Hòa Hiệp",
-          "Xã Tân Long Hội"
+          "Xã Óc Eo",
+          "Xã Thoại Sơn",
+          "Xã Bình Hòa"
         ]
       },
       {
         "province": "Tỉnh Tây Ninh",
-        "communeCount": 10,
-        "totalAlerts": 40,
+        "communeCount": 11,
+        "totalAlerts": 34,
         "sampleCommunes": [
-          "Xã Tân Thạnh",
-          "Xã Thạnh Phước",
+          "Xã Hưng Điền",
+          "Xã Nhơn Hòa Lập",
           "Xã Mộc Hóa",
-          "Xã Thạnh Hóa",
-          "Xã Bình Thành"
+          "Xã Tân Thạnh",
+          "Xã Bình Hòa"
         ]
       },
       {
-        "province": "Tỉnh Gia Lai",
+        "province": "Tỉnh Quảng Ngãi",
         "communeCount": 9,
-        "totalAlerts": 17,
+        "totalAlerts": 13,
         "sampleCommunes": [
-          "Xã Kim Sơn",
-          "Xã Vạn Đức",
-          "Phường Hoài Nhơn Tây",
-          "Xã An Hòa",
-          "Xã Sơn Lang"
+          "Xã Trà Bồng",
+          "Xã Mỏ Cày",
+          "Phường Trà Câu",
+          "Xã Thanh Bồng",
+          "Xã Mộ Đức"
+        ]
+      },
+      {
+        "province": "Tỉnh Vĩnh Long",
+        "communeCount": 8,
+        "totalAlerts": 11,
+        "sampleCommunes": [
+          "Xã Bình Phước",
+          "Xã Nhuận Phú Tân",
+          "Xã Tân Thủy",
+          "Xã Tân Long Hội",
+          "Xã Mỏ Cày"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "Long An",
-        "count": 27
-      },
-      {
-        "province": "Đồng Tháp",
-        "count": 16
+        "count": 32
       },
       {
         "province": "An Giang",
+        "count": 18
+      },
+      {
+        "province": "Đồng Tháp",
         "count": 14
       },
       {
         "province": "Vĩnh Long",
-        "count": 12
+        "count": 8
       },
       {
-        "province": "Tây Ninh",
+        "province": "Tiền Giang",
         "count": 7
       }
     ]
   },
   "counts": {
-    "dong_set": 212,
-    "lightning_strikes": 17780,
+    "dong_set": 228,
+    "lightning_strikes": 17315,
     "heavy_rain_points": 100,
     "radar_frames": 12,
     "radar_stations": 10
