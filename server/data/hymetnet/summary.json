@@ -1,24 +1,81 @@
 {
   "snapshotId": "20261008_0900",
-  "exactTimeId": "20261008_0916",
-  "crawledAt": "2026-10-08T02:16:08.009Z",
-  "vnTime": "09:16 08/10/2026",
+  "exactTimeId": "20261008_0900",
+  "crawledAt": "2026-10-08T02:21:04.682Z",
+  "vnTime": "09:00 08/10/2026",
   "summary": {
-    "totalAlertCommunes": 0,
-    "totalLightningStrikes": 0,
-    "totalLightningCG": 0,
-    "totalLightningCC": 0,
-    "maxLightningAmpKa": 0,
-    "heavyRainPointsCount": 0,
-    "radarFramesCount": 0,
-    "topDongSetProvinces": [],
-    "topRainProvinces": []
+    "totalAlertCommunes": 83,
+    "totalLightningStrikes": 7116,
+    "totalLightningCG": 6001,
+    "totalLightningCC": 1115,
+    "maxLightningAmpKa": 255,
+    "heavyRainPointsCount": 27,
+    "radarFramesCount": 12,
+    "topDongSetProvinces": [
+      {
+        "province": "Thành phố Đà Nẵng",
+        "communeCount": 22,
+        "totalAlerts": 57,
+        "sampleCommunes": [
+          "Xã Nam Trà My",
+          "Xã Duy Xuyên",
+          "Xã Xuân Phú",
+          "Xã Trà Liên",
+          "Xã Tiên Phước"
+        ]
+      },
+      {
+        "province": "Tỉnh Quảng Ngãi",
+        "communeCount": 7,
+        "totalAlerts": 16,
+        "sampleCommunes": [
+          "Xã Đăk Pxi",
+          "Xã Măng Đen",
+          "Xã Sơn Thủy",
+          "Xã Thanh Bồng",
+          "Xã Đăk Kôi"
+        ]
+      },
+      {
+        "province": "Tỉnh Quảng Trị",
+        "communeCount": 4,
+        "totalAlerts": 10,
+        "sampleCommunes": [
+          "Xã Gio Linh",
+          "Xã Bến Hải",
+          "Xã Cửa Tùng",
+          "Xã Cửa Việt"
+        ]
+      }
+    ],
+    "topRainProvinces": [
+      {
+        "province": "TP. Hồ Chí Minh",
+        "count": 12
+      },
+      {
+        "province": "TP. Hà Nội",
+        "count": 2
+      },
+      {
+        "province": "Bắc Ninh",
+        "count": 2
+      },
+      {
+        "province": "Lai Châu",
+        "count": 2
+      },
+      {
+        "province": "Quảng Ngãi",
+        "count": 2
+      }
+    ]
   },
   "counts": {
-    "dong_set": 0,
-    "lightning_strikes": 0,
-    "heavy_rain_points": 0,
-    "radar_frames": 0,
+    "dong_set": 83,
+    "lightning_strikes": 7116,
+    "heavy_rain_points": 27,
+    "radar_frames": 12,
     "radar_stations": 10
   }
 }
