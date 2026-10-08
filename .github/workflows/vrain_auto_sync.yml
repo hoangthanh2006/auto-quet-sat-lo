@@ -54,7 +54,17 @@ jobs:
       - name: Run Vrain Crawler & Sync to Supabase & Firebase
         run: |
           echo "🚀 Khởi động Vrain Auto Sync (1 giờ một lần)..."
-          node server/autoSyncVrain.js
+          node server/autoSyncVrain.js 2>&1 | tee /tmp/vrain.log || {
+            echo "❌ Quá trình chạy bị lỗi! Đang đẩy log để chẩn đoán..."
+            mkdir -p server/data/vrain
+            cp /tmp/vrain.log server/data/vrain/error.log
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git add server/data/vrain/error.log
+            git commit -m "ci: debug error log [skip ci]" || true
+            git push origin main || true
+            exit 1
+          }
 
       - name: Commit & Push Updated Data to Git
         run: |
