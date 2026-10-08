@@ -1,56 +1,39 @@
 {
   "snapshotId": "20261008_0800",
   "exactTimeId": "20261008_0800",
-  "crawledAt": "2026-10-08T01:51:34.730Z",
+  "crawledAt": "2026-10-08T02:06:42.542Z",
   "vnTime": "08:00 08/10/2026",
   "summary": {
-    "totalAlertCommunes": 132,
-    "totalLightningStrikes": 8834,
-    "totalLightningCG": 7055,
-    "totalLightningCC": 1779,
+    "totalAlertCommunes": 70,
+    "totalLightningStrikes": 7037,
+    "totalLightningCG": 6051,
+    "totalLightningCC": 986,
     "maxLightningAmpKa": 255,
-    "heavyRainPointsCount": 32,
+    "heavyRainPointsCount": 29,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Thành phố Đà Nẵng",
-        "communeCount": 31,
-        "totalAlerts": 80,
+        "communeCount": 19,
+        "totalAlerts": 52,
         "sampleCommunes": [
-          "Xã Đồng Dương",
-          "Xã Quế Sơn Trung",
-          "Xã Sơn Cẩm Hà",
+          "Xã Duy Xuyên",
           "Xã Nam Phước",
-          "Xã Thăng Phú"
+          "Xã Phú Ninh",
+          "Xã Đức Phú",
+          "Xã Tam Xuân"
         ]
       },
       {
         "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 20,
-        "totalAlerts": 47,
+        "communeCount": 10,
+        "totalAlerts": 17,
         "sampleCommunes": [
           "Xã Măng Bút",
-          "Xã Măng Đen",
-          "Xã Sơn Thủy",
-          "Xã Trà Bồng",
-          "Xã Sơn Kỳ"
-        ]
-      },
-      {
-        "province": "Tỉnh Gia Lai",
-        "communeCount": 2,
-        "totalAlerts": 3,
-        "sampleCommunes": [
-          "Xã Krong",
-          "Xã Đak Sơmei"
-        ]
-      },
-      {
-        "province": "Tỉnh Ninh Bình",
-        "communeCount": 1,
-        "totalAlerts": 1,
-        "sampleCommunes": [
-          "Xã Tân Thanh"
+          "Xã Cà Đam",
+          "Xã Thọ Phong",
+          "Xã Sơn Tịnh",
+          "Xã Tây Trà Bồng"
         ]
       },
       {
@@ -58,7 +41,7 @@
         "communeCount": 1,
         "totalAlerts": 1,
         "sampleCommunes": [
-          "Xã Cửa Tùng"
+          "Xã Bến Hải"
         ]
       }
     ],
@@ -69,26 +52,26 @@
       },
       {
         "province": "Quảng Nam",
-        "count": 6
-      },
-      {
-        "province": "Quảng Ngãi",
-        "count": 4
-      },
-      {
-        "province": "Điện Biên",
-        "count": 3
+        "count": 5
       },
       {
         "province": "Lai Châu",
+        "count": 3
+      },
+      {
+        "province": "Bắc Ninh",
+        "count": 2
+      },
+      {
+        "province": "Quảng Ngãi",
         "count": 2
       }
     ]
   },
   "counts": {
-    "dong_set": 132,
-    "lightning_strikes": 8834,
-    "heavy_rain_points": 32,
+    "dong_set": 70,
+    "lightning_strikes": 7037,
+    "heavy_rain_points": 29,
     "radar_frames": 12,
     "radar_stations": 10
   }
