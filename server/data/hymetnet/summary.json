@@ -1,80 +1,99 @@
 {
   "snapshotId": "20261008_0900",
   "exactTimeId": "20261008_0900",
-  "crawledAt": "2026-10-08T02:21:04.682Z",
+  "crawledAt": "2026-10-08T02:38:01.258Z",
   "vnTime": "09:00 08/10/2026",
   "summary": {
-    "totalAlertCommunes": 83,
-    "totalLightningStrikes": 7116,
-    "totalLightningCG": 6001,
-    "totalLightningCC": 1115,
+    "totalAlertCommunes": 103,
+    "totalLightningStrikes": 7674,
+    "totalLightningCG": 6440,
+    "totalLightningCC": 1234,
     "maxLightningAmpKa": 255,
-    "heavyRainPointsCount": 27,
+    "heavyRainPointsCount": 24,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Thành phố Đà Nẵng",
-        "communeCount": 22,
-        "totalAlerts": 57,
+        "communeCount": 27,
+        "totalAlerts": 65,
         "sampleCommunes": [
+          "Xã Phước Năng",
           "Xã Nam Trà My",
-          "Xã Duy Xuyên",
           "Xã Xuân Phú",
-          "Xã Trà Liên",
-          "Xã Tiên Phước"
+          "Xã Duy Nghĩa",
+          "Xã Thạnh Bình"
         ]
       },
       {
         "province": "Tỉnh Quảng Ngãi",
         "communeCount": 7,
-        "totalAlerts": 16,
+        "totalAlerts": 15,
         "sampleCommunes": [
           "Xã Đăk Pxi",
-          "Xã Măng Đen",
-          "Xã Sơn Thủy",
-          "Xã Thanh Bồng",
-          "Xã Đăk Kôi"
+          "Xã Đăk Kôi",
+          "Xã Sơn Kỳ",
+          "Xã Đăk Plô",
+          "Xã Tu Mơ Rông"
         ]
       },
       {
         "province": "Tỉnh Quảng Trị",
-        "communeCount": 4,
-        "totalAlerts": 10,
+        "communeCount": 7,
+        "totalAlerts": 16,
         "sampleCommunes": [
-          "Xã Gio Linh",
           "Xã Bến Hải",
+          "Xã Cửa Việt",
           "Xã Cửa Tùng",
-          "Xã Cửa Việt"
+          "Xã Gio Linh",
+          "Xã Vĩnh Thủy"
+        ]
+      },
+      {
+        "province": "Thành phố Huế",
+        "communeCount": 3,
+        "totalAlerts": 3,
+        "sampleCommunes": [
+          "Phường Thuận An",
+          "Phường Phong Phú",
+          "Phường Mỹ Thượng"
+        ]
+      },
+      {
+        "province": "Thành phố Hồ Chí Minh",
+        "communeCount": 1,
+        "totalAlerts": 2,
+        "sampleCommunes": [
+          "Xã Thái Mỹ"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 12
+        "count": 14
+      },
+      {
+        "province": "Hải Dương",
+        "count": 2
       },
       {
         "province": "TP. Hà Nội",
         "count": 2
       },
       {
-        "province": "Bắc Ninh",
-        "count": 2
-      },
-      {
-        "province": "Lai Châu",
-        "count": 2
-      },
-      {
         "province": "Quảng Ngãi",
         "count": 2
+      },
+      {
+        "province": "Hà Nam",
+        "count": 1
       }
     ]
   },
   "counts": {
-    "dong_set": 83,
-    "lightning_strikes": 7116,
-    "heavy_rain_points": 27,
+    "dong_set": 103,
+    "lightning_strikes": 7674,
+    "heavy_rain_points": 24,
     "radar_frames": 12,
     "radar_stations": 10
   }
