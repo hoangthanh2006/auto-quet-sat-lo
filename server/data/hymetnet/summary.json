@@ -1,58 +1,61 @@
 {
-  "snapshotId": "20261008_0900",
-  "exactTimeId": "20261008_0900",
-  "crawledAt": "2026-10-08T03:08:02.251Z",
-  "vnTime": "09:00 08/10/2026",
+  "snapshotId": "20261008_1000",
+  "exactTimeId": "20261008_1000",
+  "crawledAt": "2026-10-08T03:38:08.946Z",
+  "vnTime": "10:00 08/10/2026",
   "summary": {
-    "totalAlertCommunes": 135,
-    "totalLightningStrikes": 9437,
-    "totalLightningCG": 7588,
-    "totalLightningCC": 1849,
+    "totalAlertCommunes": 128,
+    "totalLightningStrikes": 10232,
+    "totalLightningCG": 8437,
+    "totalLightningCC": 1795,
     "maxLightningAmpKa": 255,
-    "heavyRainPointsCount": 25,
+    "heavyRainPointsCount": 28,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Thành phố Đà Nẵng",
-        "communeCount": 33,
-        "totalAlerts": 75,
+        "province": "Tỉnh Quảng Ngãi",
+        "communeCount": 24,
+        "totalAlerts": 63,
         "sampleCommunes": [
-          "Xã Hiệp Đức",
-          "Xã Nông Sơn",
-          "Xã Trà Tân",
-          "Xã Duy Xuyên",
-          "Xã Quế Sơn Trung"
+          "Xã Đăk Pék",
+          "Xã Ngọc Linh",
+          "Xã Măng Bút",
+          "Xã Sơn Tây Thượng",
+          "Xã Sơn Tây"
         ]
       },
       {
-        "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 20,
-        "totalAlerts": 55,
+        "province": "Thành phố Đà Nẵng",
+        "communeCount": 22,
+        "totalAlerts": 43,
         "sampleCommunes": [
-          "Xã Đăk Plô",
-          "Xã Xốp",
-          "Xã Đăk Pxi",
-          "Xã Măng Bút",
-          "Xã Sơn Tây Thượng"
+          "Xã Trà Linh",
+          "Xã Nông Sơn",
+          "Xã Nam Trà My",
+          "Xã Trà Tân",
+          "Phường Ngũ Hành Sơn"
         ]
       },
       {
         "province": "Thành phố Huế",
-        "communeCount": 4,
-        "totalAlerts": 4,
+        "communeCount": 9,
+        "totalAlerts": 16,
         "sampleCommunes": [
           "Phường Thuận An",
-          "Phường Dương Nỗ",
-          "Phường Phú Xuân",
-          "Phường Kim Long"
+          "Xã Quảng Điền",
+          "Phường Phong Quảng",
+          "Phường Mỹ Thượng",
+          "Xã Đan Điền"
         ]
       },
       {
         "province": "Tỉnh Tây Ninh",
-        "communeCount": 1,
-        "totalAlerts": 1,
+        "communeCount": 3,
+        "totalAlerts": 6,
         "sampleCommunes": [
-          "Xã Hậu Nghĩa"
+          "Xã Tân Đông",
+          "Xã Tân Hòa",
+          "Xã Bình Thành"
         ]
       }
     ],
@@ -62,27 +65,27 @@
         "count": 15
       },
       {
+        "province": "Quảng Nam",
+        "count": 3
+      },
+      {
+        "province": "Long An",
+        "count": 2
+      },
+      {
         "province": "Lai Châu",
         "count": 2
       },
       {
-        "province": "TP. Hà Nội",
-        "count": 2
-      },
-      {
-        "province": "Nghệ An",
-        "count": 1
-      },
-      {
-        "province": "Thái Bình",
+        "province": "Quảng Ninh",
         "count": 1
       }
     ]
   },
   "counts": {
-    "dong_set": 135,
-    "lightning_strikes": 9437,
-    "heavy_rain_points": 25,
+    "dong_set": 128,
+    "lightning_strikes": 10232,
+    "heavy_rain_points": 28,
     "radar_frames": 12,
     "radar_stations": 10
   }
