@@ -11,7 +11,6 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { crawlVrainData } from './vrainService.js';
-import { fetchFirebaseRTDB, getFirebaseAuthToken } from './autoSyncNCHMF.js';
 import { saveVrainToSupabase } from './supabaseService.js';
 import { autoUploadDailyBackupToDrive } from './driveService.js';
 
@@ -21,6 +20,44 @@ const DATA_DIR = path.join(__dirname, 'data', 'vrain');
 
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+
+const FIREBASE_DB_URL = 'https://anh-cao-keu-default-rtdb.asia-southeast1.firebasedatabase.app';
+const FIREBASE_API_KEY = 'AIzaSyBge4vaLT4ADI_wFDtV7h69TeM762w7opk';
+
+let cachedAuthToken = null;
+let tokenExpiresAt = 0;
+
+async function getFirebaseAuthToken() {
+  const now = Date.now();
+  if (cachedAuthToken && now < tokenExpiresAt - 60000) {
+    return cachedAuthToken;
+  }
+  try {
+    const res = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_API_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: 'spotlight.vnexpress@gmail.com',
+        password: 'datajournalism2023',
+        returnSecureToken: true
+      })
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    cachedAuthToken = data.idToken;
+    tokenExpiresAt = now + (parseInt(data.expiresIn, 10) || 3600) * 1000;
+    return cachedAuthToken;
+  } catch (err) {
+    return null;
+  }
+}
+
+async function fetchFirebaseRTDB(path, options = {}) {
+  const token = await getFirebaseAuthToken();
+  const sep = path.includes('?') ? '&' : '?';
+  const url = `${FIREBASE_DB_URL}${path}${token ? `${sep}auth=${token}` : ''}`;
+  return fetch(url, options);
 }
 
 const schedulerState = {
