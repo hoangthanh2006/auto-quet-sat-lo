@@ -69,7 +69,7 @@ export async function saveVrainToSupabase({ payload, timelinePayload, source = '
   const { error: errSnap } = await supabase.from('vrain_snapshots').upsert({
     snapshot_id: snapshotId,
     date: String(date),
-    hour: Number(hour) || 0,
+    hour: parseInt(String(hour || '0').split(':')[0], 10) || 0,
     vn_time: vnTime,
     crawled_vn_time: crawledVnTime,
     counts: counts || {},
@@ -85,7 +85,7 @@ export async function saveVrainToSupabase({ payload, timelinePayload, source = '
   const { error: errTime } = await supabase.from('vrain_timeline').upsert({
     snapshot_id: timelinePayload.snapshotId || snapshotId,
     date: String(timelinePayload.date || date),
-    hour: Number(timelinePayload.time || hour) || 0,
+    hour: parseInt(String(timelinePayload.time || hour || '0').split(':')[0], 10) || 0,
     vn_time: timelinePayload.vnTime || vnTime,
     crawled_vn_time: timelinePayload.crawledVnTime || crawledVnTime,
     counts: timelinePayload.counts || counts || {},
@@ -125,7 +125,7 @@ export async function saveHymetnetToSupabase({ payload, timelinePayload }) {
   const { error: errSnap } = await supabase.from('hymetnet_snapshots').upsert({
     snapshot_id: snapshotId,
     date: String(date),
-    hour: Number(hour) || 0,
+    hour: parseInt(String(hour || '0').split(':')[0], 10) || 0,
     vn_time: vnTime,
     crawled_vn_time: crawledVnTime,
     counts: counts || {},
@@ -138,7 +138,7 @@ export async function saveHymetnetToSupabase({ payload, timelinePayload }) {
   const { error: errTime } = await supabase.from('hymetnet_timeline').upsert({
     snapshot_id: timelinePayload.snapshotId || snapshotId,
     date: String(timelinePayload.date || date),
-    hour: Number(timelinePayload.time || hour) || 0,
+    hour: parseInt(String(timelinePayload.time || hour || '0').split(':')[0], 10) || 0,
     vn_time: timelinePayload.vnTime || vnTime,
     crawled_vn_time: timelinePayload.crawledVnTime || crawledVnTime,
     counts: timelinePayload.counts || counts || {},

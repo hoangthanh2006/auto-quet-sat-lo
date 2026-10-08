@@ -143,15 +143,16 @@ export async function runVrainAutoSyncOnce(options = {}) {
     const elapsed = Date.now() - startTime;
     console.log(`[Vrain Sync] 🏁 Hoàn thành trong ${elapsed}ms.\n`);
 
+    const isPrimarySuccess = supabaseRes?.success !== false;
     const runResult = {
-      success: failed.length === 0,
+      success: isPrimarySuccess,
       snapshotId,
       crawledAt: payload.crawledAt,
       vnTime: payload.vnTime,
       counts,
       summary,
       executionTimeMs: elapsed,
-      ...(failed.length ? { error: `${failed.length} bản ghi Firebase thất bại (kiểm tra quyền ghi / rules)` } : {})
+      ...(failed.length ? { warning: `${failed.length} bản ghi Firebase thất bại (đã lưu an toàn trên Supabase)` } : {})
     };
     schedulerState.lastRunAt = payload.crawledAt;
     schedulerState.totalRuns++;

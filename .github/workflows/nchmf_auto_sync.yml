@@ -48,8 +48,9 @@ jobs:
 
       - name: Run NCHMF Crawler & Sync to Supabase & Firebase
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://mmmnpsbnwbhracyuhhmd.supabase.co' }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY || 'sb_publishable_cLtlP6FRQp0ItsyDJNdwhg_qWexo8Nm' }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
         run: |
           echo "🚀 Khởi động NCHMF 24/7 Automated Sync..."
           node server/autoSyncNCHMF.js

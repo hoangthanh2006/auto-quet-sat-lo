@@ -415,13 +415,17 @@ export async function runAutoSyncOnce(options = {}) {
       }
     }).catch(err => console.warn('[River Sync] Error:', err.message));
 
-    const results = await Promise.all(updatePromises);
-    if (!results[0].ok || !results[1].ok) {
-      throw new Error(`Firebase RTDB REST error: ${results[0].status} / ${results[1].status}`);
-    }
-
     const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-    console.log(`[Firebase] ✅ Thành công! Đã sao lưu snapshot mốc giờ "${hourlySnapshotId}" (${summary.totalCommunes} xã, Rất cao: ${summary.ratCao}, Cao: ${summary.cao}, Max mưa: ${summary.maxRain}mm) trong ${elapsed}s.`);
+    try {
+      const results = await Promise.all(updatePromises);
+      if (!results[0]?.ok || !results[1]?.ok) {
+        console.warn(`[Firebase RTDB] ⚠️ Cảnh báo ghi Firebase: ${results[0]?.status} / ${results[1]?.status} (Đã lưu an toàn vào Supabase)`);
+      } else {
+        console.log(`[Firebase] ✅ Thành công! Đã sao lưu snapshot mốc giờ "${hourlySnapshotId}" (${summary.totalCommunes} xã, Rất cao: ${summary.ratCao}, Cao: ${summary.cao}, Max mưa: ${summary.maxRain}mm) trong ${elapsed}s.`);
+      }
+    } catch (fbErr) {
+      console.warn('[Firebase RTDB] ⚠️ Bỏ qua lỗi phụ trợ Firebase:', fbErr.message);
+    }
 
     // 6. Tự động sao lưu lên Google Drive theo ngày (folder: 1Az5eQhaIPBfmdef8G3gPKv_O_YqqE4G6)
     try {

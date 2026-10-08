@@ -53,8 +53,9 @@ jobs:
 
       - name: Run Vrain Crawler & Sync to Supabase & Firebase
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://mmmnpsbnwbhracyuhhmd.supabase.co' }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY || 'sb_publishable_cLtlP6FRQp0ItsyDJNdwhg_qWexo8Nm' }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
         run: |
           echo "🚀 Khởi động Vrain Auto Sync (1 giờ một lần)..."
           node server/autoSyncVrain.js

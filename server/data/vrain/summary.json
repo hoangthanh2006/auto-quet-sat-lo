@@ -1,41 +1,33 @@
 {
-  "snapshotId": "20261008_1200",
-  "exactTimeId": "20261008_1207",
-  "crawledAt": "2026-10-08T05:38:15.974Z",
-  "vnTime": "12:07 08/10/2026",
+  "snapshotId": "20261008_1300",
+  "exactTimeId": "20261008_1307",
+  "crawledAt": "2026-10-08T06:37:50.099Z",
+  "vnTime": "13:07 08/10/2026",
   "summary": {
     "totalStations": 2585,
-    "rainingStations": 754,
+    "rainingStations": 785,
     "levelCounts": {
-      "Không mưa": 1831,
-      "Mưa nhỏ": 388,
-      "Mưa vừa": 175,
-      "Mưa to": 104,
-      "Mưa rất to": 87
+      "Không mưa": 1800,
+      "Mưa nhỏ": 400,
+      "Mưa vừa": 184,
+      "Mưa to": 102,
+      "Mưa rất to": 99
     },
-    "maxDepth": 309.8,
+    "maxDepth": 350,
     "maxStation": {
       "name": "Tam Trà",
-      "depth": 309.8,
+      "depth": 350,
       "lat": 15.38522,
       "lng": 108.49981
     },
-    "avgDepthRaining": 35.8,
-    "heavyStations": 191,
+    "avgDepthRaining": 37.3,
+    "heavyStations": 201,
     "topStations": [
       {
         "n": "Tam Trà",
         "lt": 15.38522,
         "lg": 108.49981,
-        "d": 309.8,
-        "l": "Mưa rất to",
-        "c": "#D84544"
-      },
-      {
-        "n": "Tam Lãnh",
-        "lt": 15.430278,
-        "lg": 108.408611,
-        "d": 262,
+        "d": 350,
         "l": "Mưa rất to",
         "c": "#D84544"
       },
@@ -43,7 +35,15 @@
         "n": "Hồ Thái Xuân",
         "lt": 15.440145,
         "lg": 108.586996,
-        "d": 253,
+        "d": 281.4,
+        "l": "Mưa rất to",
+        "c": "#D84544"
+      },
+      {
+        "n": "Tam Lãnh",
+        "lt": 15.430278,
+        "lg": 108.408611,
+        "d": 271.8,
         "l": "Mưa rất to",
         "c": "#D84544"
       },
@@ -51,7 +51,7 @@
         "n": "Trà Kót",
         "lt": 15.356583,
         "lg": 108.3825,
-        "d": 249.2,
+        "d": 254,
         "l": "Mưa rất to",
         "c": "#D84544"
       },
@@ -59,7 +59,7 @@
         "n": "Trà Thanh",
         "lt": 15.271111,
         "lg": 108.351944,
-        "d": 233.8,
+        "d": 237.8,
         "l": "Mưa rất to",
         "c": "#D84544"
       },
@@ -67,7 +67,7 @@
         "n": "Giang Hải (Phú Lộc)",
         "lt": 16.366389,
         "lg": 107.863056,
-        "d": 228,
+        "d": 231.8,
         "l": "Mưa rất to",
         "c": "#D84544"
       },
@@ -75,7 +75,7 @@
         "n": "Bạch Mã",
         "lt": 16.251017,
         "lg": 107.873289,
-        "d": 223.2,
+        "d": 230.2,
         "l": "Mưa rất to",
         "c": "#D84544"
       },
@@ -83,7 +83,7 @@
         "n": "Bình Tân",
         "lt": 15.228611,
         "lg": 108.846389,
-        "d": 221,
+        "d": 221.8,
         "l": "Mưa rất to",
         "c": "#D84544"
       },
@@ -91,15 +91,15 @@
         "n": "Bình Khương",
         "lt": 15.313611,
         "lg": 108.686944,
-        "d": 196,
+        "d": 200,
         "l": "Mưa rất to",
         "c": "#D84544"
       },
       {
-        "n": "Trà Hiệp",
-        "lt": 15.27632,
-        "lg": 108.40889,
-        "d": 195,
+        "n": "Hồ chứa nước Truồi",
+        "lt": 16.255637,
+        "lg": 107.783688,
+        "d": 199,
         "l": "Mưa rất to",
         "c": "#D84544"
       }
@@ -108,19 +108,19 @@
       {
         "city": "Đà Nẵng",
         "station": "Tam Trà",
-        "depth": 309.8,
+        "depth": 350,
         "level": "Mưa rất to"
       },
       {
         "city": "Quảng Ngãi",
         "station": "Trà Thanh",
-        "depth": 233.8,
+        "depth": 237.8,
         "level": "Mưa rất to"
       },
       {
         "city": "Thành phố Huế",
         "station": "Giang Hải (Phú Lộc)",
-        "depth": 228,
+        "depth": 231.8,
         "level": "Mưa rất to"
       },
       {
@@ -139,9 +139,9 @@
   },
   "counts": {
     "stations_total": 2585,
-    "stations_raining": 754,
-    "heavy_rain_stations": 191,
-    "very_heavy_stations": 87,
+    "stations_raining": 785,
+    "heavy_rain_stations": 201,
+    "very_heavy_stations": 99,
     "cities": 34
   }
 }
