@@ -1,22 +1,9 @@
 name: Hymetnet 1H Auto Sync & Git Backup
 
 on:
-  schedule:
-    # GitHub Actions hay BỎ QUA các lượt cron nếu chỉ đặt 1 hoặc 2 mốc thưa.
-    # Cấu hình 4 mốc dự phòng độc lập (- cron riêng) vào các phút lệch giờ cao điểm:
-    # Dữ liệu Hymetnet cập nhật theo giờ (snapshotId theo mốc giờ), nên chạy trùng sẽ ghi đè an toàn.
-    - cron: '12 * * * *'
-    - cron: '27 * * * *'
-    - cron: '42 * * * *'
-    - cron: '57 * * * *'
-  workflow_dispatch: # Cho phép kích hoạt thủ công bằng nút "Run workflow" trên GitHub UI
-  push:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/hymetnet_auto_sync.yml'
-      - 'server/autoSyncHymetnet.js'
-      - 'server/hymetnetService.js'
+  # Đã TẮT chạy tự động (cron/push). Chỉ chạy thủ công bằng nút "Run workflow" trên GitHub UI.
+  # Để bật lại: thêm khối `schedule` với các mốc cron '12/27/42/57 * * * *'.
+  workflow_dispatch:
 
 permissions:
   contents: write

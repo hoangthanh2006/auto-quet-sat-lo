@@ -1424,8 +1424,9 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT} (0.0.0.0)`);
   // Khởi động tiến trình tự động sao lưu dữ liệu NCHMF mỗi giờ 1 lần
   startHourlyAutoSync(60);
-  // Khởi động tiến trình tự động sao lưu dữ liệu Hymetnet mỗi 1 giờ 1 lần (60 phút)
-  startHymetnetAutoSync(60);
+  // Đã tắt tự động quét Hymetnet. Vẫn quét được thủ công qua POST /api/hymetnet/sync-now
+  // hoặc bật lại bằng POST /api/hymetnet/scheduler-toggle { enable: true }.
+  // startHymetnetAutoSync(60);
 
   // Khởi động tiến trình tự động lưu dữ liệu đo mưa Vrain mỗi 1 giờ
   startVrainAutoSync(60);
