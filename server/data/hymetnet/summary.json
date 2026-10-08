@@ -1,69 +1,94 @@
 {
   "snapshotId": "20261008_0800",
   "exactTimeId": "20261008_0800",
-  "crawledAt": "2026-10-08T01:38:02.062Z",
+  "crawledAt": "2026-10-08T01:51:34.730Z",
   "vnTime": "08:00 08/10/2026",
   "summary": {
-    "totalAlertCommunes": 88,
-    "totalLightningStrikes": 7320,
-    "totalLightningCG": 6426,
-    "totalLightningCC": 894,
+    "totalAlertCommunes": 132,
+    "totalLightningStrikes": 8834,
+    "totalLightningCG": 7055,
+    "totalLightningCC": 1779,
     "maxLightningAmpKa": 255,
-    "heavyRainPointsCount": 36,
+    "heavyRainPointsCount": 32,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
         "province": "Thành phố Đà Nẵng",
-        "communeCount": 26,
-        "totalAlerts": 51,
+        "communeCount": 31,
+        "totalAlerts": 80,
         "sampleCommunes": [
           "Xã Đồng Dương",
-          "Xã Thăng Bình",
           "Xã Quế Sơn Trung",
-          "Xã Thăng Phú",
-          "Phường Hội An Đông"
+          "Xã Sơn Cẩm Hà",
+          "Xã Nam Phước",
+          "Xã Thăng Phú"
         ]
       },
       {
         "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 14,
-        "totalAlerts": 37,
+        "communeCount": 20,
+        "totalAlerts": 47,
         "sampleCommunes": [
           "Xã Măng Bút",
+          "Xã Măng Đen",
+          "Xã Sơn Thủy",
           "Xã Trà Bồng",
-          "Xã Cà Đam",
-          "Xã Sơn Linh",
-          "Xã Bình Minh"
+          "Xã Sơn Kỳ"
+        ]
+      },
+      {
+        "province": "Tỉnh Gia Lai",
+        "communeCount": 2,
+        "totalAlerts": 3,
+        "sampleCommunes": [
+          "Xã Krong",
+          "Xã Đak Sơmei"
+        ]
+      },
+      {
+        "province": "Tỉnh Ninh Bình",
+        "communeCount": 1,
+        "totalAlerts": 1,
+        "sampleCommunes": [
+          "Xã Tân Thanh"
+        ]
+      },
+      {
+        "province": "Tỉnh Quảng Trị",
+        "communeCount": 1,
+        "totalAlerts": 1,
+        "sampleCommunes": [
+          "Xã Cửa Tùng"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 7
-      },
-      {
-        "province": "An Giang",
-        "count": 7
+        "count": 10
       },
       {
         "province": "Quảng Nam",
         "count": 6
       },
       {
+        "province": "Quảng Ngãi",
+        "count": 4
+      },
+      {
         "province": "Điện Biên",
         "count": 3
       },
       {
-        "province": "Quảng Ngãi",
-        "count": 3
+        "province": "Lai Châu",
+        "count": 2
       }
     ]
   },
   "counts": {
-    "dong_set": 88,
-    "lightning_strikes": 7320,
-    "heavy_rain_points": 36,
+    "dong_set": 132,
+    "lightning_strikes": 8834,
+    "heavy_rain_points": 32,
     "radar_frames": 12,
     "radar_stations": 10
   }
