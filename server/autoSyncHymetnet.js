@@ -14,6 +14,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { crawlHymetnetData } from './hymetnetService.js';
 import { fetchFirebaseRTDB, getFirebaseAuthToken } from './autoSyncNCHMF.js';
+import { saveHymetnetToSupabase } from './supabaseService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -108,7 +109,11 @@ export async function runHymetnetAutoSyncOnce(options = {}) {
       source
     };
 
-    // 4. Đẩy lên Firebase Realtime Database
+    // 4. Lưu vào Supabase Database (Chính thức)
+    console.log(`[Supabase] Đang lưu dữ liệu Hymetnet mốc ${snapshotId}...`);
+    await saveHymetnetToSupabase({ payload, timelinePayload });
+
+    // 5. Cập nhật phụ trợ Firebase Realtime Database
     console.log(`[Firebase] Đang cập nhật dữ liệu Hymetnet vào Realtime Database...`);
     const authToken = await getFirebaseAuthToken();
     if (!authToken) {

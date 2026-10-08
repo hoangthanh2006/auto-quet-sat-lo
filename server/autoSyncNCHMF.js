@@ -17,6 +17,7 @@ import {
   getTramMua
 } from './luquetSatloService.js';
 import { crawlLakeWater, crawlRiverWater } from './environmentalService.js';
+import { saveNCHMFToSupabase } from './supabaseService.js';
 
 const FIREBASE_DB_URL = 'https://anh-cao-keu-default-rtdb.asia-southeast1.firebasedatabase.app';
 const FIREBASE_API_KEY = 'AIzaSyBge4vaLT4ADI_wFDtV7h69TeM762w7opk';
@@ -272,7 +273,19 @@ export async function runAutoSyncOnce(options = {}) {
       } : null
     };
 
-    // 4. Đẩy lên Firebase Realtime Database qua REST API
+    // 4. Lưu vào Supabase Database (Chính thức)
+    console.log(`[Supabase] Đang lưu dữ liệu NCHMF Lũ quét sạt lở mốc "${hourlySnapshotId}"...`);
+    await saveNCHMFToSupabase({
+      hourlySnapshotId,
+      bulletinSnapshotId,
+      timelinePayload,
+      snapshotPayload: fullSnapshotPayload,
+      summary,
+      counts,
+      actualDate
+    });
+
+    // 5. Đẩy lên Firebase Realtime Database qua REST API (sao lưu phụ)
     console.log(`[Firebase] Đang ghi sao lưu mốc giờ chuẩn "${hourlySnapshotId}" (${hour}:00)...`);
     
     const updatePromises = [

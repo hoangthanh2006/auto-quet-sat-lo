@@ -12,6 +12,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { crawlVrainData } from './vrainService.js';
 import { fetchFirebaseRTDB, getFirebaseAuthToken } from './autoSyncNCHMF.js';
+import { saveVrainToSupabase } from './supabaseService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -97,6 +98,11 @@ export async function runVrainAutoSyncOnce(options = {}) {
       source
     };
 
+    // 1. Lưu vào Supabase Database (Chính thức)
+    console.log(`[Supabase] Đang lưu dữ liệu Vrain mốc ${snapshotId}...`);
+    const supabaseRes = await saveVrainToSupabase({ payload, timelinePayload, source });
+
+    // 2. Lưu phụ trợ vào Firebase Realtime Database (đảm bảo tính liên tục)
     const token = await getFirebaseAuthToken();
     if (!token) console.warn('[Firebase] ⚠️ Không lấy được Firebase Auth Token, ghi với quyền mặc định.');
 
@@ -117,10 +123,9 @@ export async function runVrainAutoSyncOnce(options = {}) {
       })
     ]);
 
-    // fetchFirebaseRTDB trả về Response: coi HTTP lỗi cũng là thất bại
     const failed = results.filter((r) => r.status === 'rejected' || (r.value && r.value.ok === false));
     if (failed.length) console.warn(`[Firebase] ⚠️ Có ${failed.length}/${results.length} bản ghi Firebase thất bại`);
-    else console.log('[Firebase] ✅ Đã lưu dữ liệu Vrain vào Firebase Realtime Database!');
+    else console.log('[Firebase] ✅ Đã cập nhật Firebase Realtime Database!');
 
     const elapsed = Date.now() - startTime;
     console.log(`[Vrain Sync] 🏁 Hoàn thành trong ${elapsed}ms.\n`);

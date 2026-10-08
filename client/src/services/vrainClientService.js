@@ -11,6 +11,13 @@ import {
   getVrainSyncStatus,
   getVrainSnapshot
 } from './firebase.js';
+import {
+  getLatestDataFromSupabase,
+  subscribeLatestDataFromSupabase,
+  getTimelineFromSupabase,
+  getSnapshotFromSupabase,
+  getSyncStatusFromSupabase
+} from './supabaseClient.js';
 import { getApiBaseUrl, isHtmlResponse, BACKEND_REQUIRED_MSG } from './api.js';
 
 export const getVrainApiBase = () => `${getApiBaseUrl()}/vrain`;
@@ -71,8 +78,17 @@ async function requestVrain(endpoint, options = {}) {
   }
 }
 
-/** Dữ liệu Vrain mới nhất (Firebase trước, fallback backend) */
+/** Dữ liệu Vrain mới nhất (Ưu tiên Supabase, fallback Firebase & backend) */
 export async function getVrainLatestData() {
+  try {
+    const sbRes = await getLatestDataFromSupabase('vrain');
+    if (sbRes.success && sbRes.data) {
+      return { success: true, data: sbRes.data, source: 'supabase' };
+    }
+  } catch (e) {
+    console.warn('[Vrain Client] Supabase read failed:', e);
+  }
+
   try {
     const fbRes = await getVrainLatest();
     if (fbRes.success && fbRes.data) {
@@ -93,13 +109,29 @@ export async function getVrainLatestData() {
   };
 }
 
-/** Lắng nghe dữ liệu Vrain thời gian thực */
+/** Lắng nghe dữ liệu Vrain thời gian thực (Supabase Realtime + Firebase) */
 export function subscribeVrainRealtime(onData) {
-  return listenToVrainLatest(onData);
+  const unsubSb = subscribeLatestDataFromSupabase('vrain', (data) => {
+    onData(data);
+  });
+  const unsubFb = listenToVrainLatest(onData);
+
+  return () => {
+    if (typeof unsubSb === 'function') unsubSb();
+    if (typeof unsubFb === 'function') unsubFb();
+  };
 }
 
-/** Timeline lịch sử (mỗi giờ 1 mốc) */
+/** Timeline lịch sử (mỗi giờ 1 mốc, ưu tiên Supabase) */
 export async function getVrainHistoryTimeline(limit = 2000) {
+  try {
+    const sbRes = await getTimelineFromSupabase('vrain', limit);
+    if (sbRes.success && sbRes.data && Object.keys(sbRes.data).length > 0) {
+      return sbRes;
+    }
+  } catch (e) {
+    console.warn('[Vrain Client] Supabase timeline failed:', e);
+  }
   return getVrainTimeline(limit);
 }
 
@@ -108,16 +140,31 @@ export async function triggerVrainManualSync() {
   return await requestVrain('/sync-now', { method: 'POST', timeout: 90000 });
 }
 
-/** Trạng thái đồng bộ */
+/** Trạng thái đồng bộ (ưu tiên Supabase) */
 export async function fetchVrainStatus() {
+  try {
+    const sbRes = await getSyncStatusFromSupabase('vrain');
+    if (sbRes.success && sbRes.data) return sbRes;
+  } catch (e) {
+    console.warn('[Vrain Client] Supabase status failed:', e);
+  }
   const res = await requestVrain('/sync-status', { timeout: 15000 });
   if (res && res.success) return res;
   return getVrainSyncStatus();
 }
 
-/** Chi tiết 1 snapshot lịch sử */
+/** Chi tiết 1 snapshot lịch sử (ưu tiên Supabase) */
 export async function getVrainSnapshotData(snapshotId) {
   if (!snapshotId) return { success: false, data: null, message: 'Thiếu mã snapshot' };
+
+  try {
+    const sbRes = await getSnapshotFromSupabase('vrain', snapshotId);
+    if (sbRes.success && sbRes.data) {
+      return { success: true, data: sbRes.data, source: 'supabase' };
+    }
+  } catch (e) {
+    console.warn('[Vrain Client] Supabase snapshot failed:', e);
+  }
 
   try {
     const fbRes = await getVrainSnapshot(snapshotId);

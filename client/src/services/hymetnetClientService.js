@@ -12,6 +12,13 @@ import {
   getHymetnetSyncStatus,
   getHymetnetSnapshot
 } from './firebase.js';
+import {
+  getLatestDataFromSupabase,
+  subscribeLatestDataFromSupabase,
+  getTimelineFromSupabase,
+  getSnapshotFromSupabase,
+  getSyncStatusFromSupabase
+} from './supabaseClient.js';
 import { getApiBaseUrl, isHtmlResponse, BACKEND_REQUIRED_MSG } from './api.js';
 
 export const getHymetnetApiBase = () => `${getApiBaseUrl()}/hymetnet`;
@@ -100,7 +107,16 @@ async function requestHymetnet(endpoint, options = {}) {
  * 1. Lấy toàn bộ dữ liệu mới nhất (Tổng hợp tất cả các lớp)
  */
 export async function getHymetnetLatestData() {
-  // Thử đọc từ Firebase RTDB trước
+  try {
+    const sbRes = await getLatestDataFromSupabase('hymetnet_all');
+    if (sbRes.success && sbRes.data) {
+      return { success: true, data: sbRes.data, source: 'supabase' };
+    }
+  } catch (e) {
+    console.warn('[Hymetnet Client] Supabase read failed:', e);
+  }
+
+  // Thử đọc từ Firebase RTDB
   try {
     const fbRes = await getHymetnetLatest('all');
     if (fbRes.success && fbRes.data) {
@@ -128,6 +144,13 @@ export async function getHymetnetLatestData() {
  */
 export async function getHymetnetDongSet() {
   try {
+    const sbRes = await getLatestDataFromSupabase('hymetnet_dong_set');
+    if (sbRes.success && sbRes.data) {
+      return { success: true, data: sbRes.data, source: 'supabase' };
+    }
+  } catch (_) {}
+
+  try {
     const fbRes = await getHymetnetLatest('dong_set');
     if (fbRes.success && fbRes.data) {
       return { success: true, data: fbRes.data, source: 'firebase' };
@@ -146,6 +169,13 @@ export async function getHymetnetDongSet() {
  * 3. Lấy số liệu sét quan trắc thực tế
  */
 export async function getHymetnetLightning() {
+  try {
+    const sbRes = await getLatestDataFromSupabase('hymetnet_lightning');
+    if (sbRes.success && sbRes.data) {
+      return { success: true, data: sbRes.data, source: 'supabase' };
+    }
+  } catch (_) {}
+
   try {
     const fbRes = await getHymetnetLatest('lightning');
     if (fbRes.success && fbRes.data) {
@@ -185,6 +215,13 @@ export async function getHymetnetRain() {
  */
 export async function getHymetnetRadar() {
   try {
+    const sbRes = await getLatestDataFromSupabase('hymetnet_radar');
+    if (sbRes.success && sbRes.data) {
+      return { success: true, data: sbRes.data, source: 'supabase' };
+    }
+  } catch (_) {}
+
+  try {
     const fbRes = await getHymetnetLatest('radar');
     if (fbRes.success && fbRes.data) {
       return { success: true, data: fbRes.data, source: 'firebase' };
@@ -203,13 +240,30 @@ export async function getHymetnetRadar() {
  * 6. Lắng nghe dữ liệu Hymetnet thời gian thực
  */
 export function subscribeHymetnetRealtime(layer = 'all', onData) {
-  return listenToHymetnetLatest(layer, onData);
+  const sourceName = layer === 'all' ? 'hymetnet_all' : `hymetnet_${layer}`;
+  const unsubSb = subscribeLatestDataFromSupabase(sourceName, (data) => {
+    onData(data);
+  });
+  const unsubFb = listenToHymetnetLatest(layer, onData);
+
+  return () => {
+    if (typeof unsubSb === 'function') unsubSb();
+    if (typeof unsubFb === 'function') unsubFb();
+  };
 }
 
 /**
- * 7. Lấy chuỗi lịch sử timeline (mỗi giờ 1 mốc)
+ * 7. Lấy chuỗi lịch sử timeline (mỗi giờ 1 mốc, ưu tiên Supabase)
  */
 export async function getHymetnetHistoryTimeline(limit = 96) {
+  try {
+    const sbRes = await getTimelineFromSupabase('hymetnet', limit);
+    if (sbRes.success && sbRes.data && Object.keys(sbRes.data).length > 0) {
+      return sbRes;
+    }
+  } catch (e) {
+    console.warn('[Hymetnet Client] Supabase timeline failed:', e);
+  }
   return getHymetnetTimeline(limit);
 }
 
@@ -224,9 +278,16 @@ export async function triggerHymetnetManualSync() {
 }
 
 /**
- * 9. Lấy trạng thái đồng bộ và scheduler
+ * 9. Lấy trạng thái đồng bộ và scheduler (ưu tiên Supabase)
  */
 export async function fetchHymetnetStatus() {
+  try {
+    const sbRes = await getSyncStatusFromSupabase('hymetnet');
+    if (sbRes.success && sbRes.data) return sbRes;
+  } catch (e) {
+    console.warn('[Hymetnet Client] Supabase status failed:', e);
+  }
+
   const res = await requestHymetnet('/sync-status', { timeout: 15000 });
   if (res && res.success) {
     return res;
@@ -237,10 +298,19 @@ export async function fetchHymetnetStatus() {
 
 /**
  * 10. Lấy dữ liệu chi tiết của 1 snapshot lịch sử theo snapshotId
- * Ưu tiên đọc từ Firebase RTDB (/hymetnet/snapshots/${snapshotId}), fallback sang backend API
+ * Ưu tiên đọc từ Supabase (hymetnet_snapshots), fallback Firebase RTDB và backend API
  */
 export async function getHymetnetSnapshotData(snapshotId) {
   if (!snapshotId) return { success: false, data: null, message: 'Thiếu mã snapshot' };
+
+  try {
+    const sbRes = await getSnapshotFromSupabase('hymetnet', snapshotId);
+    if (sbRes.success && sbRes.data) {
+      return { success: true, data: sbRes.data, source: 'supabase' };
+    }
+  } catch (e) {
+    console.warn('[Hymetnet Client] Supabase read snapshot failed:', e);
+  }
 
   // 1. Thử đọc từ Firebase RTDB trước (nhanh và trực tiếp)
   try {

@@ -51,7 +51,10 @@ jobs:
           echo "📦 Cài đặt thư viện backend..."
           npm install --prefix server --omit=dev --ignore-scripts
 
-      - name: Run Vrain Crawler & Sync to Firebase
+      - name: Run Vrain Crawler & Sync to Supabase & Firebase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://mmmnpsbnwbhracyuhhmd.supabase.co' }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY || 'sb_publishable_cLtlP6FRQp0ItsyDJNdwhg_qWexo8Nm' }}
         run: |
           echo "🚀 Khởi động Vrain Auto Sync (1 giờ một lần)..."
           node server/autoSyncVrain.js
