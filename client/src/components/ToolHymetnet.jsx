@@ -53,6 +53,10 @@ export default function ToolHymetnet() {
   const [selectedSnapshotId, setSelectedSnapshotId] = useState(null);
   const [loadingSnapshotId, setLoadingSnapshotId] = useState(null);
   const [historyDateFilter, setHistoryDateFilter] = useState('all');
+  const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const [exportDate, setExportDate] = useState('');
+  const [exportProgress, setExportProgress] = useState(null); // { done, total } | null
+  const exportMenuRef = useRef(null);
   const selectedSnapshotIdRef = useRef(null);
   selectedSnapshotIdRef.current = selectedSnapshotId;
 
@@ -111,7 +115,7 @@ export default function ToolHymetnet() {
     });
 
     // Lấy chuỗi lịch sử theo giờ
-    getHymetnetHistoryTimeline(96).then((res) => {
+    getHymetnetHistoryTimeline(2000).then((res) => {
       if (res.success && Array.isArray(res.data) && isMounted) {
         setHistoryTimeline(res.data);
       }
@@ -122,6 +126,18 @@ export default function ToolHymetnet() {
       if (typeof unsubscribe === 'function') unsubscribe();
     };
   }, []);
+
+  // Đóng menu xuất JSON khi click ra ngoài
+  useEffect(() => {
+    if (!exportMenuOpen) return;
+    const onClickOutside = (e) => {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(e.target)) {
+        setExportMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onClickOutside);
+    return () => document.removeEventListener('mousedown', onClickOutside);
+  }, [exportMenuOpen]);
 
   // Animation player cho khung radar
   useEffect(() => {
@@ -471,16 +487,162 @@ export default function ToolHymetnet() {
     rainSortColumn !== 'rank' ||
     rainSortOrder !== 'asc';
 
-  // Xuất file JSON
-  const handleExportJSON = () => {
-    if (!data) return;
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  // Tải xuống 1 Blob (không revoke ngay để file lớn kịp tải)
+  const downloadBlob = (blob, filename) => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `hymetnet_${data.snapshotId || 'data'}.json`;
+    a.download = filename;
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 120000);
+  };
+
+  // Tải xuống 1 đối tượng JSON
+  const downloadJSON = (obj, filename) => {
+    downloadBlob(new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' }), filename);
+  };
+
+  // Xuất file JSON (dữ liệu đang xem)
+  const handleExportJSON = () => {
+    if (!data) return;
+    downloadJSON(data, `hymetnet_${data.snapshotId || 'data'}.json`);
+    setExportMenuOpen(false);
+  };
+
+  // Lấy ngày (YYYY-MM-DD) của 1 mốc timeline
+  const getItemDateKey = (item) => {
+    if (item.date) return item.date;
+    if (item.snapshotId && item.snapshotId.length >= 8) {
+      return `${item.snapshotId.slice(0, 4)}-${item.snapshotId.slice(4, 6)}-${item.snapshotId.slice(6, 8)}`;
+    }
+    return '';
+  };
+
+  // Xuất nhiều snapshot (theo ngày hoặc toàn bộ) — ghi từng snapshot một để không tràn bộ nhớ.
+  // - Trình duyệt hỗ trợ showSaveFilePicker (Chrome/Edge): stream thẳng vào 1 file.
+  // - Trình duyệt khác: "toàn bộ" được tách thành 1 file/ngày (mỗi file nhỏ hơn nhiều).
+  const handleExportBulk = async (scope, dateKey = '') => {
+    if (exportProgress) return;
+    setExportMenuOpen(false);
+
+    const stamp = new Date().toISOString().slice(0, 10);
+    const baseName = scope === 'day' ? `hymetnet_${dateKey}` : `hymetnet_all_${stamp}`;
+
+    // Phải mở hộp thoại lưu file ngay trong thao tác click của người dùng
+    let fileHandle = null;
+    if (typeof window.showSaveFilePicker === 'function') {
+      try {
+        fileHandle = await window.showSaveFilePicker({
+          suggestedName: `${baseName}.json`,
+          types: [{ description: 'JSON', accept: { 'application/json': ['.json'] } }]
+        });
+      } catch (err) {
+        if (err?.name === 'AbortError') return; // người dùng huỷ
+        fileHandle = null;
+      }
+    }
+
+    setExportProgress({ done: 0, total: 0 });
+    try {
+      // Lấy toàn bộ timeline (không giới hạn 96 mốc)
+      const tlRes = await getHymetnetHistoryTimeline(100000);
+      let list = Array.isArray(tlRes?.data) && tlRes.data.length > 0 ? tlRes.data : historyTimeline || [];
+      if (scope === 'day') list = list.filter((it) => getItemDateKey(it) === dateKey);
+      list = [...list].sort((a, b) => (a.snapshotId || '').localeCompare(b.snapshotId || ''));
+
+      if (list.length === 0) {
+        setSyncMessage('Không có bản ghi nào để xuất.');
+        if (fileHandle) {
+          try { const w = await fileHandle.createWritable(); await w.close(); } catch { /* ignore */ }
+        }
+        return;
+      }
+
+      // Chia nhóm file
+      let groups;
+      if (fileHandle || scope === 'day') {
+        groups = [{ name: baseName, items: list, date: scope === 'day' ? dateKey : null }];
+      } else {
+        const byDay = new Map();
+        list.forEach((it) => {
+          const k = getItemDateKey(it) || 'unknown';
+          if (!byDay.has(k)) byDay.set(k, []);
+          byDay.get(k).push(it);
+        });
+        groups = Array.from(byDay.entries()).map(([k, items]) => ({ name: `hymetnet_${k}`, items, date: k }));
+      }
+
+      setExportProgress({ done: 0, total: list.length });
+      const CONCURRENCY = 4;
+      let done = 0;
+      let exported = 0;
+      const failedAll = [];
+
+      // Tải 1 snapshot -> chuỗi JSON gọn (không indent), null nếu lỗi
+      const fetchOne = async (item) => {
+        try {
+          const res = await getHymetnetSnapshotData(item.snapshotId);
+          if (res.success && res.data) return JSON.stringify(res.data);
+        } catch { /* fallthrough */ }
+        return null;
+      };
+
+      for (const group of groups) {
+        const writable = fileHandle ? await fileHandle.createWritable() : null;
+        const parts = [];
+        const emit = async (s) => {
+          if (writable) await writable.write(s);
+          else parts.push(s);
+        };
+
+        const failed = [];
+        let count = 0;
+        await emit(
+          `{"exportedAt":${JSON.stringify(new Date().toISOString())},"scope":${JSON.stringify(scope)},"date":${JSON.stringify(group.date)},"snapshots":[`
+        );
+
+        try {
+          for (let i = 0; i < group.items.length; i += CONCURRENCY) {
+            const batch = group.items.slice(i, i + CONCURRENCY);
+            const results = await Promise.all(batch.map(fetchOne));
+            for (let k = 0; k < batch.length; k++) {
+              if (results[k] == null) {
+                failed.push(batch[k].snapshotId);
+              } else {
+                await emit((count > 0 ? ',' : '') + results[k]);
+                count++;
+              }
+              done++;
+            }
+            setExportProgress({ done, total: list.length });
+          }
+          await emit(`],"totalSnapshots":${count},"failedSnapshots":${JSON.stringify(failed)}}`);
+        } catch (err) {
+          if (writable) { try { await writable.abort(); } catch { /* ignore */ } }
+          throw err;
+        }
+
+        if (writable) {
+          await writable.close();
+        } else {
+          downloadBlob(new Blob(parts, { type: 'application/json' }), `${group.name}.json`);
+          await new Promise((r) => setTimeout(r, 500)); // tránh trình duyệt chặn nhiều lượt tải liên tiếp
+        }
+        exported += count;
+        failedAll.push(...failed);
+      }
+
+      setSyncMessage(
+        `Đã xuất ${exported}/${list.length} bản ghi${scope === 'day' ? ` ngày ${dateKey}` : ''}${groups.length > 1 ? ` (${groups.length} file, mỗi ngày 1 file)` : ''}${failedAll.length ? ` (${failedAll.length} lỗi)` : ''}.`
+      );
+    } catch (err) {
+      setSyncMessage(`Lỗi xuất JSON: ${err.message}`);
+    } finally {
+      setExportProgress(null);
+      setTimeout(() => setSyncMessage(null), 6000);
+    }
   };
 
   return (
@@ -545,15 +707,67 @@ export default function ToolHymetnet() {
           </div>
 
           <div className="flex items-center gap-2 self-start md:self-center">
-            <button
-              onClick={handleExportJSON}
-              disabled={!data}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition cursor-pointer disabled:opacity-50"
-              title="Tải toàn bộ dữ liệu dạng JSON"
-            >
-              <Download className="w-4 h-4" />
-              <span className="hidden sm:inline">Xuất JSON</span>
-            </button>
+            <div className="relative" ref={exportMenuRef}>
+              <button
+                onClick={() => {
+                  if (!exportMenuOpen && !exportDate && historyDates.length > 0) setExportDate(historyDates[0].date);
+                  setExportMenuOpen((v) => !v);
+                }}
+                disabled={!data || !!exportProgress}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition cursor-pointer disabled:opacity-50"
+                title="Xuất dữ liệu dạng JSON"
+              >
+                <Download className={`w-4 h-4 ${exportProgress ? 'animate-bounce' : ''}`} />
+                <span className="hidden sm:inline">
+                  {exportProgress ? `Đang xuất ${exportProgress.done}/${exportProgress.total}` : 'Xuất JSON'}
+                </span>
+              </button>
+
+              {exportMenuOpen && (
+                <div className="absolute right-0 mt-2 w-72 z-30 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl p-2 space-y-1 text-xs">
+                  <button
+                    onClick={handleExportJSON}
+                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                  >
+                    <div className="font-bold text-slate-800 dark:text-slate-100">Dữ liệu đang xem</div>
+                    <div className="text-[11px] text-slate-500">{selectedSnapshotId ? `Snapshot ${selectedSnapshotId}` : 'Live mới nhất'}</div>
+                  </button>
+
+                  <div className="px-3 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/60">
+                    <div className="font-bold text-slate-800 dark:text-slate-100 mb-1.5">Xuất theo ngày</div>
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={exportDate}
+                        onChange={(e) => setExportDate(e.target.value)}
+                        className="flex-1 px-2 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-amber-500"
+                      >
+                        {historyDates.length === 0 && <option value="">Chưa có dữ liệu</option>}
+                        {historyDates.map((d) => (
+                          <option key={d.date} value={d.date}>
+                            {d.display} ({d.count} mốc)
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        onClick={() => handleExportBulk('day', exportDate)}
+                        disabled={!exportDate}
+                        className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-bold cursor-pointer disabled:opacity-50"
+                      >
+                        Xuất
+                      </button>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => handleExportBulk('all')}
+                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                  >
+                    <div className="font-bold text-slate-800 dark:text-slate-100">Toàn bộ dữ liệu</div>
+                    <div className="text-[11px] text-slate-500">Tất cả các mốc lịch sử trong database (file có thể rất lớn)</div>
+                  </button>
+                </div>
+              )}
+            </div>
 
             <button
               onClick={handleManualSync}

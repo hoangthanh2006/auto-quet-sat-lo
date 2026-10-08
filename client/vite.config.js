@@ -37,6 +37,9 @@ export default defineConfig({
             if (id.includes('firebase')) {
               return 'vendor-firebase'
             }
+            if (/node_modules\/(d3|d3-[^/]+|three|@observablehq|internmap|delaunator|robust-predicates|isoformat)\//.test(id)) {
+              return 'vendor-analyst'
+            }
             return 'vendor-libs'
           }
         },

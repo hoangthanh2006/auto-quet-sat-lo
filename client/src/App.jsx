@@ -1,5 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
-import { LayoutDashboard, Users, Zap, Wrench, Home, Sun, Moon, BookOpen, BarChart3, ScanText, Waves, Loader2, LogOut, Wind, Droplets, Leaf, Database } from 'lucide-react';
+import { LayoutDashboard, Users, Zap, Wrench, Home, Sun, Moon, BookOpen, BarChart3, ScanText, Waves, Loader2, LogOut, Wind, Droplets, Leaf, Database, Activity, CloudRain } from 'lucide-react';
 import LoginPage from './components/LoginPage';
 import { getStoredAuthUser, logoutSpotlightUser } from './services/firebase';
 
@@ -13,6 +13,8 @@ const ToolEnvironmentalCrawlers = lazy(() => import('./components/ToolEnvironmen
 const ToolEvLcaCalculator = lazy(() => import('./components/ToolEvLcaCalculator'));
 const ToolOpenDevMekong = lazy(() => import('./components/ToolOpenDevMekong'));
 const ToolHymetnet = lazy(() => import('./components/ToolHymetnet'));
+const ToolDataAnalyst = lazy(() => import('./components/ToolDataAnalyst'));
+const ToolVrain = lazy(() => import('./components/ToolVrain'));
 const DashboardHome = lazy(() => import('./components/DashboardHome'));
 const OtherTools = lazy(() => import('./components/OtherTools'));
 const UsageGuide = lazy(() => import('./components/UsageGuide'));
@@ -41,6 +43,8 @@ const NAV_GROUPS = [
       { id: 'tool-environmental', label: 'Thu thập Dữ liệu Môi trường', icon: Droplets, color: 'text-emerald-500', badge: 'Hồ / Sông' },
       { id: 'tool-luquet-satlo', label: 'Lũ quét & Sạt lở (NCHMF)', icon: Waves, color: 'text-cyan-500', badge: 'Map' },
       { id: 'tool-hymetnet', label: 'Dông sét & Radar (Hymetnet)', icon: Zap, color: 'text-amber-500', badge: 'Hymetnet' },
+      { id: 'tool-vrain', label: 'Đo mưa chuyên dụng (Vrain)', icon: CloudRain, color: 'text-sky-500', badge: 'Vrain' },
+      { id: 'tool-analyst', label: 'Phân tích dữ liệu (D3 · Three.js)', icon: Activity, color: 'text-fuchsia-500', badge: 'Analyst' },
       { id: 'tool-ev-lca', label: 'Tính Phát thải Xe điện (LCA)', icon: Leaf, color: 'text-teal-500', badge: 'LCA' },
       { id: 'tool-opendev-mekong', label: 'Open Development VN', icon: Database, color: 'text-amber-500', badge: 'CKAN' },
     ]
@@ -199,6 +203,8 @@ function App() {
             {currentPage === 'tool-environmental' && <ToolEnvironmentalCrawlers />}
             {currentPage === 'tool-luquet-satlo' && <ToolLuquetSatlo />}
             {currentPage === 'tool-hymetnet' && <ToolHymetnet />}
+            {currentPage === 'tool-analyst' && <ToolDataAnalyst />}
+            {currentPage === 'tool-vrain' && <ToolVrain />}
             {currentPage === 'tool-ev-lca' && <ToolEvLcaCalculator />}
             {currentPage === 'tool-opendev-mekong' && <ToolOpenDevMekong />}
             {currentPage === 'tool-ocr' && <ToolOCR />}

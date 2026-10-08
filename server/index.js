@@ -45,6 +45,13 @@ import {
   stopHymetnetAutoSync,
   getHymetnetSchedulerStatus
 } from './autoSyncHymetnet.js';
+import { crawlVrainData } from './vrainService.js';
+import {
+  runVrainAutoSyncOnce,
+  startVrainAutoSync,
+  stopVrainAutoSync,
+  getVrainSchedulerStatus
+} from './autoSyncVrain.js';
 
 
 
@@ -1071,6 +1078,86 @@ app.get('/api/hymetnet/snapshot/:id', async (req, res) => {
 });
 
 // ============================================================================
+// VRAIN - DỮ LIỆU ĐO MƯA (https://vrain.vn)
+// ============================================================================
+
+// 1. Cào dữ liệu thời gian thực từ Vrain (không lưu)
+app.get('/api/vrain/all', async (req, res) => {
+  try {
+    const result = await crawlVrainData();
+    res.json({ success: true, data: result });
+  } catch (error) {
+    console.error('API /api/vrain/all error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 2. Quét & lưu Vrain lên Firebase ngay lập tức
+app.post('/api/vrain/sync-now', async (req, res) => {
+  try {
+    const result = await runVrainAutoSyncOnce({ forceSave: true, source: 'manual_api_trigger' });
+    res.json(result);
+  } catch (error) {
+    console.error('API /api/vrain/sync-now error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 3. Trạng thái scheduler Vrain
+app.get('/api/vrain/scheduler-status', (req, res) => {
+  try {
+    res.json({ success: true, ...getVrainSchedulerStatus() });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 4. Bật / tắt scheduler Vrain
+app.post('/api/vrain/scheduler-toggle', (req, res) => {
+  try {
+    const { enable, intervalMinutes = 60 } = req.body || {};
+    const status = enable ? startVrainAutoSync(Number(intervalMinutes) || 60) : stopVrainAutoSync();
+    res.json({ success: true, ...status });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 5. Trạng thái đồng bộ Firebase mới nhất
+app.get('/api/vrain/sync-status', async (req, res) => {
+  try {
+    const response = await fetchFirebaseRTDB('/vrain/sync_status.json');
+    const data = await response.json();
+    res.json({ success: true, data, scheduler: getVrainSchedulerStatus() });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 6. Dữ liệu 1 snapshot lịch sử theo id
+app.get('/api/vrain/snapshot/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!/^\d{8}_\d{4}$/.test(id)) {
+      return res.status(400).json({ success: false, error: 'ID snapshot không hợp lệ' });
+    }
+    const localFile = path.join(__dirname, 'data', 'vrain', `${id}.json`);
+    if (fs.existsSync(localFile)) {
+      const content = JSON.parse(fs.readFileSync(localFile, 'utf8'));
+      return res.json({ success: true, data: content, source: 'local_disk' });
+    }
+    const response = await fetchFirebaseRTDB(`/vrain/snapshots/${id}.json`);
+    const data = await response.json();
+    if (data && !data.error) {
+      return res.json({ success: true, data, source: 'firebase' });
+    }
+    res.status(404).json({ success: false, error: `Không tìm thấy snapshot ${id}` });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ============================================================================
 // TYPHOON TRACKING & ANALYSIS (THEO DÕI & PHÂN TÍCH BÃO)
 // ============================================================================
 
@@ -1339,6 +1426,9 @@ app.listen(PORT, '0.0.0.0', () => {
   startHourlyAutoSync(60);
   // Khởi động tiến trình tự động sao lưu dữ liệu Hymetnet mỗi 1 giờ 1 lần (60 phút)
   startHymetnetAutoSync(60);
+
+  // Khởi động tiến trình tự động lưu dữ liệu đo mưa Vrain mỗi 1 giờ
+  startVrainAutoSync(60);
 });
 
 export default app;

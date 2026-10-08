@@ -746,5 +746,87 @@ export async function getHymetnetSnapshot(snapshotId) {
   }
 }
 
+// ============================================================================
+// VRAIN REALTIME DATABASE HELPERS (https://vrain.vn/)
+// ============================================================================
+
+/** Lấy dữ liệu Vrain mới nhất từ Firebase RTDB */
+export async function getVrainLatest() {
+  try {
+    await ensureAuth();
+    const snapshot = await get(child(ref(rtdb), 'vrain/latest/all'));
+    if (snapshot.exists()) {
+      return { success: true, data: snapshot.val() };
+    }
+    return { success: false, data: null, message: 'Chưa có dữ liệu Vrain trên Firebase' };
+  } catch (err) {
+    console.error('[Firebase RTDB] getVrainLatest error:', err);
+    return { success: false, error: err.message, data: null };
+  }
+}
+
+/** Lắng nghe dữ liệu Vrain mới nhất theo thời gian thực */
+export function listenToVrainLatest(callback) {
+  return onValue(ref(rtdb, 'vrain/latest/all'), (snapshot) => {
+    if (snapshot.exists()) {
+      callback({ success: true, data: snapshot.val() });
+    } else {
+      callback({ success: false, data: null });
+    }
+  }, (error) => {
+    console.error('[Firebase RTDB] listenToVrainLatest error:', error);
+    callback({ success: false, error: error.message, data: null });
+  });
+}
+
+/** Lấy timeline lịch sử Vrain (mỗi giờ 1 mốc) */
+export async function getVrainTimeline(limit = 2000) {
+  try {
+    await ensureAuth();
+    const timelineRef = query(ref(rtdb, 'vrain/statistics/timeline'), limitToLast(limit));
+    const snapshot = await get(timelineRef);
+    if (snapshot.exists()) {
+      const list = Object.values(snapshot.val()).sort((a, b) => (a.snapshotId || '').localeCompare(b.snapshotId || ''));
+      return { success: true, data: list };
+    }
+    return { success: true, data: [] };
+  } catch (err) {
+    console.error('[Firebase RTDB] getVrainTimeline error:', err);
+    return { success: false, error: err.message, data: [] };
+  }
+}
+
+/** Lấy trạng thái đồng bộ của Vrain */
+export async function getVrainSyncStatus() {
+  try {
+    await ensureAuth();
+    const snapshot = await get(child(ref(rtdb), 'vrain/sync_status'));
+    if (snapshot.exists()) {
+      return { success: true, data: snapshot.val() };
+    }
+    return { success: false, data: null };
+  } catch (err) {
+    console.error('[Firebase RTDB] getVrainSyncStatus error:', err);
+    return { success: false, error: err.message, data: null };
+  }
+}
+
+/** Lấy chi tiết 1 snapshot Vrain (ví dụ '20261008_1000') */
+export async function getVrainSnapshot(snapshotId) {
+  if (!snapshotId) return { success: false, data: null, message: 'Thiếu mã snapshot' };
+  try {
+    await ensureAuth();
+    const snapshot = await get(child(ref(rtdb), `vrain/snapshots/${snapshotId}`));
+    if (snapshot.exists()) {
+      return { success: true, data: snapshot.val() };
+    }
+    return { success: false, data: null, message: `Không tìm thấy snapshot ${snapshotId}` };
+  } catch (err) {
+    console.error('[Firebase RTDB] getVrainSnapshot error:', err);
+    return { success: false, error: err.message, data: null };
+  }
+}
+
+
 
 
