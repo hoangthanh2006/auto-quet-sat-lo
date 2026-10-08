@@ -1,33 +1,33 @@
 {
-  "snapshotId": "20261008_1300",
-  "exactTimeId": "20261008_1307",
-  "crawledAt": "2026-10-08T06:40:54.544Z",
-  "vnTime": "13:07 08/10/2026",
+  "snapshotId": "20261008_1400",
+  "exactTimeId": "20261008_1407",
+  "crawledAt": "2026-10-08T07:30:12.459Z",
+  "vnTime": "14:07 08/10/2026",
   "summary": {
     "totalStations": 2585,
-    "rainingStations": 785,
+    "rainingStations": 831,
     "levelCounts": {
-      "Không mưa": 1800,
-      "Mưa nhỏ": 400,
-      "Mưa vừa": 184,
+      "Không mưa": 1754,
+      "Mưa nhỏ": 436,
+      "Mưa vừa": 187,
       "Mưa to": 102,
-      "Mưa rất to": 99
+      "Mưa rất to": 106
     },
-    "maxDepth": 350,
+    "maxDepth": 361.8,
     "maxStation": {
       "name": "Tam Trà",
-      "depth": 350,
+      "depth": 361.8,
       "lat": 15.38522,
       "lng": 108.49981
     },
-    "avgDepthRaining": 37.3,
-    "heavyStations": 201,
+    "avgDepthRaining": 37.4,
+    "heavyStations": 208,
     "topStations": [
       {
         "n": "Tam Trà",
         "lt": 15.38522,
         "lg": 108.49981,
-        "d": 350,
+        "d": 361.8,
         "l": "Mưa rất to",
         "c": "#D84544"
       },
@@ -35,7 +35,7 @@
         "n": "Hồ Thái Xuân",
         "lt": 15.440145,
         "lg": 108.586996,
-        "d": 281.4,
+        "d": 321,
         "l": "Mưa rất to",
         "c": "#D84544"
       },
@@ -43,7 +43,7 @@
         "n": "Tam Lãnh",
         "lt": 15.430278,
         "lg": 108.408611,
-        "d": 271.8,
+        "d": 283.8,
         "l": "Mưa rất to",
         "c": "#D84544"
       },
@@ -51,7 +51,15 @@
         "n": "Trà Kót",
         "lt": 15.356583,
         "lg": 108.3825,
-        "d": 254,
+        "d": 256.6,
+        "l": "Mưa rất to",
+        "c": "#D84544"
+      },
+      {
+        "n": "Đầu mối hồ Phú Ninh",
+        "lt": 15.506648,
+        "lg": 108.481143,
+        "d": 243.8,
         "l": "Mưa rất to",
         "c": "#D84544"
       },
@@ -59,15 +67,7 @@
         "n": "Trà Thanh",
         "lt": 15.271111,
         "lg": 108.351944,
-        "d": 237.8,
-        "l": "Mưa rất to",
-        "c": "#D84544"
-      },
-      {
-        "n": "Giang Hải (Phú Lộc)",
-        "lt": 16.366389,
-        "lg": 107.863056,
-        "d": 231.8,
+        "d": 239.8,
         "l": "Mưa rất to",
         "c": "#D84544"
       },
@@ -75,7 +75,15 @@
         "n": "Bạch Mã",
         "lt": 16.251017,
         "lg": 107.873289,
-        "d": 230.2,
+        "d": 234,
+        "l": "Mưa rất to",
+        "c": "#D84544"
+      },
+      {
+        "n": "Giang Hải (Phú Lộc)",
+        "lt": 16.366389,
+        "lg": 107.863056,
+        "d": 233.4,
         "l": "Mưa rất to",
         "c": "#D84544"
       },
@@ -83,23 +91,15 @@
         "n": "Bình Tân",
         "lt": 15.228611,
         "lg": 108.846389,
-        "d": 221.8,
+        "d": 222,
         "l": "Mưa rất to",
         "c": "#D84544"
       },
       {
-        "n": "Bình Khương",
-        "lt": 15.313611,
-        "lg": 108.686944,
-        "d": 200,
-        "l": "Mưa rất to",
-        "c": "#D84544"
-      },
-      {
-        "n": "Hồ chứa nước Truồi",
-        "lt": 16.255637,
-        "lg": 107.783688,
-        "d": 199,
+        "n": "Bình Phước",
+        "lt": 15.319229,
+        "lg": 108.802091,
+        "d": 221,
         "l": "Mưa rất to",
         "c": "#D84544"
       }
@@ -108,19 +108,19 @@
       {
         "city": "Đà Nẵng",
         "station": "Tam Trà",
-        "depth": 350,
+        "depth": 361.8,
         "level": "Mưa rất to"
       },
       {
         "city": "Quảng Ngãi",
         "station": "Trà Thanh",
-        "depth": 237.8,
+        "depth": 239.8,
         "level": "Mưa rất to"
       },
       {
         "city": "Thành phố Huế",
-        "station": "Giang Hải (Phú Lộc)",
-        "depth": 231.8,
+        "station": "Bạch Mã",
+        "depth": 234,
         "level": "Mưa rất to"
       },
       {
@@ -139,9 +139,9 @@
   },
   "counts": {
     "stations_total": 2585,
-    "stations_raining": 785,
-    "heavy_rain_stations": 201,
-    "very_heavy_stations": 99,
+    "stations_raining": 831,
+    "heavy_rain_stations": 208,
+    "very_heavy_stations": 106,
     "cities": 34
   }
 }

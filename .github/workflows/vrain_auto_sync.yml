@@ -2,12 +2,8 @@ name: Vrain 1H Auto Sync & Git Backup
 
 on:
   schedule:
-    # Dữ liệu Vrain (đo mưa) cập nhật theo giờ; snapshotId theo mốc giờ nên chạy trùng ghi đè an toàn.
-    # Dùng nhiều cron dự phòng, lệch phút so với workflow Hymetnet để tránh giờ cao điểm.
-    - cron: '7 * * * *'
-    - cron: '22 * * * *'
-    - cron: '37 * * * *'
-    - cron: '52 * * * *'
+    # Dữ liệu Vrain (đo mưa) cập nhật theo giờ; chạy mỗi 15 phút (phút 7, 22, 37, 52)
+    - cron: '7,22,37,52 * * * *'
   workflow_dispatch: # Cho phép kích hoạt thủ công trên GitHub UI
   push:
     branches:
