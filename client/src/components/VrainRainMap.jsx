@@ -26,19 +26,22 @@ const toGeoJSON = (stations) => ({
     .map((s) => ({
       type: 'Feature',
       geometry: { type: 'Point', coordinates: [s.lg, s.lt] },
-      properties: { n: s.n || '', d: s.d || 0, l: s.l || '', c: s.c || '#38bdf8' }
+      properties: { n: s.n || '', d: s.d || 0, v: s.v ?? s.d ?? 0, l: s.l || '', c: s.c || '#38bdf8' }
     }))
 });
 
 /**
  * Bản đồ các trạm đo mưa Vrain (chỉ trạm đang có mưa).
  * Vòng tròn: màu theo cấp mưa, bán kính theo lượng mưa.
+ * Dùng chung cho tool Phân tích: `d` quyết định bán kính, `v` (nếu có) là giá trị hiển thị, `unit` là đơn vị.
  */
-export default function VrainRainMap({ stations = [], selectedStation = null }) {
+export default function VrainRainMap({ stations = [], selectedStation = null, unit = 'mm' }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const popupRef = useRef(null);
   const stationsRef = useRef(stations);
+  const unitRef = useRef(unit);
+  unitRef.current = unit;
   const [basemap, setBasemap] = useState('dark_matter');
 
   stationsRef.current = stations;
@@ -82,8 +85,8 @@ export default function VrainRainMap({ stations = [], selectedStation = null }) 
       .setHTML(
         `<div style="font-family:system-ui;font-size:12px;color:#0f172a;min-width:160px">
           <div style="font-weight:700;font-size:13px">${escapeHtml(p.n)}</div>
-          <div style="margin-top:4px"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${escapeHtml(p.c)};margin-right:6px"></span>${escapeHtml(p.l)}</div>
-          <div style="margin-top:2px;font-weight:700">${Number(p.d).toFixed(1)} mm</div>
+          ${p.l ? `<div style="margin-top:4px"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${escapeHtml(p.c)};margin-right:6px"></span>${escapeHtml(p.l)}</div>` : ''}
+          <div style="margin-top:2px;font-weight:700">${Number(p.v ?? p.d).toLocaleString('vi-VN', { maximumFractionDigits: 2 })} ${escapeHtml(unitRef.current)}</div>
         </div>`
       )
       .addTo(map);
