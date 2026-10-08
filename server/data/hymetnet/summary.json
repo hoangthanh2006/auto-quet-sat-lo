@@ -1,103 +1,78 @@
 {
   "snapshotId": "20261008_0700",
   "exactTimeId": "20261008_0700",
-  "crawledAt": "2026-10-08T00:38:03.857Z",
+  "crawledAt": "2026-10-08T01:08:02.240Z",
   "vnTime": "07:00 08/10/2026",
   "summary": {
-    "totalAlertCommunes": 176,
-    "totalLightningStrikes": 11731,
-    "totalLightningCG": 9504,
-    "totalLightningCC": 2227,
-    "maxLightningAmpKa": 210,
-    "heavyRainPointsCount": 50,
+    "totalAlertCommunes": 98,
+    "totalLightningStrikes": 7753,
+    "totalLightningCG": 6749,
+    "totalLightningCC": 1004,
+    "maxLightningAmpKa": 255,
+    "heavyRainPointsCount": 32,
     "radarFramesCount": 12,
     "topDongSetProvinces": [
       {
-        "province": "Thành phố Đà Nẵng",
-        "communeCount": 19,
-        "totalAlerts": 38,
-        "sampleCommunes": [
-          "Xã Lãnh Ngọc",
-          "Xã Trà Liên",
-          "Xã Thăng Bình",
-          "Xã Trà My",
-          "Xã Quế Sơn Trung"
-        ]
-      },
-      {
         "province": "Tỉnh Quảng Ngãi",
-        "communeCount": 18,
-        "totalAlerts": 53,
+        "communeCount": 23,
+        "totalAlerts": 59,
         "sampleCommunes": [
+          "Xã Măng Bút",
           "Xã Sơn Tây Thượng",
-          "Xã Thanh Bồng",
-          "Xã Sơn Hà",
+          "Xã Sơn Tây",
           "Xã Sơn Kỳ",
-          "Xã Sơn Hạ"
+          "Xã Sơn Linh"
         ]
       },
       {
-        "province": "Tỉnh An Giang",
-        "communeCount": 16,
-        "totalAlerts": 63,
+        "province": "Thành phố Đà Nẵng",
+        "communeCount": 15,
+        "totalAlerts": 35,
         "sampleCommunes": [
-          "Xã Núi Cấm",
-          "Phường Chi Lăng",
-          "Xã Thạnh Mỹ Tây",
-          "Xã Châu Phú",
-          "Xã Vĩnh An"
-        ]
-      },
-      {
-        "province": "Tỉnh Đồng Tháp",
-        "communeCount": 4,
-        "totalAlerts": 13,
-        "sampleCommunes": [
-          "Xã Hòa Long",
-          "Xã Mỹ Hiệp",
-          "Xã Lai Vung",
-          "Xã Bình Hàng Trung"
+          "Xã Việt An",
+          "Xã Quế Sơn Trung",
+          "Xã Đồng Dương",
+          "Xã Sơn Cẩm Hà",
+          "Xã Thăng Bình"
         ]
       },
       {
         "province": "Tỉnh Quảng Trị",
-        "communeCount": 4,
-        "totalAlerts": 6,
+        "communeCount": 2,
+        "totalAlerts": 4,
         "sampleCommunes": [
-          "Xã Nam Cửa Việt",
-          "Phường Nam Đông Hà",
-          "Xã Ái Tử",
-          "Xã Triệu Bình"
+          "Xã Gio Linh",
+          "Xã Cửa Việt"
         ]
       }
     ],
     "topRainProvinces": [
       {
         "province": "An Giang",
-        "count": 19
-      },
-      {
-        "province": "Đồng Tháp",
         "count": 13
       },
       {
         "province": "TP. Hồ Chí Minh",
-        "count": 6
-      },
-      {
-        "province": "Long An",
         "count": 4
       },
       {
-        "province": "Quảng Nam",
+        "province": "Quảng Ngãi",
+        "count": 3
+      },
+      {
+        "province": "Điện Biên",
+        "count": 3
+      },
+      {
+        "province": "Hải Dương",
         "count": 3
       }
     ]
   },
   "counts": {
-    "dong_set": 176,
-    "lightning_strikes": 11731,
-    "heavy_rain_points": 50,
+    "dong_set": 98,
+    "lightning_strikes": 7753,
+    "heavy_rain_points": 32,
     "radar_frames": 12,
     "radar_stations": 10
   }
