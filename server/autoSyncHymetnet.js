@@ -15,6 +15,7 @@ import { fileURLToPath } from 'url';
 import { crawlHymetnetData } from './hymetnetService.js';
 import { fetchFirebaseRTDB, getFirebaseAuthToken } from './autoSyncNCHMF.js';
 import { saveHymetnetToSupabase } from './supabaseService.js';
+import { autoUploadDailyBackupToDrive } from './driveService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -220,6 +221,18 @@ export async function runHymetnetAutoSyncOnce(options = {}) {
       console.warn(`[Firebase] ⚠️ Có ${failedWrites.length}/${results.length} bản ghi Firebase thất bại`);
     } else {
       console.log(`[Firebase] ✅ Đã lưu thành công TẤT CẢ các lớp Hymetnet vào Firebase Realtime Database!`);
+    }
+
+    // 6. Tự động sao lưu lên Google Drive theo ngày (folder: 1Az5eQhaIPBfmdef8G3gPKv_O_YqqE4G6)
+    try {
+      await autoUploadDailyBackupToDrive({
+        type: 'hymetnet',
+        date: payload.date,
+        fileName: `hymetnet_${snapshotId}.json`,
+        content: payload
+      });
+    } catch (driveErr) {
+      console.warn('[Drive Backup] ⚠️ Lỗi khi lưu Google Drive:', driveErr.message);
     }
 
     const elapsed = Date.now() - startTime;

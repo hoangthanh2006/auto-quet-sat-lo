@@ -5,7 +5,7 @@ import { Readable } from 'stream';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DEFAULT_ROOT_FOLDER_ID = '1qyM-4r0aBiyVmRDotRARVg6WVUKAGAJC';
+const DEFAULT_ROOT_FOLDER_ID = '1Az5eQhaIPBfmdef8G3gPKv_O_YqqE4G6';
 const CONFIG_FILE_PATH = path.join(__dirname, 'driveConfig.json');
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, 'service-account.json');
 
@@ -240,4 +240,65 @@ export async function uploadToDrive({ fileName, content, mimeType = 'text/csv' }
     webViewLink: file.data.webViewLink || `https://drive.google.com/file/d/${file.data.id}/view`,
     webContentLink: file.data.webContentLink
   };
+}
+
+/**
+ * Tự động sao lưu dữ liệu theo ngày vào thư mục Google Drive (1Az5eQhaIPBfmdef8G3gPKv_O_YqqE4G6)
+ * - Tự động tạo thư mục con ngày YYYY-MM-DD nếu chưa có
+ * - Tự động kiểm tra file trùng để update nội dung thay vì tạo file thừa
+ */
+export async function autoUploadDailyBackupToDrive({ type, date, fileName, content, mimeType = 'application/json' }) {
+  try {
+    const drive = getDriveClient();
+    if (!drive) {
+      return { success: false, skipped: true, reason: 'Chưa cấu hình Google Drive credentials' };
+    }
+
+    const dateStr = date || new Date().toISOString().slice(0, 10);
+    const rootFolderId = currentConfig.rootFolderId || DEFAULT_ROOT_FOLDER_ID;
+
+    // 1. Tạo hoặc lấy subfolder theo ngày: YYYY-MM-DD
+    const dateFolderId = await ensureSubFolder(drive, rootFolderId, dateStr);
+
+    // 2. Chuẩn bị stream dữ liệu
+    const buffer = Buffer.isBuffer(content)
+      ? content
+      : Buffer.from(typeof content === 'string' ? content : JSON.stringify(content, null, 2), 'utf-8');
+    const stream = new Readable();
+    stream.push(buffer);
+    stream.push(null);
+
+    // 3. Kiểm tra file đã tồn tại trong folder ngày chưa
+    const checkQuery = `'${dateFolderId}' in parents and name = '${fileName}' and trashed = false`;
+    const existing = await drive.files.list({ q: checkQuery, fields: 'files(id, name)' });
+
+    let file;
+    if (existing.data.files && existing.data.files.length > 0) {
+      const fileId = existing.data.files[0].id;
+      file = await drive.files.update({
+        fileId,
+        media: { mimeType, body: stream },
+        fields: 'id, name, webViewLink'
+      });
+      console.log(`[Google Drive] 🔄 Đã cập nhật file '${fileName}' vào folder ngày ${dateStr}`);
+    } else {
+      file = await drive.files.create({
+        requestBody: { name: fileName, parents: [dateFolderId] },
+        media: { mimeType, body: stream },
+        fields: 'id, name, webViewLink'
+      });
+      console.log(`[Google Drive] ☁️ Đã lưu file mới '${fileName}' vào folder ngày ${dateStr}`);
+    }
+
+    return {
+      success: true,
+      fileId: file.data.id,
+      fileName,
+      dateFolder: dateStr,
+      webViewLink: file.data.webViewLink
+    };
+  } catch (err) {
+    console.warn(`[Google Drive Backup Error] ⚠️ Không thể lưu file '${fileName}' lên Drive:`, err.message);
+    return { success: false, error: err.message };
+  }
 }

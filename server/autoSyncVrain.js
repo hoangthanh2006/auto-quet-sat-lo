@@ -13,6 +13,7 @@ import { fileURLToPath } from 'url';
 import { crawlVrainData } from './vrainService.js';
 import { fetchFirebaseRTDB, getFirebaseAuthToken } from './autoSyncNCHMF.js';
 import { saveVrainToSupabase } from './supabaseService.js';
+import { autoUploadDailyBackupToDrive } from './driveService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -126,6 +127,18 @@ export async function runVrainAutoSyncOnce(options = {}) {
     const failed = results.filter((r) => r.status === 'rejected' || (r.value && r.value.ok === false));
     if (failed.length) console.warn(`[Firebase] ⚠️ Có ${failed.length}/${results.length} bản ghi Firebase thất bại`);
     else console.log('[Firebase] ✅ Đã cập nhật Firebase Realtime Database!');
+
+    // 3. Tự động sao lưu theo ngày lên Google Drive (folder: 1Az5eQhaIPBfmdef8G3gPKv_O_YqqE4G6)
+    try {
+      await autoUploadDailyBackupToDrive({
+        type: 'vrain',
+        date: payload.date,
+        fileName: `vrain_${snapshotId}.json`,
+        content: payload
+      });
+    } catch (driveErr) {
+      console.warn('[Drive Backup] ⚠️ Lỗi khi lưu Google Drive:', driveErr.message);
+    }
 
     const elapsed = Date.now() - startTime;
     console.log(`[Vrain Sync] 🏁 Hoàn thành trong ${elapsed}ms.\n`);

@@ -18,6 +18,7 @@ import {
 } from './luquetSatloService.js';
 import { crawlLakeWater, crawlRiverWater } from './environmentalService.js';
 import { saveNCHMFToSupabase } from './supabaseService.js';
+import { autoUploadDailyBackupToDrive } from './driveService.js';
 
 const FIREBASE_DB_URL = 'https://anh-cao-keu-default-rtdb.asia-southeast1.firebasedatabase.app';
 const FIREBASE_API_KEY = 'AIzaSyBge4vaLT4ADI_wFDtV7h69TeM762w7opk';
@@ -421,6 +422,18 @@ export async function runAutoSyncOnce(options = {}) {
 
     const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
     console.log(`[Firebase] ✅ Thành công! Đã sao lưu snapshot mốc giờ "${hourlySnapshotId}" (${summary.totalCommunes} xã, Rất cao: ${summary.ratCao}, Cao: ${summary.cao}, Max mưa: ${summary.maxRain}mm) trong ${elapsed}s.`);
+
+    // 6. Tự động sao lưu lên Google Drive theo ngày (folder: 1Az5eQhaIPBfmdef8G3gPKv_O_YqqE4G6)
+    try {
+      await autoUploadDailyBackupToDrive({
+        type: 'luquet_satlo',
+        date: dateStr,
+        fileName: `luquet_satlo_${hourlySnapshotId}.json`,
+        content: fullSnapshotPayload
+      });
+    } catch (driveErr) {
+      console.warn('[Drive Backup] ⚠️ Lỗi khi lưu Google Drive:', driveErr.message);
+    }
 
     schedulerState.lastRunAt = now.toISOString();
     schedulerState.totalRuns++;

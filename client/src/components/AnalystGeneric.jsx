@@ -18,7 +18,10 @@ import {
   GitCompare,
   LayoutList,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  RefreshCw,
+  ChevronDown,
+  Mountain
 } from 'lucide-react';
 import VrainRainMap from './VrainRainMap';
 import { HistogramChart, GroupBarChart, TimeSeriesChart, ScatterChart, CorrHeatmap, colorScale } from './AnalystGenericCharts';
@@ -36,6 +39,7 @@ import {
 } from '../services/genericAnalyzer';
 import { getVrainLatestData, getVrainHistoryTimeline, getVrainSnapshotData } from '../services/vrainClientService';
 import { getHymetnetHistoryTimeline } from '../services/hymetnetClientService';
+import { getTimelineFromSupabase } from '../services/supabaseClient';
 
 const SEVERITY = {
   high: { label: 'Đáng chú ý', cls: 'border-rose-500/50 bg-rose-500/10', chip: 'bg-rose-500 text-white', icon: AlertTriangle, iconCls: 'text-rose-400' },
@@ -117,11 +121,24 @@ export default function AnalystGeneric() {
   const [showAllInsights, setShowAllInsights] = useState(false);
   const [tableLimit, setTableLimit] = useState(100);
   const [sort, setSort] = useState({ col: null, dir: 'desc' });
+  const [showReloadMenu, setShowReloadMenu] = useState(false);
   const fileRef = useRef(null);
+  const reloadMenuRef = useRef(null);
   const idRef = useRef(1);
 
   const active = datasets.find((d) => d.id === activeId) || null;
   const ds = active?.ds || null;
+
+  // Đóng dropdown khi click ra ngoài
+  useEffect(() => {
+    const handleOutside = (e) => {
+      if (reloadMenuRef.current && !reloadMenuRef.current.contains(e.target)) {
+        setShowReloadMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutside);
+    return () => document.removeEventListener('mousedown', handleOutside);
+  }, []);
 
   // Reset lựa chọn khi đổi dataset
   useEffect(() => {
@@ -132,13 +149,22 @@ export default function AnalystGeneric() {
     setShowAllInsights(false);
   }, [activeId, active?.path]);
 
-  const addDataset = useCallback(async (name, sets, preferPath) => {
+  const addDataset = useCallback(async (name, sets, preferPath, sourceKind = null, replaceId = null) => {
     if (!sets.length) throw new Error('Không tìm thấy bảng dữ liệu (mảng bản ghi) trong nguồn này.');
     const chosen = (preferPath && sets.find((s) => s.path === preferPath)) || sets[0];
     await tick();
     const built = buildDataset(`${name}${sets.length > 1 ? ` › ${chosen.path}` : ''}`, chosen.rows);
+
+    if (replaceId) {
+      setDatasets((prev) =>
+        prev.map((d) => (d.id === replaceId ? { ...d, name, sets, path: chosen.path, ds: built, sourceKind, loadedAt: new Date().toLocaleTimeString('vi-VN') } : d))
+      );
+      setActiveId(replaceId);
+      return built;
+    }
+
     const id = idRef.current++;
-    setDatasets((prev) => [...prev, { id, name, sets, path: chosen.path, ds: built }]);
+    setDatasets((prev) => [...prev, { id, name, sets, path: chosen.path, ds: built, sourceKind, loadedAt: new Date().toLocaleTimeString('vi-VN') }]);
     setActiveId(id);
     return built;
   }, []);
@@ -188,7 +214,7 @@ export default function AnalystGeneric() {
 
   /* ---------------------------------------------------------- nguồn: có sẵn */
 
-  const loadBuiltin = async (kind) => {
+  const loadBuiltin = async (kind, replaceId = null) => {
     setBusy(kind);
     setMessage(null);
     try {
@@ -200,12 +226,14 @@ export default function AnalystGeneric() {
         await addDataset(
           `Vrain ${label}`,
           sets,
-          kind === 'vrain-stations' ? 'stations' : 'cities'
+          kind === 'vrain-stations' ? 'stations' : 'cities',
+          kind,
+          replaceId
         );
       } else if (kind === 'vrain-timeline') {
         const res = await getVrainHistoryTimeline(2000);
         if (!res.success || !res.data.length) throw new Error('Chưa có timeline Vrain.');
-        await addDataset('Vrain · timeline theo giờ', [{ path: '(timeline)', rows: res.data, count: res.data.length }]);
+        await addDataset('Vrain · timeline theo giờ', [{ path: '(timeline)', rows: res.data, count: res.data.length }], '(timeline)', kind, replaceId);
       } else if (kind === 'vrain-all') {
         const tl = await getVrainHistoryTimeline(2000);
         if (!tl.success || !tl.data.length) throw new Error('Chưa có timeline Vrain.');
@@ -223,16 +251,22 @@ export default function AnalystGeneric() {
         if (!snaps.length) throw new Error('Không nạp được snapshot nào.');
         snaps.sort((a, b) => (a.snapshotId || '').localeCompare(b.snapshotId || ''));
         const sets = findRecordSets({ snapshots: snaps });
-        await addDataset(`Vrain · ${snaps.length} mốc gần nhất`, sets, 'snapshots[*].stations');
+        await addDataset(`Vrain · ${snaps.length} mốc gần nhất`, sets, 'snapshots[*].stations', kind, replaceId);
       } else if (kind === 'hymetnet-timeline') {
         const res = await getHymetnetHistoryTimeline(2000);
         if (!res.success || !res.data.length) throw new Error('Chưa có timeline Hymetnet trên database.');
-        await addDataset('Hymetnet · timeline theo giờ', [{ path: '(timeline)', rows: res.data, count: res.data.length }]);
+        await addDataset('Hymetnet · timeline theo giờ', [{ path: '(timeline)', rows: res.data, count: res.data.length }], '(timeline)', kind, replaceId);
+      } else if (kind === 'luquet-satlo-timeline') {
+        const res = await getTimelineFromSupabase('luquet_satlo', 2000);
+        if (!res.success || !res.data.length) throw new Error('Chưa có timeline NCHMF Lũ quét sạt lở trên database.');
+        await addDataset('NCHMF · Lũ quét & Sạt lở timeline', [{ path: '(timeline)', rows: res.data, count: res.data.length }], '(timeline)', kind, replaceId);
       }
+      setMessage({ type: 'ok', text: `✅ Đã ${replaceId ? 'làm mới' : 'nạp'} thành công dữ liệu lúc ${new Date().toLocaleTimeString('vi-VN')}!` });
     } catch (e) {
       setMessage({ type: 'err', text: e.message || 'Không nạp được nguồn dữ liệu' });
     } finally {
       setBusy('');
+      setShowReloadMenu(false);
     }
   };
 
@@ -354,7 +388,8 @@ export default function AnalystGeneric() {
     { id: 'vrain-cities', label: 'Vrain · tỉnh/thành', icon: CloudRain },
     { id: 'vrain-all', label: 'Vrain · trạm × 48 mốc gần nhất', icon: CloudRain },
     { id: 'vrain-timeline', label: 'Vrain · timeline giờ', icon: CloudRain },
-    { id: 'hymetnet-timeline', label: 'Hymetnet · timeline giờ', icon: Zap }
+    { id: 'hymetnet-timeline', label: 'Hymetnet · timeline giờ', icon: Zap },
+    { id: 'luquet-satlo-timeline', label: 'NCHMF · Lũ quét & Sạt lở', icon: Mountain }
   ];
 
   return (
@@ -374,15 +409,103 @@ export default function AnalystGeneric() {
           <div className="min-w-[200px] flex-1 text-slate-400">
             Kéo thả file <b>.json · .csv · .ndjson</b> vào đây — mọi nguồn trong site (Hymetnet, Vrain, NCHMF, UVTU, NSO…) đều xuất được JSON để phân tích.
           </div>
-          <button
-            id="analyst-import"
-            type="button"
-            onClick={() => fileRef.current?.click()}
-            disabled={busy === 'file'}
-            className="flex cursor-pointer items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-amber-500/20 hover:from-amber-600 hover:to-yellow-700 disabled:opacity-60"
-          >
-            {busy === 'file' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Chọn file
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              id="analyst-import"
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              disabled={busy === 'file'}
+              className="flex cursor-pointer items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-amber-500/20 hover:from-amber-600 hover:to-yellow-700 disabled:opacity-60"
+            >
+              {busy === 'file' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Chọn file
+            </button>
+
+            {/* Menu Chọn tải lại data */}
+            <div className="relative" ref={reloadMenuRef}>
+              <button
+                id="analyst-reload-menu-btn"
+                type="button"
+                onClick={() => setShowReloadMenu((prev) => !prev)}
+                className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-amber-500/50 bg-amber-500/15 px-3 py-2 text-xs font-bold text-amber-400 hover:bg-amber-500/25 transition shadow-sm"
+              >
+                <RefreshCw className={`h-3.5 w-3.5 ${busy ? 'animate-spin' : ''}`} />
+                <span>Chọn tải lại data</span>
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${showReloadMenu ? 'rotate-180' : ''}`} />
+              </button>
+
+              {showReloadMenu && (
+                <div className="absolute right-0 top-full mt-2 w-80 z-50 rounded-2xl border border-slate-700 bg-slate-900/95 p-2.5 shadow-2xl backdrop-blur-xl ring-1 ring-black/40">
+                  {/* Nếu đang có bộ dữ liệu active */}
+                  {active && (
+                    <div className="mb-2 border-b border-slate-800 pb-2">
+                      <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">Bộ dữ liệu đang xem</div>
+                      <button
+                        type="button"
+                        disabled={!!busy}
+                        onClick={() => {
+                          if (active.sourceKind) {
+                            loadBuiltin(active.sourceKind, active.id);
+                          } else {
+                            fileRef.current?.click();
+                          }
+                          setShowReloadMenu(false);
+                        }}
+                        className="flex w-full cursor-pointer items-center justify-between rounded-xl px-2.5 py-2 text-left text-xs font-semibold text-amber-300 hover:bg-amber-500/15 transition"
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          <RefreshCw className={`h-3.5 w-3.5 shrink-0 ${busy ? 'animate-spin' : ''}`} />
+                          <span className="truncate">Làm mới: {active.name}</span>
+                        </div>
+                        <span className="text-[10px] text-slate-400 shrink-0 ml-1">{active.loadedAt || 'vừa nạp'}</span>
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">Chọn nguồn tải lại / nạp mới</div>
+                  <div className="space-y-0.5 max-h-60 overflow-y-auto">
+                    {BUILTIN.map((b) => {
+                      const isViewing = active && active.sourceKind === b.id;
+                      return (
+                        <button
+                          key={b.id}
+                          type="button"
+                          disabled={!!busy}
+                          onClick={() => {
+                            // Tải lại và thay thế bộ dữ liệu đang xem nếu cùng nguồn, hoặc thêm mới
+                            loadBuiltin(b.id, isViewing ? active.id : null);
+                            setShowReloadMenu(false);
+                          }}
+                          className="flex w-full cursor-pointer items-center justify-between rounded-xl px-2.5 py-1.5 text-left text-xs text-slate-200 hover:bg-slate-800 transition"
+                        >
+                          <div className="flex items-center gap-2 truncate">
+                            <b.icon className="h-3.5 w-3.5 shrink-0 text-amber-400" />
+                            <span className="truncate">{b.label}</span>
+                          </div>
+                          {isViewing && (
+                            <span className="rounded bg-amber-500/20 px-1.5 py-0.5 text-[9px] font-bold text-amber-300 shrink-0 ml-1">đang xem</span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="mt-2 border-t border-slate-800 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        fileRef.current?.click();
+                        setShowReloadMenu(false);
+                      }}
+                      className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-1.5 text-left text-xs text-slate-300 hover:bg-slate-800 transition"
+                    >
+                      <Upload className="h-3.5 w-3.5 text-slate-400" />
+                      <span>Nạp lại từ file máy tính (.json, .csv)</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
           <input ref={fileRef} type="file" accept=".json,.csv,.tsv,.ndjson,.txt,application/json,text/csv" multiple className="hidden" onChange={(e) => { handleFiles(e.target.files); e.target.value = ''; }} />
         </div>
 
@@ -419,6 +542,20 @@ export default function AnalystGeneric() {
                 <button type="button" onClick={() => setActiveId(d.id)} className="cursor-pointer">
                   {d.name} · {fmtNum(d.ds.nRows)} dòng
                 </button>
+                {d.sourceKind && (
+                  <button
+                    type="button"
+                    title={`Tải lại dữ liệu ${d.name} (cập nhật lúc ${d.loadedAt || 'vừa nạp'})`}
+                    disabled={!!busy}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      loadBuiltin(d.sourceKind, d.id);
+                    }}
+                    className="cursor-pointer text-amber-400/80 hover:text-amber-300 disabled:opacity-50"
+                  >
+                    <RefreshCw className={`h-3 w-3 ${busy === d.sourceKind && activeId === d.id ? 'animate-spin' : ''}`} />
+                  </button>
+                )}
                 <button type="button" aria-label={`Xóa ${d.name}`} onClick={() => removeDataset(d.id)} className="cursor-pointer text-slate-500 hover:text-rose-400">
                   <X className="h-3 w-3" />
                 </button>
@@ -446,9 +583,23 @@ export default function AnalystGeneric() {
               </Field>
             )}
             {busy === 'switch' && <Loader2 className="h-4 w-4 animate-spin text-amber-400" />}
-            <button type="button" onClick={exportCsv} className="ml-auto flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1.5 text-[11px] font-semibold text-slate-200 hover:bg-slate-700">
-              <Download className="h-3.5 w-3.5" /> Xuất bảng CSV
-            </button>
+
+            <div className="ml-auto flex items-center gap-2">
+              {active.sourceKind && (
+                <button
+                  type="button"
+                  disabled={!!busy}
+                  onClick={() => loadBuiltin(active.sourceKind, active.id)}
+                  title={`Tải lại dữ liệu mới nhất cho bộ này (đã nạp: ${active.loadedAt || 'vừa xong'})`}
+                  className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-amber-500/40 bg-amber-500/10 px-2.5 py-1.5 text-[11px] font-semibold text-amber-300 hover:bg-amber-500/20 disabled:opacity-50 transition"
+                >
+                  <RefreshCw className={`h-3.5 w-3.5 ${busy ? 'animate-spin' : ''}`} /> Tải lại dữ liệu này
+                </button>
+              )}
+              <button type="button" onClick={exportCsv} className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1.5 text-[11px] font-semibold text-slate-200 hover:bg-slate-700">
+                <Download className="h-3.5 w-3.5" /> Xuất bảng CSV
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
