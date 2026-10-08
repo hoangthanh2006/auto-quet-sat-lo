@@ -99,11 +99,11 @@ export async function getTimelineFromSupabase(source, limit = 500) {
 
     if (error) throw error;
 
-    // Chuyển format mảng thành object map { [snapshotId]: item } để tương thích code giao diện cũ
+    // Chuyển dữ liệu thành mảng (list) sắp xếp theo thời gian tăng dần và map tra cứu nhanh
     const map = {};
-    const list = data || [];
-    list.forEach((row) => {
-      map[row.snapshot_id] = {
+    const list = [];
+    (data || []).forEach((row) => {
+      const item = {
         snapshotId: row.snapshot_id,
         date: row.date,
         time: row.hour || row.time,
@@ -113,12 +113,17 @@ export async function getTimelineFromSupabase(source, limit = 500) {
         summary: row.summary || {},
         createdAt: row.created_at
       };
+      map[row.snapshot_id] = item;
+      list.push(item);
     });
 
-    return { success: true, data: map, list };
+    // Sắp xếp tăng dần theo snapshotId (quá khứ -> hiện tại) để vẽ biểu đồ và timeline
+    list.sort((a, b) => (a.snapshotId || '').localeCompare(b.snapshotId || ''));
+
+    return { success: true, data: list, list, map };
   } catch (err) {
     console.warn(`[Supabase] Lỗi lấy timeline (${source}):`, err.message);
-    return { success: false, data: {}, list: [], error: err.message };
+    return { success: false, data: [], list: [], map: {}, error: err.message };
   }
 }
 

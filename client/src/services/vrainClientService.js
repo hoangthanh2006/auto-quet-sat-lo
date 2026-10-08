@@ -112,7 +112,7 @@ export async function getVrainLatestData() {
 /** Lắng nghe dữ liệu Vrain thời gian thực (Supabase Realtime + Firebase) */
 export function subscribeVrainRealtime(onData) {
   const unsubSb = subscribeLatestDataFromSupabase('vrain', (data) => {
-    onData(data);
+    if (data) onData({ success: true, data });
   });
   const unsubFb = listenToVrainLatest(onData);
 
@@ -126,7 +126,7 @@ export function subscribeVrainRealtime(onData) {
 export async function getVrainHistoryTimeline(limit = 2000) {
   try {
     const sbRes = await getTimelineFromSupabase('vrain', limit);
-    if (sbRes.success && sbRes.data && Object.keys(sbRes.data).length > 0) {
+    if (sbRes.success && Array.isArray(sbRes.data) && sbRes.data.length > 0) {
       return sbRes;
     }
   } catch (e) {

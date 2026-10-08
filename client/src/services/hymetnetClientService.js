@@ -242,7 +242,7 @@ export async function getHymetnetRadar() {
 export function subscribeHymetnetRealtime(layer = 'all', onData) {
   const sourceName = layer === 'all' ? 'hymetnet_all' : `hymetnet_${layer}`;
   const unsubSb = subscribeLatestDataFromSupabase(sourceName, (data) => {
-    onData(data);
+    if (data) onData({ success: true, data });
   });
   const unsubFb = listenToHymetnetLatest(layer, onData);
 
@@ -258,7 +258,7 @@ export function subscribeHymetnetRealtime(layer = 'all', onData) {
 export async function getHymetnetHistoryTimeline(limit = 96) {
   try {
     const sbRes = await getTimelineFromSupabase('hymetnet', limit);
-    if (sbRes.success && sbRes.data && Object.keys(sbRes.data).length > 0) {
+    if (sbRes.success && Array.isArray(sbRes.data) && sbRes.data.length > 0) {
       return sbRes;
     }
   } catch (e) {

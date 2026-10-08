@@ -88,7 +88,10 @@ export default function ToolVrain() {
 
   const loadTimeline = useCallback(async () => {
     const res = await getVrainHistoryTimeline(2000);
-    if (res.success) setTimeline(res.data || []);
+    if (res.success) {
+      const arr = Array.isArray(res.data) ? res.data : (Array.isArray(res.list) ? res.list : Object.values(res.data || {}));
+      setTimeline(arr);
+    }
   }, []);
 
   // Tải dữ liệu ban đầu + lắng nghe realtime
@@ -145,14 +148,15 @@ export default function ToolVrain() {
   }, [selectedId]);
 
   const days = useMemo(() => {
-    const set = new Set(timeline.map((t) => t.date).filter(Boolean));
+    const arr = Array.isArray(timeline) ? timeline : Object.values(timeline || {});
+    const set = new Set(arr.map((t) => t.date).filter(Boolean));
     return [...set].sort().reverse();
   }, [timeline]);
 
-  const daySnapshots = useMemo(
-    () => timeline.filter((t) => t.date === selectedDay).sort((a, b) => a.snapshotId.localeCompare(b.snapshotId)),
-    [timeline, selectedDay]
-  );
+  const daySnapshots = useMemo(() => {
+    const arr = Array.isArray(timeline) ? timeline : Object.values(timeline || {});
+    return arr.filter((t) => t.date === selectedDay).sort((a, b) => (a.snapshotId || '').localeCompare(b.snapshotId || ''));
+  }, [timeline, selectedDay]);
 
   const view = selectedId ? snapshot : live;
   const isLive = !selectedId;
@@ -181,7 +185,8 @@ export default function ToolVrain() {
 
   const handleSelectDay = (day) => {
     setSelectedDay(day);
-    const list = timeline.filter((t) => t.date === day).sort((a, b) => a.snapshotId.localeCompare(b.snapshotId));
+    const arr = Array.isArray(timeline) ? timeline : Object.values(timeline || {});
+    const list = arr.filter((t) => t.date === day).sort((a, b) => (a.snapshotId || '').localeCompare(b.snapshotId || ''));
     if (list.length) setSelectedId(list[list.length - 1].snapshotId);
   };
 
@@ -234,7 +239,8 @@ export default function ToolVrain() {
           `vrain_${view.snapshotId || stamp}.json`);
       } else {
         const day = selectedDay || days[0];
-        const ids = (scope === 'day' ? timeline.filter((t) => t.date === day) : timeline).map((t) => t.snapshotId);
+        const arr = Array.isArray(timeline) ? timeline : Object.values(timeline || {});
+        const ids = (scope === 'day' ? arr.filter((t) => t.date === day) : arr).map((t) => t.snapshotId);
         if (!ids.length) throw new Error('Chưa có dữ liệu lịch sử để xuất');
         const snaps = await fetchSnapshots(ids);
         const parts = [`{"exportedAt":${JSON.stringify(new Date().toISOString())},"scope":${JSON.stringify(scope)},"count":${snaps.length},"snapshots":[`];
