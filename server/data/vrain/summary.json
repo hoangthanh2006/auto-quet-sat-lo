@@ -1,16 +1,16 @@
 {
-  "snapshotId": "20261014_1600",
-  "exactTimeId": "20261014_1607",
-  "crawledAt": "2026-10-14T09:57:18.613Z",
-  "vnTime": "16:07 14/10/2026",
+  "snapshotId": "20261014_1700",
+  "exactTimeId": "20261014_1707",
+  "crawledAt": "2026-10-14T10:12:37.949Z",
+  "vnTime": "17:07 14/10/2026",
   "summary": {
     "totalStations": 2584,
-    "rainingStations": 811,
+    "rainingStations": 849,
     "levelCounts": {
-      "Không mưa": 1773,
-      "Mưa nhỏ": 613,
-      "Mưa vừa": 160,
-      "Mưa to": 36,
+      "Không mưa": 1735,
+      "Mưa nhỏ": 637,
+      "Mưa vừa": 170,
+      "Mưa to": 40,
       "Mưa rất to": 2
     },
     "maxDepth": 108.4,
@@ -20,8 +20,8 @@
       "lat": 14.678611,
       "lng": 109.042222
     },
-    "avgDepthRaining": 11.2,
-    "heavyStations": 38,
+    "avgDepthRaining": 11.6,
+    "heavyStations": 42,
     "topStations": [
       {
         "n": "Hồ Cây Xoài",
@@ -35,7 +35,7 @@
         "n": "Hồ Lỗ Lá",
         "lt": 14.796944,
         "lg": 108.901944,
-        "d": 107,
+        "d": 107.2,
         "l": "Mưa rất to",
         "c": "#D84544"
       },
@@ -83,7 +83,7 @@
         "n": "Hòa Xuân Nam",
         "lt": 12.900833,
         "lg": 109.383889,
-        "d": 79.2,
+        "d": 79.8,
         "l": "Mưa to",
         "c": "#FF9600"
       },
@@ -126,7 +126,7 @@
       {
         "city": "Đắk Lắk",
         "station": "Hòa Xuân Nam",
-        "depth": 79.2,
+        "depth": 79.8,
         "level": "Mưa to"
       },
       {
@@ -139,8 +139,8 @@
   },
   "counts": {
     "stations_total": 2584,
-    "stations_raining": 811,
-    "heavy_rain_stations": 38,
+    "stations_raining": 849,
+    "heavy_rain_stations": 42,
     "very_heavy_stations": 2,
     "cities": 34
   }

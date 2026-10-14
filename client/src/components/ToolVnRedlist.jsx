@@ -40,7 +40,9 @@ import {
   rescanVnRedlistAnimals,
   startDeepCrawl,
   getDeepCrawlStatus,
-  stopDeepCrawl
+  stopDeepCrawl,
+  getSafeImageUrl,
+  getBackendImageProxyUrl
 } from '../services/vnredlistClientService';
 
 // Bảng màu chuẩn IUCN / Danh lục Đỏ Việt Nam
@@ -1073,13 +1075,18 @@ export default function ToolVnRedlist() {
                     <div className="relative aspect-[4/3] bg-slate-100 dark:bg-slate-900 overflow-hidden">
                       {species.thumbnail ? (
                         <img
-                          src={species.thumbnail}
+                          src={getSafeImageUrl(species.thumbnail)}
                           alt={species.vietnameseName}
                           loading="lazy"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                            const fallback = getBackendImageProxyUrl(species.thumbnail);
+                            if (e.currentTarget.src !== fallback) {
+                              e.currentTarget.src = fallback;
+                            } else {
+                              e.currentTarget.style.display = 'none';
+                              e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                            }
                           }}
                         />
                       ) : null}
@@ -1218,7 +1225,19 @@ export default function ToolVnRedlist() {
                       <td className="py-2 px-3 text-center">
                         <div className="w-10 h-10 mx-auto rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
                           {s.thumbnail ? (
-                            <img src={s.thumbnail} alt="" className="w-full h-full object-cover" />
+                            <img
+                              src={getSafeImageUrl(s.thumbnail)}
+                              alt=""
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                const fallback = getBackendImageProxyUrl(s.thumbnail);
+                                if (e.currentTarget.src !== fallback) {
+                                  e.currentTarget.src = fallback;
+                                } else {
+                                  e.currentTarget.style.display = 'none';
+                                }
+                              }}
+                            />
                           ) : (
                             <PawPrint className="w-4 h-4 text-slate-400" />
                           )}
@@ -1372,19 +1391,27 @@ export default function ToolVnRedlist() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Ảnh loài & Bản đồ nhỏ */}
                     <div className="space-y-3">
-                      <div className="rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 aspect-[4/3]">
+                      <div className="rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 aspect-[4/3] relative">
                         {selectedSpecies.thumbnail ? (
                           <img
-                            src={selectedSpecies.thumbnail}
+                            src={getSafeImageUrl(selectedSpecies.thumbnail)}
                             alt={selectedSpecies.vietnameseName}
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              const fallback = getBackendImageProxyUrl(selectedSpecies.thumbnail);
+                              if (e.currentTarget.src !== fallback) {
+                                e.currentTarget.src = fallback;
+                              } else {
+                                e.currentTarget.style.display = 'none';
+                                e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                              }
+                            }}
                           />
-                        ) : (
-                          <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
-                            <PawPrint className="w-12 h-12" />
-                            <span className="text-xs mt-1">Chưa có ảnh</span>
-                          </div>
-                        )}
+                        ) : null}
+                        <div className={`${selectedSpecies.thumbnail ? 'hidden' : ''} w-full h-full flex flex-col items-center justify-center text-slate-400`}>
+                          <PawPrint className="w-12 h-12" />
+                          <span className="text-xs mt-1">Chưa có ảnh</span>
+                        </div>
                       </div>
 
                       {selectedSpecies.distributionMapUrl && (
@@ -1399,9 +1426,15 @@ export default function ToolVnRedlist() {
                             className="block aspect-[4/3] bg-slate-900"
                           >
                             <img
-                              src={selectedSpecies.distributionMapUrl}
+                              src={getSafeImageUrl(selectedSpecies.distributionMapUrl)}
                               alt="Bản đồ phân bố"
                               className="w-full h-full object-contain"
+                              onError={(e) => {
+                                const fallback = getBackendImageProxyUrl(selectedSpecies.distributionMapUrl);
+                                if (e.currentTarget.src !== fallback) {
+                                  e.currentTarget.src = fallback;
+                                }
+                              }}
                             />
                           </a>
                         </div>
@@ -1588,9 +1621,15 @@ export default function ToolVnRedlist() {
                       </div>
                       <div className="bg-slate-950 p-2 flex justify-center">
                         <img
-                          src={selectedSpecies.distributionMapUrl}
+                          src={getSafeImageUrl(selectedSpecies.distributionMapUrl)}
                           alt="Bản đồ phân bố"
                           className="max-h-96 object-contain rounded-lg"
+                          onError={(e) => {
+                            const fallback = getBackendImageProxyUrl(selectedSpecies.distributionMapUrl);
+                            if (e.currentTarget.src !== fallback) {
+                              e.currentTarget.src = fallback;
+                            }
+                          }}
                         />
                       </div>
                     </div>

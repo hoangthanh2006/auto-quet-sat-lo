@@ -1502,6 +1502,41 @@ app.get('/api/vnredlist/taxonomy', (req, res) => {
     categories: RED_LIST_CATEGORIES
   });
 });
+
+// Proxy ảnh an toàn cho Danh lục Đỏ Động vật VAST (chuyển đổi HTTP sang HTTPS để tránh lỗi Mixed Content)
+app.get('/api/vnredlist/image-proxy', async (req, res) => {
+  try {
+    const { url } = req.query;
+    if (!url || typeof url !== 'string' || !url.startsWith('http')) {
+      return res.status(400).send('Invalid url query parameter');
+    }
+    const parsed = new URL(url);
+    if (!parsed.hostname.endsWith('vast.vn')) {
+      return res.status(403).send('Forbidden hostname');
+    }
+
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'http://vnredlist.vast.vn/'
+      }
+    });
+
+    if (!response.ok) {
+      return res.status(response.status).send(`Upstream returned ${response.status}`);
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    res.setHeader('Content-Type', response.headers.get('content-type') || 'image/jpeg');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cache-Control', 'public, max-age=604800, s-maxage=604800, immutable');
+    res.send(buffer);
+  } catch (error) {
+    console.error('API /api/vnredlist/image-proxy error:', error);
+    res.status(500).send(error.message);
+  }
+});
 // SPA fallback: serve index.html for non-API routes
 if (fs.existsSync(path.join(staticPath, 'index.html'))) {
   app.get('*', (req, res, next) => {

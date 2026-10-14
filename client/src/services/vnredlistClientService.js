@@ -136,3 +136,34 @@ export async function stopDeepCrawl() {
   const res = await axios.post(`${API_BASE_URL}/vnredlist/deep-crawl/stop`, {}, { timeout: 5000 });
   return res.data;
 }
+
+/**
+ * Chuyển đổi URL ảnh từ HTTP không an toàn của vnredlist.vast.vn sang HTTPS an toàn
+ * để tránh lỗi Mixed Content bị trình duyệt chặn khi chạy trên HTTPS hosting (Firebase, Vercel...)
+ */
+export function getSafeImageUrl(url) {
+  if (!url || typeof url !== 'string') return '';
+  const cleanUrl = url.trim();
+  if (!cleanUrl) return '';
+
+  // Nếu đã là HTTPS hoặc data:image hoặc blob:, giữ nguyên
+  if (cleanUrl.startsWith('https://') || cleanUrl.startsWith('data:') || cleanUrl.startsWith('blob:') || cleanUrl.startsWith('/')) {
+    return cleanUrl;
+  }
+
+  // Nếu là ảnh từ vnredlist.vast.vn hoặc vast.vn qua HTTP:
+  // Sử dụng wsrv.nl CDN proxy miễn phí (Cloudflare edge caching toàn cầu, tự động chuyển sang HTTPS an toàn)
+  if (cleanUrl.includes('vast.vn')) {
+    return `https://wsrv.nl/?url=${encodeURIComponent(cleanUrl)}&output=webp&q=85`;
+  }
+
+  return cleanUrl;
+}
+
+/**
+ * URL proxy dự phòng qua backend Node.js nếu CDN wsrv.nl gặp sự cố mạng
+ */
+export function getBackendImageProxyUrl(url) {
+  if (!url || typeof url !== 'string') return '';
+  return `${API_BASE_URL}/vnredlist/image-proxy?url=${encodeURIComponent(url.trim())}`;
+}
