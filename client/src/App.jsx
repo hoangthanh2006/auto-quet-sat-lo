@@ -1,5 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
-import { LayoutDashboard, Users, Zap, Wrench, Home, Sun, Moon, BookOpen, BarChart3, ScanText, Waves, Loader2, LogOut, Wind, Droplets, Leaf, Database, Activity, CloudRain } from 'lucide-react';
+import { LayoutDashboard, Users, Zap, Wrench, Home, Sun, Moon, BookOpen, BarChart3, ScanText, Waves, Loader2, LogOut, Wind, Droplets, Leaf, Database, Activity, CloudRain, PawPrint } from 'lucide-react';
 import LoginPage from './components/LoginPage';
 import { getStoredAuthUser, logoutSpotlightUser } from './services/firebase';
 
@@ -12,6 +12,7 @@ const ToolTyphoon = lazy(() => import('./components/ToolTyphoon'));
 const ToolEnvironmentalCrawlers = lazy(() => import('./components/ToolEnvironmentalCrawlers'));
 const ToolEvLcaCalculator = lazy(() => import('./components/ToolEvLcaCalculator'));
 const ToolOpenDevMekong = lazy(() => import('./components/ToolOpenDevMekong'));
+const ToolVnRedlist = lazy(() => import('./components/ToolVnRedlist'));
 const ToolHymetnet = lazy(() => import('./components/ToolHymetnet'));
 const ToolDataAnalyst = lazy(() => import('./components/ToolDataAnalyst'));
 const ToolVrain = lazy(() => import('./components/ToolVrain'));
@@ -47,6 +48,7 @@ const NAV_GROUPS = [
       { id: 'tool-analyst', label: 'Phân tích dữ liệu (D3 · Three.js)', icon: Activity, color: 'text-fuchsia-500', badge: 'Analyst' },
       { id: 'tool-ev-lca', label: 'Tính Phát thải Xe điện (LCA)', icon: Leaf, color: 'text-teal-500', badge: 'LCA' },
       { id: 'tool-opendev-mekong', label: 'Open Development VN', icon: Database, color: 'text-amber-500', badge: 'CKAN' },
+      { id: 'tool-vnredlist', label: 'Danh lục Đỏ Động vật (VAST)', icon: PawPrint, color: 'text-emerald-500', badge: 'Sách Đỏ' },
     ]
   },
   {
@@ -207,6 +209,7 @@ function App() {
             {currentPage === 'tool-vrain' && <ToolVrain />}
             {currentPage === 'tool-ev-lca' && <ToolEvLcaCalculator />}
             {currentPage === 'tool-opendev-mekong' && <ToolOpenDevMekong />}
+            {currentPage === 'tool-vnredlist' && <ToolVnRedlist />}
             {currentPage === 'tool-ocr' && <ToolOCR />}
             {currentPage === 'tool-uvtu' && <ToolUVTU />}
             {currentPage === 'tool-dynamic' && <DynamicScraper />}

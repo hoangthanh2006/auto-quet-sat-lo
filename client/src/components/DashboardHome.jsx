@@ -1,6 +1,14 @@
-import { Users, Zap, Wrench, BarChart3, ScanText, Waves, Wind, Droplets, Leaf, Sparkles, Database } from 'lucide-react';
+import { Users, Zap, Wrench, BarChart3, ScanText, Waves, Wind, Droplets, Leaf, Sparkles, Database, PawPrint } from 'lucide-react';
 
 const tools = [
+  {
+    id: 'tool-vnredlist',
+    title: 'Danh Lục Đỏ Động Vật Việt Nam (VAST / IEBR)',
+    description: 'Cào & trích xuất 720 loài động vật trong Sách Đỏ / Danh lục Đỏ Việt Nam từ vnredlist.vast.vn: Phân hạng bảo tồn (CR, EN, VU...), bản đồ phân bố, sinh cảnh sống, mối đe dọa và giải pháp bảo tồn. Xuất CSV/JSON/Drive.',
+    icon: PawPrint,
+    color: 'emerald',
+    badge: 'VAST · 720 Loài Sách Đỏ'
+  },
   {
     id: 'tool-opendev-mekong',
     title: 'Open Development Vietnam (Mekong Datahub)',

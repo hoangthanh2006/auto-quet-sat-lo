@@ -52,6 +52,17 @@ import {
   stopVrainAutoSync,
   getVrainSchedulerStatus
 } from './autoSyncVrain.js';
+import {
+  crawlAllAnimalsList,
+  crawlSingleSpeciesDetail,
+  runDeepCrawl,
+  getDeepCrawlProgress,
+  stopDeepCrawl,
+  getLocalAnimalsCache,
+  ANIMAL_TAXONOMY_TREE,
+  RED_LIST_CATEGORIES
+} from './vnredlistService.js';
+
 
 
 
@@ -1409,9 +1420,88 @@ app.get('/api/opendev/status', async (req, res) => {
   }
 });
 
+// ── 6. Danh lục Đỏ Động vật Việt Nam (VN Red List - VAST) ──────────────
+// Lấy danh sách 720 loài (kèm thống kê, bộ lọc phân loại)
+app.get('/api/vnredlist/animals', async (req, res) => {
+  try {
+    const force = req.query.force === 'true';
+    let cache = getLocalAnimalsCache();
+    if (!cache || force) {
+      cache = await crawlAllAnimalsList();
+    }
+    res.json({
+      success: true,
+      data: cache
+    });
+  } catch (error) {
+    console.error('API /api/vnredlist/animals error:', error);
+    const cached = getLocalAnimalsCache();
+    if (cached) {
+      return res.json({
+        success: true,
+        fromCache: true,
+        warning: 'Live sync failed, serving cached: ' + error.message,
+        data: cached
+      });
+    }
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 
+// Lấy thông tin chi tiết một loài (hồ sơ loài, bản đồ phân bố, nguy cơ, bảo tồn)
+app.get('/api/vnredlist/species/:slug', async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const detail = await crawlSingleSpeciesDetail(slug);
+    res.json({ success: true, data: detail });
+  } catch (error) {
+    console.error(`API /api/vnredlist/species/${req.params.slug} error:`, error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 
+// Kích hoạt cào lại danh mục 720 loài từ vnredlist.vast.vn
+app.post('/api/vnredlist/rescan', async (req, res) => {
+  try {
+    const result = await crawlAllAnimalsList();
+    res.json({ success: true, message: 'Đã hoàn tất cào lại danh mục 720 loài Động vật', data: result });
+  } catch (error) {
+    console.error('API /api/vnredlist/rescan error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 
+// Khởi chạy tiến trình cào sâu (Deep Crawl) toàn bộ chi tiết loài
+app.post('/api/vnredlist/deep-crawl', async (req, res) => {
+  try {
+    const limit = req.body?.limit ? parseInt(req.body.limit, 10) : null;
+    const concurrency = req.body?.concurrency ? parseInt(req.body.concurrency, 10) : 5;
+    const result = await runDeepCrawl({ limit, concurrency });
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Lấy tiến độ cào sâu
+app.get('/api/vnredlist/deep-crawl/status', (req, res) => {
+  res.json({ success: true, progress: getDeepCrawlProgress() });
+});
+
+// Dừng tiến trình cào sâu
+app.post('/api/vnredlist/deep-crawl/stop', (req, res) => {
+  const result = stopDeepCrawl();
+  res.json(result);
+});
+
+// Cây phân loại học và danh mục bảo tồn
+app.get('/api/vnredlist/taxonomy', (req, res) => {
+  res.json({
+    success: true,
+    tree: ANIMAL_TAXONOMY_TREE,
+    categories: RED_LIST_CATEGORIES
+  });
+});
 // SPA fallback: serve index.html for non-API routes
 if (fs.existsSync(path.join(staticPath, 'index.html'))) {
   app.get('*', (req, res, next) => {

@@ -1,147 +1,147 @@
 {
-  "snapshotId": "20261008_1400",
-  "exactTimeId": "20261008_1407",
-  "crawledAt": "2026-10-08T07:30:12.459Z",
-  "vnTime": "14:07 08/10/2026",
+  "snapshotId": "20261014_1600",
+  "exactTimeId": "20261014_1607",
+  "crawledAt": "2026-10-14T09:57:18.613Z",
+  "vnTime": "16:07 14/10/2026",
   "summary": {
-    "totalStations": 2585,
-    "rainingStations": 831,
+    "totalStations": 2584,
+    "rainingStations": 811,
     "levelCounts": {
-      "Không mưa": 1754,
-      "Mưa nhỏ": 436,
-      "Mưa vừa": 187,
-      "Mưa to": 102,
-      "Mưa rất to": 106
+      "Không mưa": 1773,
+      "Mưa nhỏ": 613,
+      "Mưa vừa": 160,
+      "Mưa to": 36,
+      "Mưa rất to": 2
     },
-    "maxDepth": 361.8,
+    "maxDepth": 108.4,
     "maxStation": {
-      "name": "Tam Trà",
-      "depth": 361.8,
-      "lat": 15.38522,
-      "lng": 108.49981
+      "name": "Hồ Cây Xoài",
+      "depth": 108.4,
+      "lat": 14.678611,
+      "lng": 109.042222
     },
-    "avgDepthRaining": 37.4,
-    "heavyStations": 208,
+    "avgDepthRaining": 11.2,
+    "heavyStations": 38,
     "topStations": [
       {
-        "n": "Tam Trà",
-        "lt": 15.38522,
-        "lg": 108.49981,
-        "d": 361.8,
+        "n": "Hồ Cây Xoài",
+        "lt": 14.678611,
+        "lg": 109.042222,
+        "d": 108.4,
         "l": "Mưa rất to",
         "c": "#D84544"
       },
       {
-        "n": "Hồ Thái Xuân",
-        "lt": 15.440145,
-        "lg": 108.586996,
-        "d": 321,
+        "n": "Hồ Lỗ Lá",
+        "lt": 14.796944,
+        "lg": 108.901944,
+        "d": 107,
         "l": "Mưa rất to",
         "c": "#D84544"
       },
       {
-        "n": "Tam Lãnh",
-        "lt": 15.430278,
-        "lg": 108.408611,
-        "d": 283.8,
-        "l": "Mưa rất to",
-        "c": "#D84544"
+        "n": "Hồ Trong Thượng",
+        "lt": 14.660419,
+        "lg": 108.877926,
+        "d": 95,
+        "l": "Mưa to",
+        "c": "#FF9600"
       },
       {
-        "n": "Trà Kót",
-        "lt": 15.356583,
-        "lg": 108.3825,
-        "d": 256.6,
-        "l": "Mưa rất to",
-        "c": "#D84544"
+        "n": "Sông Trà",
+        "lt": 15.540833,
+        "lg": 108.042222,
+        "d": 93.4,
+        "l": "Mưa to",
+        "c": "#FF9600"
       },
       {
-        "n": "Đầu mối hồ Phú Ninh",
-        "lt": 15.506648,
-        "lg": 108.481143,
-        "d": 243.8,
-        "l": "Mưa rất to",
-        "c": "#D84544"
+        "n": "Hồ Cẩn Hậu",
+        "lt": 14.639956,
+        "lg": 108.992461,
+        "d": 93.4,
+        "l": "Mưa to",
+        "c": "#FF9600"
       },
       {
-        "n": "Trà Thanh",
-        "lt": 15.271111,
-        "lg": 108.351944,
-        "d": 239.8,
-        "l": "Mưa rất to",
-        "c": "#D84544"
+        "n": "Hồ Cây Sanh",
+        "lt": 14.641389,
+        "lg": 109.051389,
+        "d": 84.4,
+        "l": "Mưa to",
+        "c": "#FF9600"
       },
       {
-        "n": "Bạch Mã",
-        "lt": 16.251017,
-        "lg": 107.873289,
-        "d": 234,
-        "l": "Mưa rất to",
-        "c": "#D84544"
+        "n": "Đầu mối HCN Diên Trường",
+        "lt": 14.71347,
+        "lg": 109.022807,
+        "d": 82.6,
+        "l": "Mưa to",
+        "c": "#FF9600"
       },
       {
-        "n": "Giang Hải (Phú Lộc)",
-        "lt": 16.366389,
-        "lg": 107.863056,
-        "d": 233.4,
-        "l": "Mưa rất to",
-        "c": "#D84544"
+        "n": "Hòa Xuân Nam",
+        "lt": 12.900833,
+        "lg": 109.383889,
+        "d": 79.2,
+        "l": "Mưa to",
+        "c": "#FF9600"
       },
       {
-        "n": "Bình Tân",
-        "lt": 15.228611,
-        "lg": 108.846389,
-        "d": 222,
-        "l": "Mưa rất to",
-        "c": "#D84544"
+        "n": "Tiểu Cần",
+        "lt": 9.821811,
+        "lg": 106.197092,
+        "d": 78.8,
+        "l": "Mưa to",
+        "c": "#FF9600"
       },
       {
-        "n": "Bình Phước",
-        "lt": 15.319229,
-        "lg": 108.802091,
-        "d": 221,
-        "l": "Mưa rất to",
-        "c": "#D84544"
+        "n": "Hồ Tôn Dung",
+        "lt": 14.755556,
+        "lg": 108.738889,
+        "d": 77,
+        "l": "Mưa to",
+        "c": "#FF9600"
       }
     ],
     "topCities": [
       {
-        "city": "Đà Nẵng",
-        "station": "Tam Trà",
-        "depth": 361.8,
-        "level": "Mưa rất to"
-      },
-      {
         "city": "Quảng Ngãi",
-        "station": "Trà Thanh",
-        "depth": 239.8,
+        "station": "Hồ Cây Xoài",
+        "depth": 108.4,
         "level": "Mưa rất to"
       },
       {
-        "city": "Thành phố Huế",
-        "station": "Bạch Mã",
-        "depth": 234,
-        "level": "Mưa rất to"
+        "city": "Gia Lai",
+        "station": "Hồ Trong Thượng",
+        "depth": 95,
+        "level": "Mưa to"
       },
       {
-        "city": "Lâm Đồng",
-        "station": "Phan Điền",
-        "depth": 139.6,
-        "level": "Mưa rất to"
+        "city": "Đà Nẵng",
+        "station": "Sông Trà",
+        "depth": 93.4,
+        "level": "Mưa to"
       },
       {
-        "city": "Cần Thơ",
-        "station": "Hòa An",
-        "depth": 72,
+        "city": "Đắk Lắk",
+        "station": "Hòa Xuân Nam",
+        "depth": 79.2,
+        "level": "Mưa to"
+      },
+      {
+        "city": "Vĩnh Long",
+        "station": "Tiểu Cần",
+        "depth": 78.8,
         "level": "Mưa to"
       }
     ]
   },
   "counts": {
-    "stations_total": 2585,
-    "stations_raining": 831,
-    "heavy_rain_stations": 208,
-    "very_heavy_stations": 106,
+    "stations_total": 2584,
+    "stations_raining": 811,
+    "heavy_rain_stations": 38,
+    "very_heavy_stations": 2,
     "cities": 34
   }
 }
